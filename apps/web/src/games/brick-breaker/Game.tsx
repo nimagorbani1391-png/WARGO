@@ -3,7 +3,7 @@ import GameFrame from "../GameFrame";
 
 type Brick = { id: number; x: number; y: number; w: number; h: number; hp: number; color: string };
 type Ball = { x: number; y: number; vx: number; vy: number; delay: number };
-type Engine = { width: number; height: number; bricks: Brick[]; balls: Ball[]; launching: boolean; score: number; volley: number; won: boolean; lost: boolean; aimX: number; aimY: number; dragging: boolean; lastTick: number; accumulator: number };
+type Engine = { width: number; height: number; bricks: Brick[]; balls: Ball[]; launching: boolean; score: number; volley: number; won: boolean; lost: boolean; lastTick: number; accumulator: number };
 const BALLS_PER_VOLLEY = 10;
 const BALL_RADIUS = 4.2;
 const BALL_SPEED = 410;
@@ -21,7 +21,7 @@ function makeBricks(width: number): Brick[] {
   return rows.flatMap((row, r) => Array.from({ length: row.end - row.start + 1 }, (_, j) => ({ id: r * 10 + j, x: margin + (row.start + j) * (brickW + gap), y: 58 + r * (brickH + 7), w: brickW, h: brickH, hp: row.hp, color: row.color })));
 }
 function freshEngine(width: number, height: number): Engine {
-  return { width, height, bricks: makeBricks(width), balls: [], launching: false, score: 0, volley: 1, won: false, lost: false, aimX: width / 2, aimY: height - 90, dragging: false, lastTick: 0, accumulator: 0 };
+  return { width, height, bricks: makeBricks(width), balls: [], launching: false, score: 0, volley: 1, won: false, lost: false, lastTick: 0, accumulator: 0 };
 }
 export default function BrickBreaker({ onExit }: { onExit: () => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -31,6 +31,9 @@ export default function BrickBreaker({ onExit }: { onExit: () => void }) {
   const [ballsLeft, setBallsLeft] = useState(BALLS_PER_VOLLEY);
   const [round, setRound] = useState(1);
   const [status, setStatus] = useState<"ready" | "playing" | "won" | "lost">("ready");
+  const [aimAngle, setAimAngle] = useState(0);
+  const aimAngleRef = useRef(0);
+  const sliderActiveRef = useRef(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -50,7 +53,7 @@ export default function BrickBreaker({ onExit }: { onExit: () => void }) {
         const sx = width / s.width, sy = height / s.height;
         s.bricks.forEach(b => { b.x *= sx; b.y *= sy; b.w *= sx; b.h *= sy; });
         s.balls.forEach(b => { b.x *= sx; b.y *= sy; });
-        s.aimX *= sx; s.aimY *= sy; s.width = width; s.height = height;
+s.width = width; s.height = height;
       }
     };
     resize();
@@ -72,12 +75,6 @@ export default function BrickBreaker({ onExit }: { onExit: () => void }) {
         ctx.fillStyle = "#fff"; ctx.font = "600 14px Vazirmatn, sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(String(b.hp), b.x + b.w / 2, b.y + b.h / 2);
       }
 
-      if (s.dragging && !s.launching && status === "ready") {
-        const a = anchor(), dx = a.x - s.aimX, dy = a.y - s.aimY, len = Math.hypot(dx, dy) || 1;
-        const ux = dx / len, uy = dy / len;
-        ctx.setLineDash([5, 6]); ctx.strokeStyle = "rgba(225,190,255,.65)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(a.x + ux * 100, a.y + uy * 100); ctx.stroke(); ctx.setLineDash([]);
-        ctx.fillStyle = "#e879f9"; ctx.beginPath(); ctx.arc(s.aimX, s.aimY, 8, 0, Math.PI * 2); ctx.fill();
-      }
       const a = anchor();
       ctx.shadowColor = "#e879f9"; ctx.shadowBlur = 15; ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(a.x, a.y, 5, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
 
@@ -124,27 +121,32 @@ export default function BrickBreaker({ onExit }: { onExit: () => void }) {
     return () => { cancelAnimationFrame(raf); observer.disconnect(); };
   }, [status]);
 
-  const pointFromEvent = (event: PointerEvent<HTMLCanvasElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+  const launchVolley = () => {
+    const s = engineRef.current;
+    if (!s || s.launching || status !== "ready" || s.won || s.lost) return;
+    const angle = aimAngleRef.current * Math.PI / 180;
+    const speed = BALL_SPEED;
+    s.balls = Array.from({ length: BALLS_PER_VOLLEY }, (_, i) => ({
+      x: s.width / 2,
+      y: s.height - 34,
+      vx: Math.sin(angle) * speed,
+      vy: -Math.cos(angle) * speed,
+      delay: i * .075
+    }));
+    s.launching = true;
+    s.accumulator = 0;
+    setBallsLeft(0);
+    setStatus("playing");
   };
-  const pointerDown = (event: PointerEvent<HTMLCanvasElement>) => {
-    const s = engineRef.current; if (!s || s.launching || status !== "ready" || s.won || s.lost) return;
-    const p = pointFromEvent(event); s.dragging = true; s.aimX = p.x; s.aimY = Math.min(s.height - 70, Math.max(s.height - 210, p.y));
-    event.currentTarget.setPointerCapture(event.pointerId);
+  const changeAim = (value: number) => {
+    const next = Math.max(-65, Math.min(65, value));
+    aimAngleRef.current = next;
+    setAimAngle(next);
   };
-  const pointerMove = (event: PointerEvent<HTMLCanvasElement>) => {
-    const s = engineRef.current; if (!s?.dragging) return;
-    const p = pointFromEvent(event); s.aimX = Math.max(12, Math.min(s.width - 12, p.x)); s.aimY = Math.min(s.height - 70, Math.max(s.height - 210, p.y));
-  };
-  const pointerUp = () => {
-    const s = engineRef.current; if (!s?.dragging) return;
-    s.dragging = false;
-    const a = { x: s.width / 2, y: s.height - 34 }, dx = a.x - s.aimX, dy = a.y - s.aimY, length = Math.hypot(dx, dy);
-    if (length < 18 || dy < 10) return;
-    const ux = dx / length, uy = dy / length, speed = BALL_SPEED * Math.min(1.18, Math.max(.78, length / 100));
-    s.balls = Array.from({ length: BALLS_PER_VOLLEY }, (_, i) => ({ x: a.x, y: a.y, vx: ux * speed, vy: uy * speed, delay: i * .075 }));
-    s.launching = true; s.accumulator = 0; setBallsLeft(0); setStatus("playing");
+  const releaseSlider = () => {
+    if (!sliderActiveRef.current) return;
+    sliderActiveRef.current = false;
+    launchVolley();
   };
   const restart = () => {
     const canvas = canvasRef.current; if (!canvas) return;
@@ -153,8 +155,29 @@ export default function BrickBreaker({ onExit }: { onExit: () => void }) {
   };
   return <GameFrame title="شکستن آجرها" onExit={onExit}>
     <div className="game-stats"><span>امتیاز <b>{score}</b></span><span>توپ در نوبت بعد <b>{ballsLeft}</b></span><span>راند <b>{round}</b></span><span>رکورد <b>{best}</b></span></div>
-    <canvas ref={canvasRef} className="brick-canvas" onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp} aria-label="برای نشانه‌گیری توپ‌ها را به عقب بکش و رها کن" />
-    {status !== "playing" && <div className="game-action-panel"><strong>{status === "won" ? "همه آجرها شکسته شدند!" : status === "lost" ? "بازی تمام شد" : round === 1 ? "۱۰ توپ را مثل تیرکمان بکش و رها کن" : "۱۰ توپ بعدی آماده‌اند؛ نشانه بگیر"}</strong><button className="game-primary" type="button" onClick={restart}>شروع دوباره</button></div>}
-    <p className="game-help">انگشتت را از نقطهٔ پایین به عقب بکش و رها کن؛ ۱۰ توپ پشت‌سرهم پرتاب می‌شوند. هر آجری که جانش تمام شود، از صفحه حذف می‌شود.</p>
+    <canvas ref={canvasRef} className="brick-canvas" aria-label="میدان بازی شکستن آجرها" />
+    <div className={`brick-aim-control ${status !== "ready" ? "is-disabled" : ""}`}>
+      <label className="brick-aim-label" htmlFor="brick-aim-slider">زاویه پرتاب <b>{aimAngle > 0 ? "+" : ""}{aimAngle}°</b></label>
+      <input
+        id="brick-aim-slider"
+        className="brick-aim-slider"
+        type="range"
+        min="-65"
+        max="65"
+        step="1"
+        value={aimAngle}
+        disabled={status !== "ready"}
+        onChange={event => changeAim(Number(event.currentTarget.value))}
+        onPointerDown={() => { sliderActiveRef.current = true; }}
+        onPointerUp={releaseSlider}
+        onPointerCancel={releaseSlider}
+        onKeyUp={event => { if (event.key.startsWith("Arrow")) launchVolley(); }}
+        aria-label="زاویه پرتاب توپ‌ها؛ دستگیره را حرکت بده و رها کن تا ۱۰ توپ شلیک شوند"
+      />
+      <div className="brick-aim-scale"><span>چپ</span><span>مستقیم</span><span>راست</span></div>
+      <p className="game-help">{status === "playing" ? "۱۰ توپ در حال حرکت‌اند..." : "دستگیره را به چپ یا راست بکش؛ با رها کردن، ۱۰ توپ خودکار شلیک می‌شوند."}</p>
+    </div>
+    {status === "won" && <div className="game-action-panel"><strong>همه آجرها شکسته شدند!</strong><button className="game-primary" type="button" onClick={restart}>بازی دوباره</button></div>}
+    {status === "lost" && <div className="game-action-panel"><strong>بازی تمام شد</strong><button className="game-primary" type="button" onClick={restart}>شروع دوباره</button></div>}
   </GameFrame>;
 }
