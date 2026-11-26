@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type PointerEvent } from "react";
 import GameFrame from "../GameFrame";
 
 type Brick = { x: number; y: number; w: number; h: number; hp: number; color: string };
@@ -66,7 +66,9 @@ export default function BrickBreaker({ onExit }: { onExit: () => void }) {
         }
         for (const b of s.bricks) {
           if (b.hp > 0 && s.ballX >= b.x - 7 && s.ballX <= b.x + b.w + 7 && s.ballY >= b.y - 7 && s.ballY <= b.y + b.h + 7) {
-            b.hp -= 1; s.vy *= -1; s.score += b.hp === 0 ? 15 : 5; setScore(s.score); break;
+            b.hp -= 1; s.vy *= -1; s.score += b.hp === 0 ? 15 : 5; setScore(s.score);
+            try { if (s.score > Number(localStorage.getItem("wargo:brick-best") || 0)) localStorage.setItem("wargo:brick-best", String(s.score)); } catch { /* Optional local record. */ }
+            break;
           }
         }
         if (s.ballY > h + 12) { s.lives -= 1; setLives(s.lives); if (s.lives <= 0) { s.lost = true; setStatus("lost"); } else { s.ballX = s.paddleX; s.ballY = paddleY - 15; s.vx = 3.2; s.vy = -4.1; s.running = false; setStatus("ready"); } }
@@ -78,7 +80,7 @@ export default function BrickBreaker({ onExit }: { onExit: () => void }) {
     return () => { cancelAnimationFrame(frame); observer.disconnect(); };
   }, []);
 
-  const movePaddle = (event: React.PointerEvent<HTMLCanvasElement>) => {
+  const movePaddle = (event: PointerEvent<HTMLCanvasElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
     const x = event.clientX - rect.left;
     if (engineRef.current) engineRef.current.paddleX = Math.max(48, Math.min(rect.width - 48, x));
