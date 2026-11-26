@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Chess, type Move, type Square } from "chess.js";
 import GameFrame from "../GameFrame";
+import GameStartOverlay from "../GameStartOverlay";
 
 const symbols: Record<string, string> = { wk: "♔", wq: "♕", wr: "♖", wb: "♗", wn: "♘", wp: "♙", bk: "♚", bq: "♛", br: "♜", bb: "♝", bn: "♞", bp: "♟" };
 const values: Record<string, number> = { p: 100, n: 320, b: 330, r: 500, q: 900, k: 20000 };
@@ -43,12 +44,13 @@ export default function ChessGame({ onExit }: { onExit: () => void }) {
   const [difficulty, setDifficulty] = useState("normal");
   const [thinking, setThinking] = useState(false);
   const [history, setHistory] = useState<string[]>([]);
+  const [started, setStarted] = useState(false);
   const game = useMemo(() => new Chess(fen), [fen]);
   const moves = selected ? game.moves({ square: selected, verbose: true }) as Move[] : [];
   const legalTargets = moves.map((move) => move.to);
 
   useEffect(() => {
-    if (game.turn() !== "b" || game.isGameOver()) return;
+    if (!started || game.turn() !== "b" || game.isGameOver()) return;
     setThinking(true);
     const timer = window.setTimeout(() => {
       const san = chooseComputerMove(fen, difficulty);
@@ -59,11 +61,11 @@ export default function ChessGame({ onExit }: { onExit: () => void }) {
       setThinking(false);
     }, 250);
     return () => window.clearTimeout(timer);
-  }, [fen, difficulty, game]);
+  }, [fen, difficulty, game, started]);
 
   const message = game.isCheckmate() ? "کیش‌ومات! " + (game.turn() === "w" ? "ربات برنده شد." : "تو برنده شدی!") : game.isDraw() ? "بازی مساوی شد." : thinking ? "ربات در حال فکر کردن است…" : game.isCheck() ? "کیش!" : game.turn() === "w" ? "نوبت توست؛ سفید بازی می‌کند." : "نوبت ربات است.";
   function play(square: Square) {
-    if (thinking || game.turn() !== "w" || game.isGameOver()) return;
+    if (!started || thinking || game.turn() !== "w" || game.isGameOver()) return;
     if (selected) {
       const target = moves.find((move) => move.to === square);
       if (target) {
@@ -75,7 +77,7 @@ export default function ChessGame({ onExit }: { onExit: () => void }) {
     const piece = game.get(square);
     setSelected(piece?.color === "w" ? square : null);
   }
-  function restart() { setFen(new Chess().fen()); setHistory([]); setSelected(null); setThinking(false); }
+  function restart() { setFen(new Chess().fen()); setHistory([]); setSelected(null); setThinking(false); setStarted(true); }
   return <GameFrame title="شطرنج با ربات" onExit={onExit}>
     <div className="chess-toolbar"><label>سختی ربات<select value={difficulty} onChange={(e) => { setDifficulty(e.target.value); restart(); }}><option value="easy">آسان</option><option value="normal">متوسط</option><option value="hard">سخت</option></select></label><span className="chess-turn">{message}</span></div>
     <div className="chess-board" role="grid" aria-label="صفحه شطرنج">
@@ -88,7 +90,8 @@ export default function ChessGame({ onExit }: { onExit: () => void }) {
         </button>;
       }))}
     </div>
-    <div className="chess-bottom"><span>حرکت‌ها: {history.length}</span><button className="game-primary" type="button" onClick={restart}>شروع دوباره</button></div>
+    <div className="chess-bottom"><span>حرکت‌ها: {history.length}</span></div>
+    <GameStartOverlay visible={!started || game.isGameOver()} title={!started ? "آماده‌ی شطرنجی؟" : message} description={!started ? "برای شروع بازی با ربات آماده شو." : "یک بازی تازه شروع کن."} buttonLabel={!started ? "شروع بازی" : "دور بعدی"} onStart={restart} />
     {history.length > 0 && <div className="chess-history">{history.slice(-8).join(" · ")}</div>}
     <p className="game-help">مهره را لمس کن، سپس خانهٔ مقصد را انتخاب کن. ارتقای سرباز به وزیر انجام می‌شود.</p>
   </GameFrame>;
