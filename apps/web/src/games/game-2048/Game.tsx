@@ -240,7 +240,7 @@ export default function Game2048({ onExit }: { onExit: () => void }) {
         {board.flatMap((row, rowIndex) =>
           row.map((value, columnIndex) => (
             <div
-              key={rowIndex * SIZE + columnIndex}
+              key={`${rowIndex * SIZE + columnIndex}-${value}`}
               role="gridcell"
               aria-label={value === 0 ? "خالی" : String(value)}
               className={`g2048-tile v${Math.min(value, TARGET)}`}
