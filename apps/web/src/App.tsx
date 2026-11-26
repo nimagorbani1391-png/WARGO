@@ -75,7 +75,7 @@ export default function App() {
 
       <section className="recent-section mobile-section" aria-labelledby="recent-title">
         <div className="mobile-section-heading"><div><h2 id="recent-title">بازی‌های اخیر تو</h2></div></div>
-        <RecentGames onOpen={(id) => { const game = gameRegistry.find((item) => item.id === id); if (game) void launchGame(game); }} />
+        <RecentGames key={opened?.game.id || "closed"} onOpen={(id) => { const game = gameRegistry.find((item) => item.id === id); if (game) void launchGame(game); }} />
       </section>
 
       <section className="category-section mobile-section" aria-labelledby="category-title">
