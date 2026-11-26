@@ -44,9 +44,7 @@ export default function App() {
 
       <section className="mobile-home" aria-label="پیدا کردن بازی">
         <div className="mobile-welcome">
-          <span className="eyebrow">وقتشه یه استراحت کوتاه کنی</span>
           <h1>چه بازی‌ای <span>انجام بدیم؟</span></h1>
-          <p>بازی مورد علاقه‌ات رو پیدا کن یا انتخاب رو به شانس بسپار.</p>
         </div>
         <label className="search-box mobile-search">
           <span aria-hidden="true">⌕</span>
@@ -87,7 +85,6 @@ export default function App() {
       <section className="recent-section mobile-section" aria-labelledby="recent-title">
         <div className="mobile-section-heading">
           <div>
-            <span className="eyebrow">ادامه سرگرمی</span>
             <h2 id="recent-title">بازی‌های اخیر تو</h2>
           </div>
         </div>
@@ -103,7 +100,6 @@ export default function App() {
       <section className="category-section mobile-section" aria-labelledby="category-title">
         <div className="mobile-section-heading">
           <div>
-            <span className="eyebrow">بر اساس سلیقه‌ات</span>
             <h2 id="category-title">دسته‌بندی بازی‌ها</h2>
           </div>
         </div>
@@ -126,7 +122,6 @@ export default function App() {
       <section className="library" aria-labelledby="library-title">
         <div className="section-heading">
           <div>
-            <span className="eyebrow">کتابخانه WARGO</span>
             <h2 id="library-title">همه بازی‌ها</h2>
           </div>
           <label className="search-box desktop-search">
@@ -168,7 +163,6 @@ export default function App() {
 
       <footer className="footer">
         <span>WARGO</span>
-        <span>بازی‌های سبک؛ تجربه‌ای روان</span>
       </footer>
     </main>
   );
