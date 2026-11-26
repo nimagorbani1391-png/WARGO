@@ -29,7 +29,27 @@ button:focus-visible, input:focus-visible, a:focus-visible {
   height: 82px; display: flex; align-items: center; justify-content: center;
   border-bottom: 1px solid var(--line);
 }
-.brand { display: inline-flex; align-items: center; gap: 11px; color: white; text-decoration: none; font-size: 24px; font-weight: 900; letter-spacing: 3px; }
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  color: #f7f2ff;
+  text-decoration: none;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  line-height: 1;
+  background: linear-gradient(180deg, #ffffff 0%, #e8ddff 38%, #a98aff 72%, #7652d5 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 0 #d9caff)
+          drop-shadow(0 2px 0 #a88be9)
+          drop-shadow(0 3px 0 #7655c4)
+          drop-shadow(0 5px 5px rgba(0, 0, 0, .48));
+  text-shadow: 0 1px 0 rgba(255,255,255,.55);
+  transform: perspective(180px) rotateX(7deg);
+}
 .brand-mark { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; color: #171322; background: linear-gradient(135deg, #c4b5fd, #8b5cf6); }
 .topbar-caption, .footer { color: var(--muted); font-size: 13px; }
 .hero {
