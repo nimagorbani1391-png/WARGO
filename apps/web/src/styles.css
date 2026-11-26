@@ -86,6 +86,23 @@ h2 { margin: 5px 0 0; font-size: 25px; }
   .library { padding: 42px 0 54px; }
   .section-heading { align-items: stretch; flex-direction: column; }
   .search-box { width: 100%; }
+  .game-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 9px;
+  }
+  .game-card { border-radius: 12px; }
+  .game-card img { aspect-ratio: 4 / 3; }
+  .game-card div { padding: 8px; }
+  .game-card h3 {
+    margin: 0;
+    font-size: 11px;
+    line-height: 1.7;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+  .game-card p { display: none; }
   .footer { font-size: 11px; }
 }
 @media (prefers-reduced-motion: reduce) {
