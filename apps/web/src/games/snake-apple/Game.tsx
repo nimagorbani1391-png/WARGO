@@ -4,7 +4,7 @@ import GameFrame from "../GameFrame";
 type Point = { x: number; y: number };
 type Direction = "up" | "down" | "left" | "right";
 type SnakeState = { snake: Point[]; apple: Point; direction: Direction; nextDirection: Direction; score: number; running: boolean; over: boolean };
-const SIZE = 18, CELL = 18, BEST_KEY = "wargo:snake-apple-best";
+const SIZE = 20, CELL = 20, BEST_KEY = "wargo:snake-apple-best";
 const opposite: Record<Direction, Direction> = { up: "down", down: "up", left: "right", right: "left" };
 const delta: Record<Direction, Point> = { up: { x: 0, y: -1 }, down: { x: 0, y: 1 }, left: { x: -1, y: 0 }, right: { x: 1, y: 0 } };
 function randomApple(snake: Point[]): Point {
@@ -13,7 +13,7 @@ function randomApple(snake: Point[]): Point {
   return free[Math.floor(Math.random() * free.length)] || { x: 0, y: 0 };
 }
 function initialState(): SnakeState {
-  const snake = [{ x: 8, y: 9 }, { x: 7, y: 9 }, { x: 6, y: 9 }];
+  const snake = [{ x: 9, y: 10 }, { x: 8, y: 10 }, { x: 7, y: 10 }];
   return { snake, apple: randomApple(snake), direction: "right", nextDirection: "right", score: 0, running: false, over: false };
 }
 export default function SnakeApple({ onExit }: { onExit: () => void }) {
@@ -55,11 +55,6 @@ export default function SnakeApple({ onExit }: { onExit: () => void }) {
       ctx.beginPath(); ctx.arc(eyeX - (eyes.y ? 3 : 0), eyeY - (eyes.x ? 3 : 0), 1.5, 0, Math.PI * 2); ctx.arc(eyeX + (eyes.y ? 3 : 0), eyeY + (eyes.x ? 3 : 0), 1.5, 0, Math.PI * 2); ctx.fill();
     };
     draw();
-    const onKey = (event: KeyboardEvent) => {
-      const keys: Record<string, Direction> = { ArrowUp: "up", w: "up", ArrowDown: "down", s: "down", ArrowLeft: "left", a: "left", ArrowRight: "right", d: "right" };
-      const d = keys[event.key]; if (d) { event.preventDefault(); turn(d); }
-    };
-    window.addEventListener("keydown", onKey);
     const interval = window.setInterval(() => {
       const s = stateRef.current;
       if (!s.running || s.over) { draw(); return; }
@@ -84,27 +79,23 @@ export default function SnakeApple({ onExit }: { onExit: () => void }) {
       if (s.snake.length === SIZE * SIZE) { s.running = false; s.over = true; setRunning(false); setOver(true); }
       draw();
     }, speed);
-    return () => { window.clearInterval(interval); window.removeEventListener("keydown", onKey); };
+    return () => { window.clearInterval(interval); };
   }, [speed, turn]);
 
   const start = () => { const s = stateRef.current; if (s.over) stateRef.current = initialState(); stateRef.current.running = true; setScore(stateRef.current.score); setRunning(true); setOver(false); setSpeed(145); };
   const restart = () => { stateRef.current = initialState(); setScore(0); setRunning(false); setOver(false); setSpeed(145); };
   const touchStart = useRef<Point | null>(null);
-  const onTouchStart = (event: PointerEvent<HTMLCanvasElement>) => { touchStart.current = { x: event.clientX, y: event.clientY }; event.currentTarget.setPointerCapture(event.pointerId); };
+  const onTouchStart = (event: PointerEvent<HTMLCanvasElement>) => { if (event.pointerType !== "touch") return; touchStart.current = { x: event.clientX, y: event.clientY }; event.currentTarget.setPointerCapture(event.pointerId); };
   const onTouchEnd = (event: PointerEvent<HTMLCanvasElement>) => {
-    if (!touchStart.current) return;
+    if (event.pointerType !== "touch" || !touchStart.current) return;
     const dx = event.clientX - touchStart.current.x, dy = event.clientY - touchStart.current.y;
     if (Math.max(Math.abs(dx), Math.abs(dy)) > 18) turn(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "right" : "left") : (dy > 0 ? "down" : "up"));
     touchStart.current = null;
   };
   return <GameFrame title="مار و سیب" onExit={onExit}>
     <div className="game-stats"><span>امتیاز <b>{score}</b></span><span>رکورد <b>{best}</b></span><span>سرعت <b>{Math.round(1000 / speed)} حرکت/ثانیه</b></span></div>
-    <canvas ref={canvasRef} className="snake-canvas" onPointerDown={onTouchStart} onPointerUp={onTouchEnd} onPointerCancel={() => { touchStart.current = null; }} aria-label="مار را با کشیدن انگشت یا کلیدهای جهت‌نما هدایت کن و سیب‌ها را بخور" />
+    <canvas ref={canvasRef} className="snake-canvas" onPointerDown={onTouchStart} onPointerUp={onTouchEnd} onPointerCancel={() => { touchStart.current = null; }} aria-label="برای تغییر جهت، انگشتت را روی صفحه بکش و سیب‌ها را بخور" />
     {!running && <div className="game-action-panel"><strong>{over ? "بازی تمام شد؛ به بدنت برخورد کردی!" : "سیب‌ها را بخور و طول مار را بیشتر کن"}</strong><button className="game-primary" type="button" onClick={over ? restart : start}>{over ? "بازی دوباره" : "شروع بازی"}</button></div>}
-    <div className="snake-controls" aria-label="کنترل مار">
-      <button type="button" onClick={() => turn("up")} aria-label="بالا">↑</button>
-      <div><button type="button" onClick={() => turn("right")} aria-label="راست">→</button><button type="button" onClick={() => turn("down")} aria-label="پایین">↓</button><button type="button" onClick={() => turn("left")} aria-label="چپ">←</button></div>
-    </div>
-    <p className="game-help">با کشیدن انگشت روی صفحه یا دکمه‌های جهت‌نما حرکت کن. به دیوار و بدن خودت برخورد نکن.</p>
+    <p className="game-help">فقط با کشیدن انگشت روی صفحه جهت مار را تغییر بده؛ به دیوار و بدن خودت برخورد نکن.</p>
   </GameFrame>;
 }
