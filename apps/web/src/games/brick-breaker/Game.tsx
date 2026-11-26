@@ -13,10 +13,11 @@ function makeBricks(width: number): Brick[] {
   const cols = 8, gap = 5, margin = 8, brickW = (width - margin * 2 - gap * (cols - 1)) / cols, brickH = 37;
   const rows = [
     { start: 1, end: 6, hp: 3, color: "#b77aff" },
-    { start: 0, end: 7, hp: 2, color: "#b77aff" },
-    { start: 1, end: 6, hp: 2, color: "#ff727b" },
+    { start: 0, end: 7, hp: 3, color: "#b77aff" },
+    { start: 1, end: 6, hp: 2, color: "#b77aff" },
+    { start: 0, end: 7, hp: 2, color: "#ff727b" },
+    { start: 1, end: 6, hp: 2, color: "#ff626f" },
     { start: 0, end: 7, hp: 1, color: "#ff626f" },
-    { start: 1, end: 6, hp: 1, color: "#ff626f" },
   ];
   return rows.flatMap((row, r) => Array.from({ length: row.end - row.start + 1 }, (_, j) => ({ id: r * 10 + j, x: margin + (row.start + j) * (brickW + gap), y: 58 + r * (brickH + 7), w: brickW, h: brickH, hp: row.hp, color: row.color })));
 }
@@ -177,7 +178,7 @@ s.width = width; s.height = height;
       <div className="brick-aim-scale"><span>چپ</span><span>مستقیم</span><span>راست</span></div>
       <p className="game-help">{status === "playing" ? "۱۰ توپ در حال حرکت‌اند..." : "دستگیره را به چپ یا راست بکش؛ با رها کردن، ۱۰ توپ خودکار شلیک می‌شوند."}</p>
     </div>
-    {status === "won" && <div className="game-action-panel"><strong>همه آجرها شکسته شدند!</strong><button className="game-primary" type="button" onClick={restart}>بازی دوباره</button></div>}
+    {status === "won" && <div className="game-action-panel brick-win-panel" role="status" aria-live="polite"><strong>تبریک! تمام آجرها را شکستی!</strong><span>امتیاز نهایی: {score}</span><button className="game-primary" type="button" onClick={restart}>بازی دوباره</button></div>}
     {status === "lost" && <div className="game-action-panel"><strong>بازی تمام شد</strong><button className="game-primary" type="button" onClick={restart}>شروع دوباره</button></div>}
   </GameFrame>;
 }
