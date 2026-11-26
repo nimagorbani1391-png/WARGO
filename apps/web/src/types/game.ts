@@ -8,7 +8,7 @@ export type GameCategory =
   | "other";
 
 export interface GameModule {
-  default: ComponentType;
+  default: ComponentType<{ onExit: () => void }>;
 }
 
 export interface GameDefinition {
