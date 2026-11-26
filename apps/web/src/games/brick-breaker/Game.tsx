@@ -3,7 +3,7 @@ import GameFrame from "../GameFrame";
 
 type Brick = { id: number; x: number; y: number; w: number; h: number; hp: number; color: string };
 type Ball = { x: number; y: number; vx: number; vy: number; delay: number };
-type Engine = { width: number; height: number; bricks: Brick[]; balls: Ball[]; launching: boolean; score: number; volley: number; won: boolean; lost: boolean; lastTick: number; accumulator: number };
+type Engine = { width: number; height: number; bricks: Brick[]; balls: Ball[]; launching: boolean; score: number; volley: number; won: boolean; lost: boolean; lastTick: number; accumulator: number; lastUiScore: number };
 const BALLS_PER_VOLLEY = 10;
 const BALL_RADIUS = 4.2;
 const BALL_SPEED = 410;
@@ -22,7 +22,7 @@ function makeBricks(width: number): Brick[] {
   return rows.flatMap((row, r) => Array.from({ length: row.end - row.start + 1 }, (_, j) => ({ id: r * 10 + j, x: margin + (row.start + j) * (brickW + gap), y: 58 + r * (brickH + 7), w: brickW, h: brickH, hp: row.hp, color: row.color })));
 }
 function freshEngine(width: number, height: number): Engine {
-  return { width, height, bricks: makeBricks(width), balls: [], launching: false, score: 0, volley: 1, won: false, lost: false, lastTick: 0, accumulator: 0 };
+  return { width, height, bricks: makeBricks(width), balls: [], launching: false, score: 0, volley: 1, won: false, lost: false, lastTick: 0, accumulator: 0, lastUiScore: 0 };
 }
 export default function BrickBreaker({ onExit }: { onExit: () => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -108,9 +108,15 @@ s.width = width; s.height = height;
         }
         if (s.bricks.length === 0) { s.won = true; s.launching = false; setStatus("won"); }
         if (s.balls.length === 0 && !s.won) { s.launching = false; s.volley += 1; setRound(s.volley); setBallsLeft(BALLS_PER_VOLLEY); setStatus("ready"); }
-        setScore(s.score);
-        const record = bestScore();
-        if (s.score > record) { try { localStorage.setItem(BEST_KEY, String(s.score)); } catch { /* local record is optional */ } setBest(s.score); }
+        if (s.score !== s.lastUiScore) {
+          s.lastUiScore = s.score;
+          setScore(s.score);
+          const record = bestScore();
+          if (s.score > record) {
+            try { localStorage.setItem(BEST_KEY, String(s.score)); } catch { /* local record is optional */ }
+            setBest(s.score);
+          }
+        }
       }
       for (const ball of s.balls) {
         if (ball.delay > 0) continue;
