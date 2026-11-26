@@ -1,7 +1,7 @@
 import {useCallback,useEffect,useRef,useState} from "react";
 import GameFrame from "../GameFrame";
 const BEST="wargo:dino-best";
-export default function DinosaurRunner({onExit}:{onExit:()=>void}){const canvas=useRef<HTMLCanvasElement>(null);const [score,setScore]=useState(0);const [best,setBest]=useState(()=>{try{return Number(localStorage.getItem(BEST)||0)}catch{return 0}});const [running,setRunning]=useState(false);const [over,setOver]=useState(false);const jump=useRef(false);const game=useRef({y:0,vy:0,obstacles:[{x:560,w:24,h:48},{x:900,w:34,h:65}],distance:0,score:0,last:0,raf:0});
+export default function DinosaurRunner({onExit}:{onExit:()=>void}){const canvas=useRef<HTMLCanvasElement>(null);const [score,setScore]=useState(0);const [best,setBest]=useState(()=>{try{return Number(localStorage.getItem(BEST)||0)}catch{return 0}});const [running,setRunning]=useState(false);const [over,setOver]=useState(false);const game=useRef({y:0,vy:0,obstacles:[{x:560,w:24,h:48},{x:900,w:34,h:65}],distance:0,score:0,last:0,raf:0});
 const start=()=>{game.current={y:0,vy:0,obstacles:[{x:560,w:24,h:48},{x:900,w:34,h:65}],distance:0,score:0,last:0,raf:0};setScore(0);setOver(false);setRunning(true)};
 const doJump=useCallback(()=>{if(!running){if(over)return;start();return}if(game.current.y===0){game.current.vy=650}},[running,over]);
 useEffect(()=>{const c=canvas.current,ctx=c?.getContext("2d");if(!c||!ctx)return;const w=720,h=300,dpr=Math.min(devicePixelRatio||1,2);c.width=w*dpr;c.height=h*dpr;ctx.scale(dpr,dpr);
@@ -14,6 +14,6 @@ const y=244-g.y;ctx.fillStyle="#9fdf85";ctx.strokeStyle="#315b50";ctx.lineWidth=
 g.obstacles.forEach(o=>{ctx.fillStyle="#7fbd78";ctx.fillRect(o.x,244-o.h,o.w,o.h);ctx.fillRect(o.x-8,244-o.h+15,10,9);ctx.fillRect(o.x+o.w-2,244-o.h+28,10,9)});
 ctx.fillStyle="#f4f3e8";ctx.font="bold 20px sans-serif";ctx.textAlign="right";ctx.fillText(String(g.score).padStart(5,"0"),690,35);
 if(running)g.raf=requestAnimationFrame(draw);else {ctx.fillStyle="rgba(9,13,24,.25)";ctx.fillRect(0,0,w,h)}};
-const raf=requestAnimationFrame(draw);return()=>cancelAnimationFrame(raf)},[running]);
+game.current.raf=requestAnimationFrame(draw);return()=>cancelAnimationFrame(game.current.raf)},[running]);
 useEffect(()=>{const key=(e:KeyboardEvent)=>{if(e.code==="Space"||e.code==="ArrowUp"){e.preventDefault();doJump()}};window.addEventListener("keydown",key);return()=>window.removeEventListener("keydown",key)},[doJump]);
 return <GameFrame title="دایناسور دونده" onExit={onExit}><div className="game-stats"><span>امتیاز <b>{score}</b></span><span>رکورد <b>{best}</b></span></div><button className="dino-stage" onPointerDown={doJump} aria-label="برای پرش لمس کن"><canvas ref={canvas}/></button>{!running&&<div className="game-action-panel"><strong>{over?"برخورد کردی! دوباره تلاش کن.":"از روی موانع بپر و رکورد بزن."}</strong><button className="game-primary" onClick={start}>{over?"شروع دوباره":"شروع بازی"}</button></div>}<p className="game-help">برای پرش صفحه را لمس کن یا Space / ↑ را بزن.</p></GameFrame>}
