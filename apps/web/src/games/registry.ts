@@ -2,6 +2,10 @@ import type { GameDefinition } from "../types/game";
 
 /** Metadata only; each game implementation is split into its own lazy-loaded chunk. */
 export const gameRegistry: readonly GameDefinition[] = [
+  { id: "game-2048", title: "۲۰۴۸", description: "عددهای برابر را ترکیب کن و به ۲۰۴۸ برس.", category: "puzzle", cover: "/WARGO/games/2048.svg", load: () => import("./game-2048/Game") },
+  { id: "tetris", title: "تتریس", description: "قطعه‌ها را بچرخان و ردیف‌های کامل بساز.", category: "puzzle", cover: "/WARGO/games/tetris.svg", load: () => import("./tetris/Game") },
+  { id: "dinosaur-runner", title: "دایناسور دونده", description: "از موانع بپر و رکوردت را ثبت کن.", category: "arcade", cover: "/WARGO/games/dinosaur-runner.svg", load: () => import("./dinosaur-runner/Game") },
+  { id: "tic-tac-toe", title: "دوز", description: "مقابل ربات یا یک بازیکن دیگر بازی کن.", category: "logic", cover: "/WARGO/games/tic-tac-toe.svg", load: () => import("./tic-tac-toe/Game") },
   { id: "brick-breaker", title: "شکستن آجرها", description: "۱۰ توپ را مثل تیرکمان پرتاب کن و آجرها را بشکن.", category: "arcade", cover: "/WARGO/games/1000025228.webp", load: () => import("./brick-breaker/Game") },
   { id: "chess", title: "شطرنج", description: "با ربات بازی کن و سطح سختی را انتخاب کن.", category: "logic", cover: "/WARGO/games/1000025224.webp", load: () => import("./chess/Game") },
   { id: "rock-paper-scissors", title: "سنگ، کاغذ، قیچی", description: "یک رقابت سریع و سه‌مرحله‌ای با ربات.", category: "casual", cover: "/WARGO/games/1000025222.webp", load: () => import("./rock-paper-scissors/Game") },
