@@ -16,6 +16,7 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState<GameCategory | "all">("all");
   const [opened, setOpened] = useState<{ game: GameDefinition; View: ComponentType<{ onExit: () => void }> } | null>(null);
   const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const games = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase("fa");
@@ -27,6 +28,7 @@ export default function App() {
 
   async function launchGame(game: GameDefinition) {
     if (loadingId) return;
+    setLoadError(null);
     setLoadingId(game.id);
     try {
       const module = await game.load();
@@ -35,6 +37,9 @@ export default function App() {
         const previous = JSON.parse(localStorage.getItem("wargo:recent") || "[]") as string[];
         localStorage.setItem("wargo:recent", JSON.stringify([game.id, ...previous.filter((id) => id !== game.id)].slice(0, 5)));
       } catch { /* Storage is optional; games remain playable without it. */ }
+    } catch (error) {
+      console.error(`WARGO: failed to load game "${game.id}"`, error);
+      setLoadError("بارگذاری بازی ناموفق بود. اتصال اینترنت را بررسی کن و دوباره تلاش کن.");
     } finally {
       setLoadingId(null);
     }
@@ -90,6 +95,7 @@ export default function App() {
           <div><h2 id="library-title">همه بازی‌ها</h2></div>
           <label className="search-box desktop-search"><span className="sr-only">جست‌وجوی بازی</span><span aria-hidden="true">⌕</span><input type="search" placeholder="اسم بازی رو جست‌وجو کن..." value={query} onChange={(event) => setQuery(event.target.value)} /></label>
         </div>
+        {loadError && <div className="game-load-error" role="alert">{loadError}</div>}
         {games.length === 0 ? <div className="empty-state"><div className="empty-icon" aria-hidden="true">◇</div><h3>{query ? "بازی‌ای پیدا نشد" : "بازی‌ای در این دسته نیست"}</h3><p>{query ? "عبارت دیگری را جست‌وجو کن." : "دسته‌بندی دیگری را انتخاب کن."}</p></div> :
           <div className="game-grid">{games.map((game) => <button className="game-card" key={game.id} type="button" onClick={() => void launchGame(game)} disabled={!!loadingId}>
             <img src={game.cover} alt="" loading="lazy" /><div><h3>{game.title}</h3><p>{loadingId === game.id ? "در حال آماده‌سازی..." : game.description}</p></div>
