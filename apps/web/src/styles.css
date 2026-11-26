@@ -254,3 +254,74 @@ h2 { margin: 5px 0 0; font-size: 25px; }
 .brick-win-panel strong { color:#bbf7d0; font-size:18px; }
 .brick-win-panel span { color:#f3e8ff; font-size:13px; }
 .snake-canvas { width:min(100%, 420px); max-width:420px; }
+
+
+/* Motion and interaction polish */
+@keyframes wargo-fade-up {
+  from { opacity: 0; transform: translate3d(0, 12px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+@keyframes wargo-overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes wargo-panel-in {
+  from { opacity: 0; transform: translate3d(0, 8px, 0) scale(.985); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+.hero, .mobile-home, .category-section, .recent-section, .library {
+  animation: wargo-fade-up .45s ease both;
+}
+.category-section { animation-delay: .04s; }
+.recent-section { animation-delay: .07s; }
+.game-card {
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease, opacity .2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.game-card:active:not(:disabled), .random-button:active:not(:disabled),
+.game-primary:active:not(:disabled), .game-secondary:active:not(:disabled) {
+  transform: scale(.975);
+}
+.game-overlay { animation: wargo-overlay-in .2s ease both; }
+.game-frame-content { animation: wargo-fade-up .28s ease both; }
+.game-action-panel, .rps-result, .rps-arena, .chess-history {
+  animation: wargo-panel-in .22s ease both;
+}
+.game-load-error {
+  margin: 0 0 16px;
+  padding: 13px 15px;
+  border: 1px solid rgba(248,113,113,.35);
+  border-radius: 12px;
+  background: rgba(127,29,29,.16);
+  color: #fecaca;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.snake-canvas {
+  display: block;
+  width: min(100%, 420px);
+  height: auto;
+  margin: 0 auto;
+  border: 1px solid rgba(167,139,250,.25);
+  border-radius: 13px;
+  background: #101321;
+  touch-action: none;
+  box-shadow: 0 12px 34px rgba(0,0,0,.2);
+}
+.brick-aim-control { animation: wargo-panel-in .24s ease both; }
+@media (hover: hover) and (pointer: fine) {
+  .category-chip:hover, .recent-game:hover { border-color: rgba(196,181,253,.42); }
+  .game-primary:hover:not(:disabled), .random-button:hover:not(:disabled) {
+    filter: brightness(1.08);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero, .mobile-home, .category-section, .recent-section, .library,
+  .game-overlay, .game-frame-content, .game-action-panel, .rps-result,
+  .rps-arena, .chess-history, .brick-aim-control {
+    animation: none !important;
+  }
+  .game-card, .random-button, .game-primary, .game-secondary {
+    transition: none !important;
+  }
+}
