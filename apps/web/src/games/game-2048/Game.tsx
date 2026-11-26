@@ -88,11 +88,9 @@ function boardsEqual(first: Board, second: Board): boolean {
 }
 
 function isGameOver(board: Board): boolean {
-  if (board.some((row) => row.includes(0))) return false;
-
-  return !(["left", "right", "up", "down"] as Direction[]).some(
-    (direction) => !boardsEqual(board, moveBoard(board, direction).board),
-  );
+  // WARGO rule: filling all 16 cells ends the round immediately,
+  // even if a matching pair could still be merged.
+  return board.every((row) => row.every((value) => value !== 0));
 }
 
 function readBestScore(): number {
