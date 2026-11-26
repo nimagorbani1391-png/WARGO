@@ -1,5 +1,6 @@
 import { useState } from "react";
 import GameFrame from "../GameFrame";
+import GameStartOverlay from "../GameStartOverlay";
 
 type Mark = "X" | "O" | null;
 type Outcome = Mark | "draw";
@@ -209,21 +210,7 @@ export default function TicTacToe({ onExit }: { onExit: () => void }) {
         })}
       </div>
 
-      {(!started || result !== null) && (
-        <div className="ttt-screen-overlay">
-          <div
-            className={`ttt-start-card ttt-result ${result === "draw" ? "is-draw" : result ? "is-win" : ""}`}
-            role="status"
-            aria-live="polite"
-          >
-            <strong>{started ? statusText : "آماده‌ای؟"}</strong>
-            {!started && <span>برای شروع، دکمه زیر را بزن.</span>}
-            <button type="button" className="game-primary" onClick={resetRound}>
-              {started ? "دور بعدی" : "شروع بازی"}
-            </button>
-          </div>
-        </div>
-      )}
+      <GameStartOverlay visible={!started || result !== null} title={started ? statusText : "آماده‌ای؟"} description={!started ? "برای شروع، دکمه زیر را بزن." : "برای یک دور تازه آماده‌ای؟"} buttonLabel={started ? "دور بعدی" : "شروع بازی"} onStart={resetRound} />
 
       <p className="game-help">
         {mode === "ai"
