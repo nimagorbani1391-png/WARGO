@@ -36,7 +36,6 @@ export default function App() {
     <main className="app-shell">
       <header className="topbar">
         <a className="brand" href="/" aria-label="صفحه اصلی WARGO">
-          <span className="brand-mark">W</span>
           <span>WARGO</span>
         </a>
         <span className="topbar-caption">دنیای بازی‌های کوچک، سرگرمی‌های بزرگ</span>
