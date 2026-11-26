@@ -479,3 +479,12 @@ h2 { margin: 5px 0 0; font-size: 25px; }
   .g2048-tile { animation: none !important; will-change: auto; }
   .g2048-board { transition: none !important; }
 }
+
+/* Brick Breaker: clear, thumb-friendly explicit launch action. */
+.brick-launch-button {
+  display: block;
+  width: 100%;
+  min-height: 46px;
+  margin-top: 12px;
+  touch-action: manipulation;
+}
