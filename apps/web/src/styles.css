@@ -229,3 +229,11 @@ h2 { margin: 5px 0 0; font-size: 25px; }
   .snakes-controls { flex-wrap:wrap; }
   .snakes-controls .game-primary { flex:1; }
 }
+
+/* Brick Breaker: slingshot volley */
+.brick-canvas { touch-action:none; user-select:none; -webkit-user-select:none; }
+.snake-canvas { display:block; width:min(100%, 360px); height:auto; aspect-ratio:1; margin:0 auto; border:1px solid rgba(167,139,250,.3); border-radius:14px; touch-action:none; background:#0b1720; }
+.snake-controls { display:grid; justify-items:center; gap:7px; margin:14px auto 0; }
+.snake-controls>div { display:flex; gap:7px; }
+.snake-controls button { display:grid; place-items:center; width:45px; height:42px; border:1px solid rgba(196,181,253,.22); border-radius:11px; background:#242238; color:#e7dcff; font-size:21px; cursor:pointer; touch-action:manipulation; }
+.snake-controls button:active { background:#554078; }
