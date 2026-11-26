@@ -1,5 +1,6 @@
 import {useCallback,useEffect,useRef,useState} from "react";
 import GameFrame from "../GameFrame";
+import GameStartOverlay from "../GameStartOverlay";
 const BEST="wargo:dino-best";
 export default function DinosaurRunner({onExit}:{onExit:()=>void}){const canvas=useRef<HTMLCanvasElement>(null);const [score,setScore]=useState(0);const [best,setBest]=useState(()=>{try{return Number(localStorage.getItem(BEST)||0)}catch{return 0}});const [running,setRunning]=useState(false);const [over,setOver]=useState(false);const game=useRef({y:0,vy:0,obstacles:[{x:560,w:24,h:48},{x:900,w:34,h:65}],distance:0,score:0,last:0,raf:0});
 const start=()=>{game.current={y:0,vy:0,obstacles:[{x:560,w:24,h:48},{x:900,w:34,h:65}],distance:0,score:0,last:0,raf:0};setScore(0);setOver(false);setRunning(true)};
@@ -16,4 +17,4 @@ ctx.fillStyle="#f4f3e8";ctx.font="bold 20px sans-serif";ctx.textAlign="right";ct
 if(running)g.raf=requestAnimationFrame(draw);else {ctx.fillStyle="rgba(9,13,24,.25)";ctx.fillRect(0,0,w,h)}};
 game.current.raf=requestAnimationFrame(draw);return()=>cancelAnimationFrame(game.current.raf)},[running]);
 useEffect(()=>{const key=(e:KeyboardEvent)=>{if(e.code==="Space"||e.code==="ArrowUp"){e.preventDefault();doJump()}};window.addEventListener("keydown",key);return()=>window.removeEventListener("keydown",key)},[doJump]);
-return <GameFrame title="دایناسور دونده" onExit={onExit}><div className="game-stats"><span>امتیاز <b>{score}</b></span><span>رکورد <b>{best}</b></span></div><button className="dino-stage" onPointerDown={doJump} aria-label="برای پرش لمس کن"><canvas ref={canvas}/></button>{!running&&<div className="game-action-panel"><strong>{over?"برخورد کردی! دوباره تلاش کن.":"از روی موانع بپر و رکورد بزن."}</strong><button className="game-primary" onClick={start}>{over?"شروع دوباره":"شروع بازی"}</button></div>}<p className="game-help">برای پرش صفحه را لمس کن یا Space / ↑ را بزن.</p></GameFrame>}
+return <GameFrame title="دایناسور دونده" onExit={onExit}><div className="game-stats"><span>امتیاز <b>{score}</b></span><span>رکورد <b>{best}</b></span></div><button className="dino-stage" onPointerDown={doJump} aria-label="برای پرش لمس کن"><canvas ref={canvas}/></button><GameStartOverlay visible={!running} title={over ? "برخورد کردی!" : "دایناسور آماده‌ی دویدنه"} description={over ? "برای ثبت رکورد تازه دوباره تلاش کن." : "از روی موانع بپر و رکورد بزن."} buttonLabel={over ? "دور بعدی" : "شروع بازی"} onStart={start} /><p className="game-help">برای پرش صفحه را لمس کن یا Space / ↑ را بزن.</p></GameFrame>}
