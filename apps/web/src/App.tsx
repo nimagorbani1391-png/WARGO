@@ -44,6 +44,8 @@ export default function App() {
     if (games.length) void launchGame(games[Math.floor(Math.random() * games.length)]);
   }
 
+  const ActiveGame = opened?.View;
+
   return (
     <main className="app-shell">
       <header className="topbar">
@@ -95,9 +97,9 @@ export default function App() {
       </section>
       <footer className="footer"><span>WARGO</span></footer>
 
-      {opened && <div className="game-overlay" role="dialog" aria-modal="true" aria-label={opened.game.title}>
+      {opened && ActiveGame && <div className="game-overlay" role="dialog" aria-modal="true" aria-label={opened.game.title}>
         <Suspense fallback={<div className="game-loading">در حال بارگذاری بازی…</div>}>
-          <opened.View onExit={() => setOpened(null)} />
+          <ActiveGame onExit={() => setOpened(null)} />
         </Suspense>
       </div>}
     </main>
