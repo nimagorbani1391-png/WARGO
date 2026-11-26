@@ -1,7 +1,8 @@
 import {useState} from "react";
 import GameFrame from "../GameFrame";
 type Mark="X"|"O"|null;const lines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-function winningLine(b:Mark[]){return lines.find(([a,c,d])=>!!b[a]&&b[a]===b[c]&&b[a]===b[d])??[];}\nfunction winner(b:Mark[]):Mark| "draw" | null{const line=winningLine(b);if(line.length)return b[line[0]];return b.every(Boolean)?"draw":null}
+function winningLine(b:Mark[]){return lines.find(([a,c,d])=>!!b[a]&&b[a]===b[c]&&b[a]===b[d])??[];}
+function winner(b:Mark[]):Mark| "draw" | null{const line=winningLine(b);if(line.length)return b[line[0]];return b.every(Boolean)?"draw":null}
 function minimax(b:Mark[],turn:Mark,depth=0):number{const w=winner(b);if(w==="O")return 10-depth;if(w==="X")return depth-10;if(w==="draw")return 0;const scores:number[]=[];b.forEach((v,i)=>{if(!v){b[i]=turn;scores.push(minimax(b,turn==="O"?"X":"O",depth+1));b[i]=null}});return turn==="O"?Math.max(...scores):Math.min(...scores)}
 function aiMove(board:Mark[]){let best=-Infinity,choice=-1;board.forEach((v,i)=>{if(!v){board[i]="O";const score=minimax(board,"X");board[i]=null;if(score>best){best=score;choice=i}}});return choice}
 export default function TicTacToe({onExit}:{onExit:()=>void}){const [board,setBoard]=useState<Mark[]>(Array(9).fill(null));const [turn,setTurn]=useState<"X"|"O">("X");const [mode,setMode]=useState<"ai"|"two">("ai");const [scores,setScores]=useState({x:0,o:0,draw:0});const result=winner(board);const winning=winningLine(board);
