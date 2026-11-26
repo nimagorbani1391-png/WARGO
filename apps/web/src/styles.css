@@ -232,11 +232,7 @@ h2 { margin: 5px 0 0; font-size: 25px; }
 
 /* Brick Breaker: slingshot volley */
 .brick-canvas { touch-action:none; user-select:none; -webkit-user-select:none; }
-.snake-canvas { display:block; width:min(100%, 360px); height:auto; aspect-ratio:1; margin:0 auto; border:1px solid rgba(167,139,250,.3); border-radius:14px; touch-action:none; background:#0b1720; }
-.snake-controls { display:grid; justify-items:center; gap:7px; margin:14px auto 0; }
-.snake-controls>div { display:flex; gap:7px; }
-.snake-controls button { display:grid; place-items:center; width:45px; height:42px; border:1px solid rgba(196,181,253,.22); border-radius:11px; background:#242238; color:#e7dcff; font-size:21px; cursor:pointer; touch-action:manipulation; }
-.snake-controls button:active { background:#554078; }
+.snake-canvas { display:block; width:min(100%, 420px); height:auto; aspect-ratio:1; margin:0 auto; border:1px solid rgba(167,139,250,.3); border-radius:14px; touch-action:none; background:#0b1720; }
 
 /* Neon horizontal angle slider for Brick Breaker */
 .brick-aim-control { margin:16px 2px 8px; padding:14px 14px 10px; border:1px solid rgba(202,145,255,.16); border-radius:16px; background:radial-gradient(ellipse at center,rgba(169,65,255,.13),transparent 72%),#100d1c; }
@@ -252,3 +248,9 @@ h2 { margin: 5px 0 0; font-size: 25px; }
 .brick-aim-control .game-help { margin:10px 0 0; text-align:center; }
 .brick-aim-control.is-disabled { opacity:.8; }
 @media (max-width:520px) { .brick-aim-control { margin-top:12px; padding:12px 12px 9px; } .brick-aim-slider { height:54px; } }
+
+/* Clear win state for Brick Breaker */
+.brick-win-panel { align-items:center; text-align:center; border:1px solid rgba(134,239,172,.35); background:linear-gradient(135deg,rgba(34,197,94,.16),rgba(139,92,246,.16)); box-shadow:0 0 28px rgba(134,239,172,.12); }
+.brick-win-panel strong { color:#bbf7d0; font-size:18px; }
+.brick-win-panel span { color:#f3e8ff; font-size:13px; }
+.snake-canvas { width:min(100%, 420px); max-width:420px; }
