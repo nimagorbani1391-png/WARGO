@@ -237,3 +237,18 @@ h2 { margin: 5px 0 0; font-size: 25px; }
 .snake-controls>div { display:flex; gap:7px; }
 .snake-controls button { display:grid; place-items:center; width:45px; height:42px; border:1px solid rgba(196,181,253,.22); border-radius:11px; background:#242238; color:#e7dcff; font-size:21px; cursor:pointer; touch-action:manipulation; }
 .snake-controls button:active { background:#554078; }
+
+/* Neon horizontal angle slider for Brick Breaker */
+.brick-aim-control { margin:16px 2px 8px; padding:14px 14px 10px; border:1px solid rgba(202,145,255,.16); border-radius:16px; background:radial-gradient(ellipse at center,rgba(169,65,255,.13),transparent 72%),#100d1c; }
+.brick-aim-label { display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; color:#d9c8ef; font-size:12px; }
+.brick-aim-label b { color:#fff; font-variant-numeric:tabular-nums; }
+.brick-aim-slider { --thumb:28px; display:block; width:100%; height:58px; margin:0; padding:0; appearance:none; -webkit-appearance:none; background:transparent; cursor:ew-resize; touch-action:pan-y; }
+.brick-aim-slider::-webkit-slider-runnable-track { height:12px; border:2px solid #fff; border-radius:999px; background:linear-gradient(90deg,rgba(191,83,255,.2),rgba(255,255,255,.08),rgba(191,83,255,.2)); box-shadow:0 0 5px #fff,0 0 12px #d946ef,0 0 24px rgba(217,70,239,.8),inset 0 0 9px rgba(217,70,239,.6); }
+.brick-aim-slider::-moz-range-track { height:12px; border:2px solid #fff; border-radius:999px; background:linear-gradient(90deg,rgba(191,83,255,.2),rgba(255,255,255,.08),rgba(191,83,255,.2)); box-shadow:0 0 5px #fff,0 0 12px #d946ef,0 0 24px rgba(217,70,239,.8),inset 0 0 9px rgba(217,70,239,.6); }
+.brick-aim-slider::-webkit-slider-thumb { appearance:none; -webkit-appearance:none; width:var(--thumb); height:var(--thumb); margin-top:-10px; border:0; border-radius:50%; background:#fff; box-shadow:0 0 7px #fff,0 0 17px #e879f9,0 0 30px #c026d3; }
+.brick-aim-slider::-moz-range-thumb { width:var(--thumb); height:var(--thumb); border:0; border-radius:50%; background:#fff; box-shadow:0 0 7px #fff,0 0 17px #e879f9,0 0 30px #c026d3; }
+.brick-aim-slider:disabled { opacity:.42; cursor:not-allowed; }
+.brick-aim-scale { display:flex; justify-content:space-between; margin-top:-1px; color:#9f91b8; font-size:10px; }
+.brick-aim-control .game-help { margin:10px 0 0; text-align:center; }
+.brick-aim-control.is-disabled { opacity:.8; }
+@media (max-width:520px) { .brick-aim-control { margin-top:12px; padding:12px 12px 9px; } .brick-aim-slider { height:54px; } }
