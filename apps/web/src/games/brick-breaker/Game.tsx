@@ -105,10 +105,10 @@ export default function BrickBreaker({ onExit }: { onExit: () => void }) {
               }
             }
             if (ball.y > height + 12) s.balls.splice(i, 1);
-            if (hit && s.bricks.length === 0) { s.won = true; s.launching = false; break; }
+            if (hit && s.bricks.length === 0) { s.won = true; s.launching = false; setStatus("won"); break; }
           }
         }
-        if (s.bricks.length === 0) { s.won = true; s.launching = false; }
+        if (s.bricks.length === 0) { s.won = true; s.launching = false; setStatus("won"); }
         if (s.balls.length === 0 && !s.won) { s.launching = false; s.volley += 1; setRound(s.volley); setBallsLeft(BALLS_PER_VOLLEY); setStatus("ready"); }
         setScore(s.score);
         const record = bestScore();
