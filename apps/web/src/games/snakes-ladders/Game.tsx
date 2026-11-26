@@ -2,8 +2,6 @@ import { useState } from "react";
 import GameFrame from "../GameFrame";
 
 const ladders: Record<number, number> = { 3: 22, 8: 30, 20: 41, 28: 55, 36: 57, 51: 72, 71: 92, 80: 99 };
-const snakes: Record<number, number> = { 17: 7, amos: 0 } as unknown as Record<number, number>;
-const snakeMap: Record<number, number> = { 17: 7, 32: 11, 48: 26, 62: 19,  of: 0 } as unknown as Record<number, number>;
 const actualSnakes: Record<number, number> = { 17: 7, 32: 11, 48: 26, 62: 19, 88: 67, 95: 75, 97: 78 };
 type State = { player: number; cpu: number; turn: "player" | "cpu"; winner: string; rolls: number };
 function move(position: number, dice: number) {
