@@ -18,6 +18,6 @@ WARGO is a gaming and entertainment platform built around lightweight, single-pl
 
 ## Project status
 
-Initial repository scaffold. The application framework, backend project, hosting, and deployment setup have not yet been selected or provisioned.
+React + TypeScript + Vite application foundation added. Backend, hosting, deployment, and Android packaging have not yet been selected or provisioned.
 
 See [docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md) for the initial structure and engineering principles.
