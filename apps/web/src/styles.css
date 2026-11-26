@@ -460,3 +460,22 @@ h2 { margin: 5px 0 0; font-size: 25px; }
   .game-start-overlay { inset: 58px 0 0; padding: 18px; }
   .game-start-card { min-height: 176px; padding: 24px 18px; }
 }
+
+
+/* 2048 tile motion: newly moved, spawned and merged tiles pop in smoothly. */
+@keyframes g2048-tile-pop {
+  0% { opacity: .72; transform: scale(.82); }
+  65% { opacity: 1; transform: scale(1.07); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.g2048-tile {
+  animation: g2048-tile-pop .17s cubic-bezier(.2,.8,.2,1) both;
+  will-change: transform;
+}
+.g2048-board {
+  transition: background-color .18s ease, box-shadow .18s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .g2048-tile { animation: none !important; will-change: auto; }
+  .g2048-board { transition: none !important; }
+}
