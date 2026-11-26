@@ -353,3 +353,37 @@ h2 { margin: 5px 0 0; font-size: 25px; }
 .brick-aim-slider,
 .brick-aim-scale { direction: ltr; }
 .brick-aim-scale { flex-direction: row; }
+
+/* Tic-tac-toe: lock the board geometry so marks and win states cannot resize cells. */
+.ttt-board {
+  display: grid;
+  width: min(100%, 390px);
+  aspect-ratio: 1 / 1;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+  min-width: 0;
+  margin: 18px auto;
+  contain: layout;
+}
+.ttt-board > button {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  box-sizing: border-box;
+  line-height: 1;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  transform-origin: center;
+}
+.ttt-board > button.is-winning {
+  box-sizing: border-box;
+}
+@media (max-width: 700px) {
+  .ttt-board { width: min(100%, 390px); gap: 7px; }
+  .ttt-board > button { border-radius: 12px; }
+}
