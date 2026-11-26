@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent } from "react";
 import GameFrame from "../GameFrame";
+import GameStartOverlay from "../GameStartOverlay";
 
 type Point = { x: number; y: number };
 type Direction = "up" | "down" | "left" | "right";
@@ -95,7 +96,7 @@ export default function SnakeApple({ onExit }: { onExit: () => void }) {
   return <GameFrame title="مار و سیب" onExit={onExit}>
     <div className="game-stats"><span>امتیاز <b>{score}</b></span><span>رکورد <b>{best}</b></span><span>سرعت <b>{Math.round(1000 / speed)} حرکت/ثانیه</b></span></div>
     <canvas ref={canvasRef} className="snake-canvas" onPointerDown={onTouchStart} onPointerUp={onTouchEnd} onPointerCancel={() => { touchStart.current = null; }} aria-label="برای تغییر جهت، انگشتت را روی صفحه بکش و سیب‌ها را بخور" />
-    {!running && <div className="game-action-panel"><strong>{over ? "بازی تمام شد؛ به بدنت برخورد کردی!" : "سیب‌ها را بخور و طول مار را بیشتر کن"}</strong><button className="game-primary" type="button" onClick={over ? restart : start}>{over ? "بازی دوباره" : "شروع بازی"}</button></div>}
+    <GameStartOverlay visible={!running} title={over ? "بازی تمام شد!" : "مار و سیب"} description={over ? "به بدنت یا دیوار برخورد کردی. دوباره تلاش کن." : "سیب‌ها را بخور و طول مار را بیشتر کن."} buttonLabel={over ? "دور بعدی" : "شروع بازی"} onStart={over ? restart : start} />
     <p className="game-help">فقط با کشیدن انگشت روی صفحه جهت مار را تغییر بده؛ به دیوار و بدن خودت برخورد نکن.</p>
   </GameFrame>;
 }
