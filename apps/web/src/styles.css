@@ -348,3 +348,8 @@ h2 { margin: 5px 0 0; font-size: 25px; }
 .ttt-result.is-win strong{color:#bbf7d0;font-size:15px;}
 .ttt-result.is-draw{border-color:rgba(250,204,21,.4);background:linear-gradient(110deg,rgba(234,179,8,.13),#1b2030);}
 .ttt-result.is-draw strong{color:#fde68a;}
+
+/* Keep the brick-breaker aiming control physically left-to-right in the RTL UI. */
+.brick-aim-slider,
+.brick-aim-scale { direction: ltr; }
+.brick-aim-scale { flex-direction: row; }
