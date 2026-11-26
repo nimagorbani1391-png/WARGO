@@ -3,6 +3,7 @@ import GameFrame from "../GameFrame";
 
 type Brick = { x: number; y: number; w: number; h: number; hp: number; color: string };
 type Engine = { ballX: number; ballY: number; vx: number; vy: number; paddleX: number; bricks: Brick[]; running: boolean; lives: number; score: number; won: boolean; lost: boolean };
+function getBestScore() { try { return Number(localStorage.getItem("wargo:brick-best") || 0); } catch { return 0; } }
 const makeBricks = (width: number): Brick[] => {
   const cols = 7, gap = 7, margin = 12, brickW = (width - margin * 2 - gap * (cols - 1)) / cols, brickH = 43;
   const rows = [
@@ -94,7 +95,7 @@ export default function BrickBreaker({ onExit }: { onExit: () => void }) {
     s.running = true; setStatus("playing");
   };
   return <GameFrame title="شکستن آجرها" onExit={onExit}>
-    <div className="game-stats"><span>امتیاز <b>{score}</b></span><span>جان <b>{lives} ♥</b></span><span>رکورد <b>{Math.max(score, Number(localStorage.getItem("wargo:brick-best") || 0))}</b></span></div>
+    <div className="game-stats"><span>امتیاز <b>{score}</b></span><span>جان <b>{lives} ♥</b></span><span>رکورد <b>{Math.max(score, getBestScore())}</b></span></div>
     <canvas ref={canvasRef} className="brick-canvas" onPointerMove={movePaddle} onPointerDown={(e) => { movePaddle(e); if (status === "ready") start(); }} aria-label="صفحه بازی شکستن آجرها" />
     {status !== "playing" && <div className="game-action-panel"><strong>{status === "won" ? "همه آجرها شکسته شدند!" : status === "lost" ? "بازی تمام شد" : "برای شروع آماده‌ای؟"}</strong><button className="game-primary" type="button" onClick={start}>{status === "won" || status === "lost" ? "بازی دوباره" : "شروع بازی"}</button></div>}
     <p className="game-help">با لمس یا کشیدن انگشت روی صفحه، سکوی پایین را حرکت بده.</p>
