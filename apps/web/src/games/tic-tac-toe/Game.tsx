@@ -86,6 +86,7 @@ export default function TicTacToe({ onExit }: { onExit: () => void }) {
   const [turn, setTurn] = useState<"X" | "O">("X");
   const [mode, setMode] = useState<"ai" | "two">("ai");
   const [scores, setScores] = useState({ x: 0, o: 0, draw: 0 });
+  const [started, setStarted] = useState(false);
 
   const result = getOutcome(board);
   const winning = winningLine(board);
@@ -102,6 +103,7 @@ export default function TicTacToe({ onExit }: { onExit: () => void }) {
   function resetRound() {
     setBoard(Array(9).fill(null));
     setTurn("X");
+    setStarted(true);
   }
 
   function changeMode(nextMode: "ai" | "two") {
@@ -207,16 +209,21 @@ export default function TicTacToe({ onExit }: { onExit: () => void }) {
         })}
       </div>
 
-      <div
-        className={`game-action-panel ttt-result ${result === "draw" ? "is-draw" : result ? "is-win" : ""}`}
-        role="status"
-        aria-live="polite"
-      >
-        <strong>{statusText}</strong>
-        <button type="button" className="game-primary" onClick={resetRound}>
-          دور بعدی
-        </button>
-      </div>
+      {(!started || result !== null) && (
+        <div className="ttt-screen-overlay">
+          <div
+            className={`ttt-start-card ttt-result ${result === "draw" ? "is-draw" : result ? "is-win" : ""}`}
+            role="status"
+            aria-live="polite"
+          >
+            <strong>{started ? statusText : "آماده‌ای؟"}</strong>
+            {!started && <span>برای شروع، دکمه زیر را بزن.</span>}
+            <button type="button" className="game-primary" onClick={resetRound}>
+              {started ? "دور بعدی" : "شروع بازی"}
+            </button>
+          </div>
+        </div>
+      )}
 
       <p className="game-help">
         {mode === "ai"
