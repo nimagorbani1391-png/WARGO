@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type PointerEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import GameFrame from "../GameFrame";
 
 type Brick = { id: number; x: number; y: number; w: number; h: number; hp: number; color: string };
