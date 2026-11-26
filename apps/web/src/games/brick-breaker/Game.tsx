@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import GameFrame from "../GameFrame";
+import GameStartOverlay from "../GameStartOverlay";
 
 type Brick = { id: number; x: number; y: number; w: number; h: number; hp: number; color: string };
 type Ball = { x: number; y: number; vx: number; vy: number; delay: number };
@@ -32,6 +33,7 @@ export default function BrickBreaker({ onExit }: { onExit: () => void }) {
   const [ballsLeft, setBallsLeft] = useState(BALLS_PER_VOLLEY);
   const [round, setRound] = useState(1);
   const [status, setStatus] = useState<"ready" | "playing" | "won" | "lost">("ready");
+  const [started, setStarted] = useState(false);
   const [aimAngle, setAimAngle] = useState(0);
   const aimAngleRef = useRef(0);
   const sliderActiveRef = useRef(false);
@@ -160,6 +162,7 @@ s.width = width; s.height = height;
     const w = canvas.clientWidth, h = canvas.clientHeight;
     engineRef.current = freshEngine(w, h); setScore(0); setBallsLeft(BALLS_PER_VOLLEY); setRound(1); setStatus("ready");
   };
+  const begin = () => { restart(); setStarted(true); };
   return <GameFrame title="شکستن آجرها" onExit={onExit}>
     <div className="game-stats"><span>امتیاز <b>{score}</b></span><span>توپ در نوبت بعد <b>{ballsLeft}</b></span><span>راند <b>{round}</b></span><span>رکورد <b>{best}</b></span></div>
     <canvas ref={canvasRef} className="brick-canvas" aria-label="میدان بازی شکستن آجرها" />
@@ -184,7 +187,6 @@ s.width = width; s.height = height;
       <div className="brick-aim-scale"><span>چپ</span><span>مستقیم</span><span>راست</span></div>
       <p className="game-help">{status === "playing" ? "۱۰ توپ در حال حرکت‌اند..." : "دستگیره را به چپ یا راست بکش؛ با رها کردن، ۱۰ توپ خودکار شلیک می‌شوند."}</p>
     </div>
-    {status === "won" && <div className="game-action-panel brick-win-panel" role="status" aria-live="polite"><strong>تبریک! تمام آجرها را شکستی!</strong><span>امتیاز نهایی: {score}</span><button className="game-primary" type="button" onClick={restart}>بازی دوباره</button></div>}
-    {status === "lost" && <div className="game-action-panel"><strong>بازی تمام شد</strong><button className="game-primary" type="button" onClick={restart}>شروع دوباره</button></div>}
+    <GameStartOverlay visible={!started || status === "won" || status === "lost"} title={!started ? "آماده‌ای؟" : status === "won" ? "تبریک! همه آجرها را شکستی!" : "بازی تمام شد"} description={status === "won" ? `امتیاز نهایی: ${score}` : !started ? "زاویه پرتاب را بعد از شروع تنظیم کن." : "برای تلاش دوباره آماده‌ای؟"} buttonLabel={!started ? "شروع بازی" : "دور بعدی"} onStart={begin} />
   </GameFrame>;
 }
