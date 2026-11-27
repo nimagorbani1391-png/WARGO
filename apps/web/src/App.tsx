@@ -37,8 +37,10 @@ export default function App() {
   const [displayName, setDisplayName] = useState("بازیکن WARGO");
   const [nameDraft, setNameDraft] = useState("بازیکن WARGO");
   const [editingName, setEditingName] = useState(false);
-  const [contestEmail, setContestEmail] = useState("");
-  const [contestPreview, setContestPreview] = useState(false);
+  const [contestLeaders, setContestLeaders] = useState<{ displayName: string; score: number; gamesPlayed: number }[]>([]);
+  const [contestPeriod, setContestPeriod] = useState("");
+  const [contestLoading, setContestLoading] = useState(false);
+  const [contestError, setContestError] = useState("");
   const [user, setUser] = useState<WargoUser | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
 
@@ -57,6 +59,23 @@ export default function App() {
     const response = await fetch(`${API_URL}/api/profile`, { method: "PUT", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ displayName: nextName.trim(), avatarId: profileAvatars[nextAvatar].id }) });
     if (!response.ok) throw new Error("ذخیره پروفایل ناموفق بود");
     setUser((current) => current ? { ...current, displayName: nextName.trim(), avatarId: profileAvatars[nextAvatar].id } : current);
+  }
+
+  async function openMonthlyContest() {
+    setContestOpen(true);
+    setContestLoading(true);
+    setContestError("");
+    try {
+      const response = await fetch(`${API_URL}/api/leaderboard`, { cache: "no-store" });
+      if (!response.ok) throw new Error("leaderboard");
+      const data = await response.json() as { period: string; leaders: { displayName: string; score: number; gamesPlayed: number }[] };
+      setContestPeriod(data.period);
+      setContestLeaders(data.leaders || []);
+    } catch {
+      setContestError("دریافت رتبه‌بندی ممکن نشد. دوباره تلاش کن.");
+    } finally {
+      setContestLoading(false);
+    }
   }
 
   function startGoogleLogin() { window.location.href = `${API_URL}/auth/google/start`; }
@@ -145,23 +164,23 @@ export default function App() {
       <section className="contest-section" aria-labelledby="contest-title">
         <div className="contest-card">
           <div className="contest-copy">
-            <div className="contest-kicker"><span className="contest-live-dot" /> رقابت ویژه WARGO</div>
-            <h2 id="contest-title">۱۰ روز فرصت داری؛<br /><span>برای یک جایزه واقعی بجنگ!</span></h2>
-            <p className="contest-lead">بازی کن، امتیاز جمع کن و خودت رو به صدر برسون. اولین نفری که به هدف یک‌میلیونی برسه، برنده مسابقه‌ست.</p>
+            <div className="contest-kicker"><span className="contest-live-dot" /> رقابت ماهانه WARGO</div>
+            <h2 id="contest-title">هر ماه یک رقابت تازه؛<br /><span>امتیاز جمع کن و بالا برو!</span></h2>
+            <p className="contest-lead">امتیاز بازی‌ها پس از پایان هر دور به مجموع ماهانه‌ات اضافه می‌شود. در پایان ماه، سه نفر اول رتبه‌بندی مشخص می‌شوند.</p>
             <div className="contest-facts">
-              <div><span className="contest-fact-icon">◷</span><span><b>۱۰ روز</b><small>مدت رقابت</small></span></div>
-              <div><span className="contest-fact-icon">♛</span><span><b>فقط ۱ نفر</b><small>برنده نهایی</small></span></div>
-              <div><span className="contest-fact-icon">▤</span><span><b>اینترنت هدیه</b><small>جایزه مسابقه</small></span></div>
+              <div><span className="contest-fact-icon">◷</span><span><b>یک ماه</b><small>مدت رقابت</small></span></div>
+              <div><span className="contest-fact-icon">♛</span><span><b>۳ نفر</b><small>رتبه‌های برتر</small></span></div>
+              <div><span className="contest-fact-icon">▤</span><span><b>همه بازی‌ها</b><small>امتیاز مشترک</small></span></div>
             </div>
-            <button className="contest-cta" type="button" onClick={() => { setContestPreview(false); setContestOpen(true); }}>
+            <button className="contest-cta" type="button" onClick={() => void openMonthlyContest()}>
               ورود به مسابقه <span aria-hidden="true">←</span>
             </button>
-            <div className="contest-note">قوانین و شرایط پیش از شروع رسمی نمایش داده می‌شوند.</div>
+            <div className="contest-note">رتبه‌بندی با درخواست مستقیم و فقط هنگام بازکردن این بخش دریافت می‌شود.</div>
           </div>
           <div className="contest-visual" aria-hidden="true">
             <div className="contest-orbit contest-orbit-a" /><div className="contest-orbit contest-orbit-b" />
             <div className="contest-trophy">♛</div>
-            <div className="contest-target"><small>هدف مسابقه</small><strong>۱,۰۰۰,۰۰۰</strong><span>امتیاز</span></div>
+            <div className="contest-target"><small>هدف مسابقه</small><strong>۳ رتبه</strong><span>برتر ماه</span></div>
             <div className="contest-spark spark-a">✦</div><div className="contest-spark spark-b">✧</div><div className="contest-spark spark-c">✦</div>
           </div>
         </div>
@@ -231,24 +250,18 @@ export default function App() {
       {contestOpen && <div className="contest-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setContestOpen(false); }}>
         <section className="contest-modal" role="dialog" aria-modal="true" aria-labelledby="contest-modal-title" dir="rtl">
           <button className="contest-modal-close" type="button" onClick={() => setContestOpen(false)} aria-label="بستن">×</button>
-          {!contestPreview ? <>
-            <div className="contest-modal-emblem">♛</div>
-            <span className="contest-modal-kicker">یک قدم تا شروع رقابت</span>
-            <h2 id="contest-modal-title">آماده‌ای وارد رقابت بشی؟</h2>
-            <p>برای ادامه، ایمیلت رو وارد کن. ثبت‌نام نهایی بعد از فعال‌شدن زیرساخت مسابقه انجام می‌شه.</p>
-            <form className="contest-email-form" onSubmit={(event) => { event.preventDefault(); setContestPreview(true); }}>
-              <label htmlFor="contest-email">آدرس ایمیل</label>
-              <input id="contest-email" type="email" autoComplete="email" inputMode="email" placeholder="you@example.com" value={contestEmail} onChange={(event) => setContestEmail(event.target.value)} required />
-              <button className="contest-cta" type="submit">ادامه <span aria-hidden="true">←</span></button>
-            </form>
-            <small className="contest-privacy">فعلاً این فرم نمایشی است؛ ایمیل ذخیره یا ارسال نمی‌شود.</small>
-          </> : <>
-            <div className="contest-modal-emblem">✓</div>
-            <span className="contest-modal-kicker">پیش‌نمایش فرم</span>
-            <h2 id="contest-modal-title">ظاهر ثبت‌نام آماده‌ست!</h2>
-            <p>اتصال ثبت‌نام واقعی به سرور هنوز انجام نشده؛ ایمیل <bdi>{contestEmail}</bdi> در جایی ذخیره نشده است.</p>
-            <button className="contest-cta" type="button" onClick={() => { setContestOpen(false); setContestEmail(""); }}>متوجه شدم</button>
-          </>}
+          <div className="contest-modal-emblem">♛</div>
+          <span className="contest-modal-kicker">رتبه‌بندی ماهانه {contestPeriod && `· ${contestPeriod}`}</span>
+          <h2 id="contest-modal-title">سه نفر برتر WARGO</h2>
+          {contestLoading ? <p>در حال دریافت رتبه‌بندی...</p> : contestError ? <p role="alert">{contestError}</p> : contestLeaders.length ? <div className="contest-leaderboard">
+            {contestLeaders.map((leader, index) => <div className="contest-leader-row" key={index}>
+              <b>{["🥇", "🥈", "🥉"][index]}</b>
+              <strong>{leader.displayName}</strong>
+              <span>{leader.score.toLocaleString("fa-IR")} امتیاز</span>
+            </div>)}
+          </div> : <p>هنوز امتیازی برای این ماه ثبت نشده است. اولین بازی را انجام بده!</p>}
+          <small className="contest-privacy">برای ثبت امتیاز باید وارد حساب Google شده باشی. نتیجه هر دور پس از پایان بازی ارسال می‌شود.</small>
+          <button className="contest-cta" type="button" onClick={() => setContestOpen(false)}>بستن</button>
         </section>
       </div>}
 
