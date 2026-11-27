@@ -13,4 +13,7 @@ export const gameRegistry: readonly GameDefinition[] = [
   { id: "reaction-test", title: "تست سرعت واکنش", description: "سرعت واکنشت را بسنج و رکورد میلی‌ثانیه‌ای ثبت کن.", category: "casual", cover: "/WARGO/games/reaction-test.svg", load: () => import("./reaction-test/Game") },
   { id: "flappy-bird", title: "پرنده پرشی", description: "با ضربه‌های دقیق از لوله‌ها عبور کن و رکورد بزن.", category: "arcade", cover: "/WARGO/games/flappy-bird.svg", load: () => import("./flappy-bird/Game") },
   { id: "memory-match", title: "بازی حافظه", description: "جفت کارت‌ها را پیدا کن؛ هر مرحله با چیدمان تصادفی تازه.", category: "puzzle", cover: "/WARGO/games/memory-match.svg", load: () => import("./memory-match/Game") },
+  { id: "knife-hit", title: "چاقو به هدف", description: "چاقوها را با دقت به هدف چرخان پرتاب کن.", category: "arcade", cover: "/WARGO/games/knife-hit.svg", load: () => import("./knife-hit/Game") },
+  { id: "whack-a-mole", title: "موش‌گیر", description: "در ۳۰ ثانیه موش‌های بیشتری را شکار کن.", category: "arcade", cover: "/WARGO/games/whack-a-mole.svg", load: () => import("./whack-a-mole/Game") },
+  { id: "doodle-jump", title: "پرش بی‌پایان", description: "روی سکوها بپر و تا جای ممکن بالا برو.", category: "arcade", cover: "/WARGO/games/doodle-jump.svg", load: () => import("./doodle-jump/Game") },
 ];
