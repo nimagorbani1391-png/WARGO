@@ -1034,3 +1034,7 @@ h2 { margin: 5px 0 0; font-size: 25px; }
 @keyframes coin-shadow{0%,100%{transform:scaleX(1);opacity:.65}50%{transform:scaleX(.62);opacity:.3}}
 @media(max-width:380px){.coin-stage{height:190px}.coin-3d{width:118px;height:118px}.coin-choice{gap:8px}.coin-choice-button{min-height:54px}}
 @media(prefers-reduced-motion:reduce){.coin-animate,.coin-stage.is-spinning .coin-shadow{animation-duration:.5s}}
+
+.coin-3d.show-tails:not(.coin-animate){transform:rotateX(-12deg) rotateY(180deg)}
+.coin-3d.show-tails.coin-animate{animation-name:coin-flip-tails}
+@keyframes coin-flip-tails{0%{transform:rotateX(-12deg) rotateY(0deg) rotateZ(-8deg)}45%{transform:rotateX(28deg) rotateY(1080deg) rotateZ(8deg)}100%{transform:rotateX(-12deg) rotateY(1980deg) rotateZ(0deg)}}
