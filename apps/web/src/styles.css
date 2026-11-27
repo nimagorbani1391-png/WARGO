@@ -639,3 +639,75 @@ h2 { margin: 5px 0 0; font-size: 25px; }
   .rps-score { gap: 6px; padding: 8px; }
   .rps-score div:not(.rps-round) { min-height: 68px; }
 }
+
+
+/* Dinosaur Runner: tactile mechanical jump control. */
+.dino-jump-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: min(100%, 260px);
+  min-height: 58px;
+  margin: 12px auto 0;
+  padding: 8px 22px;
+  overflow: hidden;
+  border: 1px solid #ff7777;
+  border-bottom: 5px solid #76151c;
+  border-radius: 13px;
+  background: linear-gradient(180deg, #ff555b 0%, #e3222d 48%, #b91422 100%);
+  color: #fff;
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.28),
+              inset 0 -2px 0 rgba(70,0,0,.24),
+              0 5px 0 #4c1118,
+              0 10px 22px rgba(220,28,43,.25);
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: .3px;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform .12s ease, filter .12s ease, box-shadow .12s ease;
+}
+.dino-jump-button::before,
+.dino-jump-button::after {
+  position: absolute;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border: 1px solid rgba(255,220,220,.75);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff 0 12%, #9babbc 24%, #46515e 75%);
+  box-shadow: 0 1px 2px #4d0b12;
+  content: "";
+  transform: translateY(-50%);
+}
+.dino-jump-button::before { left: 10px; }
+.dino-jump-button::after { right: 10px; }
+.dino-jump-button > span { position: relative; z-index: 1; }
+.dino-jump-icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(255,255,255,.48);
+  border-radius: 8px;
+  background: linear-gradient(145deg, #ff8585, #a90f1c);
+  box-shadow: inset 0 1px 2px rgba(255,255,255,.28), 0 2px 4px rgba(65,0,0,.3);
+  font-size: 23px;
+  line-height: 1;
+}
+.dino-jump-button:active {
+  transform: translateY(3px);
+  border-bottom-width: 2px;
+  filter: brightness(.92);
+  box-shadow: inset 0 2px 5px rgba(65,0,0,.3), 0 2px 0 #4c1118;
+}
+.dino-jump-button:focus-visible {
+  outline: 2px solid #ffd1d1;
+  outline-offset: 4px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dino-jump-button { transition: none; }
+}
