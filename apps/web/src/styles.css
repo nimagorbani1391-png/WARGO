@@ -711,3 +711,48 @@ h2 { margin: 5px 0 0; font-size: 25px; }
 @media (prefers-reduced-motion: reduce) {
   .dino-jump-button { transition: none; }
 }
+
+
+/* Brick Breaker aim: crisp white trajectory and smoother thumb control. */
+.brick-aim-control {
+  border-color: rgba(255,255,255,.2);
+  background: radial-gradient(ellipse at center, rgba(255,255,255,.075), transparent 72%), #100d1c;
+}
+.brick-aim-slider {
+  --thumb: 30px;
+  height: 62px;
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+}
+.brick-aim-slider::-webkit-slider-runnable-track {
+  height: 10px;
+  border: 1px solid rgba(255,255,255,.9);
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255,255,255,.22), #fff 50%, rgba(255,255,255,.22));
+  box-shadow: 0 0 5px rgba(255,255,255,.8), 0 0 13px rgba(255,255,255,.28);
+}
+.brick-aim-slider::-moz-range-track {
+  height: 10px;
+  border: 1px solid rgba(255,255,255,.9);
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255,255,255,.22), #fff 50%, rgba(255,255,255,.22));
+  box-shadow: 0 0 5px rgba(255,255,255,.8), 0 0 13px rgba(255,255,255,.28);
+}
+.brick-aim-slider::-webkit-slider-thumb {
+  width: var(--thumb);
+  height: var(--thumb);
+  margin-top: -11px;
+  border: 2px solid #fff;
+  background: radial-gradient(circle at 35% 30%, #fff, #d7dce5 58%, #7c8491);
+  box-shadow: 0 0 0 3px rgba(255,255,255,.14), 0 0 13px rgba(255,255,255,.85), 0 3px 8px rgba(0,0,0,.55);
+}
+.brick-aim-slider::-moz-range-thumb {
+  width: var(--thumb);
+  height: var(--thumb);
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff, #d7dce5 58%, #7c8491);
+  box-shadow: 0 0 0 3px rgba(255,255,255,.14), 0 0 13px rgba(255,255,255,.85), 0 3px 8px rgba(0,0,0,.55);
+}
+.brick-aim-scale { color: #d7d9e0; }
+@media (max-width: 520px) { .brick-aim-slider { height: 58px; } }
