@@ -25,7 +25,6 @@ export default function DoodleJump({onExit}:{onExit:()=>void}){
   }else if(!("DeviceOrientationEvent" in window)){setTiltMessage("حسگر حرکتی در این مرورگر در دسترس نیست؛ از کلیدهای جهت‌دار استفاده کن.");}
   world.current=makeWorld();reportedScore.current=0;setScore(0);setOver(false);setRunning(true);
  },[]);
- const setDirection=(side:"left"|"right",value:boolean)=>{keys.current[side]=value};
  useEffect(()=>{
   const c=canvas.current,ctx=c?.getContext("2d");if(!c||!ctx)return;
   const dpr=Math.min(window.devicePixelRatio||1,2);c.width=W*dpr;c.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
