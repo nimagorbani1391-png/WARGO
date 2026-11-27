@@ -24,6 +24,9 @@ type Knife = { angle: number };
 type FlyingKnife = { distance: number; speed: number };
 type State = {
   angle: number;
+  rotationDirection: 1 | -1;
+  rotationPause: number;
+  rotationChangeIn: number;
   knives: Knife[];
   flying: FlyingKnife[];
   remaining: number;
@@ -46,6 +49,9 @@ function readBest() {
 function makeState(): State {
   return {
     angle: 0,
+    rotationDirection: 1,
+    rotationPause: 0,
+    rotationChangeIn: 0.65 + Math.random() * 0.75,
     knives: [],
     flying: [],
     remaining: NEED,
@@ -131,7 +137,23 @@ export default function KnifeHit({ onExit }: { onExit: () => void }) {
       if (state.over) return;
 
       const rotationSpeed = 1.35 + Math.min(state.score, 30) * 0.035;
-      state.angle = normalizeAngle(state.angle + rotationSpeed * dt);
+
+      // The target changes direction abruptly at irregular intervals and
+      // occasionally pauses briefly, making the timing less predictable.
+      if (state.rotationPause > 0) {
+        state.rotationPause = Math.max(0, state.rotationPause - dt);
+      } else {
+        state.rotationChangeIn -= dt;
+        if (state.rotationChangeIn <= 0) {
+          state.rotationDirection = state.rotationDirection === 1 ? -1 : 1;
+          state.rotationPause = 0.12 + Math.random() * 0.28;
+          state.rotationChangeIn = 0.55 + Math.random() * 1.05;
+        } else {
+          state.angle = normalizeAngle(
+            state.angle + rotationSpeed * state.rotationDirection * dt,
+          );
+        }
+      }
 
       if (state.flying.length === 0) return;
 
