@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GameFrame from "../GameFrame";
 import GameStartOverlay from "../GameStartOverlay";
 import { reportGameScore } from "../reportScore";
