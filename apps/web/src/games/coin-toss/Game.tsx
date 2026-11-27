@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import GameFrame from "../GameFrame";
-import { reportGameScore } from "../reportScore";
 
 type Side = "heads" | "tails";
 const LABELS: Record<Side, string> = { heads: "شیر", tails: "خط" };
@@ -20,7 +19,7 @@ export default function CoinToss({ onExit }: { onExit: () => void }) {
     setResult(landed);
     setSpinning(true);
     setRound((n) => n + 1);
-    timer.current = setTimeout(() => { setSpinning(false); reportGameScore("coin-toss", landed === choice ? 1 : 0); }, 1850);
+    timer.current = setTimeout(() => { setSpinning(false) }, 1850);
   }
 
   const won = !spinning && result !== null && result === choice;
