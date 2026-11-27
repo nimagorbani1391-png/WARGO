@@ -756,3 +756,131 @@ h2 { margin: 5px 0 0; font-size: 25px; }
 }
 .brick-aim-scale { color: #d7d9e0; }
 @media (max-width: 520px) { .brick-aim-slider { height: 58px; } }
+
+
+/* Reaction test: high-contrast, full-width tactile response surface. */
+.reaction-zone {
+  display: flex;
+  width: 100%;
+  min-height: min(54dvh, 390px);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+  padding: 28px 18px;
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 22px;
+  background: linear-gradient(145deg, #242b3d, #171d2b);
+  color: #f7f7fb;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: background .16s ease, border-color .16s ease, transform .12s ease;
+}
+.reaction-zone:active { transform: scale(.992); }
+.reaction-zone .reaction-symbol { font-size: clamp(54px, 16vw, 82px); font-weight: 900; line-height: 1; }
+.reaction-zone strong { font-size: clamp(23px, 6vw, 34px); font-weight: 900; }
+.reaction-zone > span:last-child { color: rgba(255,255,255,.72); font-size: 12px; }
+.reaction-waiting { border-color: #e6b45e; background: linear-gradient(145deg, #594522, #302718); }
+.reaction-go { border-color: #71f0a9; background: linear-gradient(145deg, #168b58, #075b3d); box-shadow: inset 0 0 55px rgba(100,255,170,.13), 0 0 30px rgba(55,225,137,.12); }
+.reaction-early { border-color: #ff7777; background: linear-gradient(145deg, #642d3b, #321d2b); }
+.reaction-result { border-color: #a9e7d0; background: linear-gradient(145deg, #234b4b, #1a2e3b); }
+@media (prefers-reduced-motion: reduce) { .reaction-zone { transition: none; } }
+
+/* Flappy Bird canvas: fixed logical aspect ratio, responsive physical size. */
+.flappy-stage {
+  display: block;
+  width: min(100%, 360px);
+  margin: 0 auto;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(167,139,250,.24);
+  border-radius: 17px;
+  background: #172b4c;
+  box-shadow: 0 16px 38px rgba(0,0,0,.24);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.flappy-stage canvas { display: block; width: 100%; height: auto; aspect-ratio: 9 / 14; }
+
+/* Memory Match: adaptive card matrix with clear flip and match feedback. */
+.memory-progress {
+  height: 7px;
+  overflow: hidden;
+  margin: 0 1px 9px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.09);
+}
+.memory-progress > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #8b75e8, #8de0bb);
+  box-shadow: 0 0 12px rgba(141,224,187,.25);
+  transition: width .22s ease;
+}
+.memory-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: #aaa5bd;
+  font-size: 10px;
+}
+.memory-board {
+  display: grid;
+  gap: clamp(6px, 2vw, 10px);
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  perspective: 900px;
+}
+.memory-card {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  aspect-ratio: 1 / 1.08;
+  padding: 0;
+  border: 1px solid rgba(196,181,253,.28);
+  border-radius: clamp(9px, 2.4vw, 15px);
+  background: linear-gradient(145deg, #39315f, #25243f);
+  color: #f8f4ff;
+  box-shadow: inset 0 1px rgba(255,255,255,.09), 0 5px 12px rgba(0,0,0,.16);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform .18s ease, border-color .18s ease, background .18s ease, opacity .18s ease;
+}
+.memory-card:active:not(:disabled) { transform: scale(.96); }
+.memory-card-back, .memory-card-face {
+  grid-area: 1 / 1;
+  display: grid;
+  place-items: center;
+  transition: opacity .12s ease, transform .18s ease;
+}
+.memory-card-back { color: #c9baff; font-size: clamp(22px, 6vw, 34px); font-weight: 900; }
+.memory-card-face { opacity: 0; transform: rotateY(90deg) scale(.8); font-size: clamp(23px, 7vw, 42px); }
+.memory-card.is-revealed {
+  border-color: rgba(196,181,253,.65);
+  background: linear-gradient(145deg, #f1eaff, #d8d0f0);
+  color: #28233c;
+  transform: rotateY(0);
+}
+.memory-card.is-revealed .memory-card-back { opacity: 0; transform: rotateY(-90deg); }
+.memory-card.is-revealed .memory-card-face { opacity: 1; transform: rotateY(0) scale(1); }
+.memory-card.is-matched {
+  border-color: rgba(112,230,174,.7);
+  background: linear-gradient(145deg, #245c4b, #1c3e3a);
+  box-shadow: 0 0 18px rgba(112,230,174,.13);
+  cursor: default;
+}
+.memory-card.is-matched .memory-card-face { filter: saturate(.9); }
+.memory-card:focus-visible { outline: 2px solid #c4b5fd; outline-offset: 3px; }
+@media (max-width: 380px) {
+  .memory-board { gap: 5px; }
+  .memory-card { border-radius: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .memory-card, .memory-card-back, .memory-card-face, .memory-progress > span { transition: none !important; }
+}
