@@ -52,7 +52,14 @@ export default function App() {
     return () => { active = false; };
   }, []);
 
-  async function saveProfile(nextName = displayName, nextAvatar = selectedAvatar) {\n    if (!user) return;\n    const response = await fetch(`${API_URL}/api/profile`, { method: "PUT", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ displayName: nextName.trim(), avatarId: profileAvatars[nextAvatar].id }) });\n    if (!response.ok) throw new Error("ذخیره پروفایل ناموفق بود");\n    setUser((current) => current ? { ...current, displayName: nextName.trim(), avatarId: profileAvatars[nextAvatar].id } : current);\n  }\n\n  function startGoogleLogin() { window.location.href = `${API_URL}/auth/google/start`; }
+  async function saveProfile(nextName = displayName, nextAvatar = selectedAvatar) {
+    if (!user) return;
+    const response = await fetch(`${API_URL}/api/profile`, { method: "PUT", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ displayName: nextName.trim(), avatarId: profileAvatars[nextAvatar].id }) });
+    if (!response.ok) throw new Error("ذخیره پروفایل ناموفق بود");
+    setUser((current) => current ? { ...current, displayName: nextName.trim(), avatarId: profileAvatars[nextAvatar].id } : current);
+  }
+
+  function startGoogleLogin() { window.location.href = `${API_URL}/auth/google/start`; }
   async function logout() {
     try { await fetch(`${API_URL}/auth/logout`, { method: "POST", credentials: "include" }); } finally { setUser(null); setDisplayName("بازیکن WARGO"); setNameDraft("بازیکن WARGO"); }
   }
