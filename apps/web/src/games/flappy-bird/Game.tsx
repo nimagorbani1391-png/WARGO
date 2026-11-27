@@ -44,7 +44,7 @@ export default function FlappyBird({ onExit }: { onExit: () => void }) {
     const onKey = (event: KeyboardEvent) => {
       if (event.code !== "Space" && event.code !== "ArrowUp") return;
       event.preventDefault();
-      if (!running && !over) start();
+      if (!running) start();
       else flap();
     };
     window.addEventListener("keydown", onKey);
