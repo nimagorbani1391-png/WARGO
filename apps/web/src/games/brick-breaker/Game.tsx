@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import GameFrame from "../GameFrame";
 import GameStartOverlay from "../GameStartOverlay";
+import { reportGameScore } from "../reportScore";
 
 type Brick = { id: number; x: number; y: number; w: number; h: number; hp: number; color: string };
 type Ball = { x: number; y: number; vx: number; vy: number; delay: number };
@@ -202,6 +203,7 @@ export default function BrickBreaker({ onExit }: { onExit: () => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<Engine | null>(null);
   const [score, setScore] = useState(0);
+  const resultReported = useRef(false);
   const [best, setBest] = useState(bestScore);
   const [ballsLeft, setBallsLeft] = useState(BALLS_PER_VOLLEY);
   const [round, setRound] = useState(1);
@@ -415,6 +417,8 @@ export default function BrickBreaker({ onExit }: { onExit: () => void }) {
       observer.disconnect();
     };
   }, []);
+
+  useEffect(() => { if (status === "ready") resultReported.current = false; if (started && (status === "won" || status === "lost") && !resultReported.current) { resultReported.current = true; reportGameScore("brick-breaker", score); } }, [status, started, score]);
 
   const launchVolley = () => {
     const engine = engineRef.current;
