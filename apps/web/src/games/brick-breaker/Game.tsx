@@ -95,81 +95,105 @@ function damageBrick(engine: Engine, brickIndex: number) {
   if (brick.hp <= 0) engine.bricks.splice(brickIndex, 1);
 }
 
+type AimPreview = {
+  angle: number;
+  width: number;
+  height: number;
+  brickCount: number;
+  points: Array<{ x: number; y: number }>;
+  target: { x: number; y: number } | null;
+};
+
 function drawAimPreview(
   ctx: CanvasRenderingContext2D,
   engine: Engine,
   angleDegrees: number,
+  cache: AimPreview,
 ) {
-  const startX = engine.width / 2;
-  const startY = engine.height - 34;
-  let x = startX;
-  let y = startY;
-  let dx = Math.sin((angleDegrees * Math.PI) / 180);
-  let dy = -Math.cos((angleDegrees * Math.PI) / 180);
-  const points: Array<{ x: number; y: number }> = [{ x, y }];
-  let target: { x: number; y: number } | null = null;
+  if (
+    cache.angle !== angleDegrees ||
+    cache.width !== engine.width ||
+    cache.height !== engine.height ||
+    cache.brickCount !== engine.bricks.length
+  ) {
+    const startX = engine.width / 2;
+    const startY = engine.height - 34;
+    let x = startX;
+    let y = startY;
+    let dx = Math.sin((angleDegrees * Math.PI) / 180);
+    let dy = -Math.cos((angleDegrees * Math.PI) / 180);
+    const points: Array<{ x: number; y: number }> = [{ x, y }];
+    let target: { x: number; y: number } | null = null;
 
-  // Cast a lightweight ray and reflect it from the side/top walls.
-  for (let step = 0; step < 2200; step += 1) {
-    x += dx * 3;
-    y += dy * 3;
+    // Calculate only when aim or brick layout changes, not on every animation frame.
+    for (let step = 0; step < 900; step += 1) {
+      x += dx * 5;
+      y += dy * 5;
 
-    if (x < BALL_RADIUS || x > engine.width - BALL_RADIUS) {
-      dx *= -1;
-      x = Math.max(BALL_RADIUS, Math.min(engine.width - BALL_RADIUS, x));
+      if (x < BALL_RADIUS || x > engine.width - BALL_RADIUS) {
+        dx *= -1;
+        x = Math.max(BALL_RADIUS, Math.min(engine.width - BALL_RADIUS, x));
+      }
+      if (y < BALL_RADIUS) {
+        dy *= -1;
+        y = BALL_RADIUS;
+      }
+
+      const hitIndex = engine.bricks.findIndex((brick) => {
+        const left = brick.x - BALL_RADIUS;
+        const right = brick.x + brick.w + BALL_RADIUS;
+        const top = brick.y - BALL_RADIUS;
+        const bottom = brick.y + brick.h + BALL_RADIUS;
+        return x >= left && x <= right && y >= top && y <= bottom;
+      });
+
+      if (hitIndex !== -1) {
+        target = { x, y };
+        points.push(target);
+        break;
+      }
+      if (y >= startY - 5) break;
+      if (step % 3 === 0) points.push({ x, y });
     }
-    if (y < BALL_RADIUS) {
-      dy *= -1;
-      y = BALL_RADIUS;
-    }
 
-    const hitIndex = engine.bricks.findIndex((brick) => {
-      const expanded = {
-        x: brick.x - BALL_RADIUS,
-        y: brick.y - BALL_RADIUS,
-        w: brick.w + BALL_RADIUS * 2,
-        h: brick.h + BALL_RADIUS * 2,
-      };
-      return x >= expanded.x && x <= expanded.x + expanded.w &&
-        y >= expanded.y && y <= expanded.y + expanded.h;
-    });
-
-    if (hitIndex !== -1) {
-      target = { x, y };
-      points.push(target);
-      break;
-    }
-    if (y >= startY - 5) break;
-    if (step % 4 === 0) points.push({ x, y });
+    cache.angle = angleDegrees;
+    cache.width = engine.width;
+    cache.height = engine.height;
+    cache.brickCount = engine.bricks.length;
+    cache.points = points;
+    cache.target = target;
   }
 
   ctx.save();
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
   ctx.beginPath();
-  points.forEach((point, index) => {
+  cache.points.forEach((point, index) => {
     if (index === 0) ctx.moveTo(point.x, point.y);
     else ctx.lineTo(point.x, point.y);
   });
-  ctx.setLineDash([7, 7]);
-  ctx.strokeStyle = "rgba(103, 232, 249, .95)";
-  ctx.lineWidth = 2;
-  ctx.shadowColor = "#22d3ee";
-  ctx.shadowBlur = 12;
+  ctx.setLineDash([6, 6]);
+  ctx.strokeStyle = "rgba(255,255,255,.98)";
+  ctx.lineWidth = 2.8;
+  ctx.shadowColor = "#ffffff";
+  ctx.shadowBlur = 9;
   ctx.stroke();
   ctx.setLineDash([]);
   ctx.shadowBlur = 0;
 
-  if (target) {
+  if (cache.target) {
     ctx.beginPath();
-    ctx.arc(target.x, target.y, 10, 0, Math.PI * 2);
-    ctx.strokeStyle = "#a5f3fc";
-    ctx.lineWidth = 2;
+    ctx.arc(cache.target.x, cache.target.y, 13, 0, Math.PI * 2);
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 3;
+    ctx.shadowColor = "#ffffff";
+    ctx.shadowBlur = 14;
     ctx.stroke();
     ctx.beginPath();
-    ctx.arc(target.x, target.y, 3, 0, Math.PI * 2);
-    ctx.fillStyle = "#fff";
+    ctx.arc(cache.target.x, cache.target.y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = "#ffffff";
     ctx.fill();
+    ctx.shadowBlur = 0;
   }
   ctx.restore();
 }
@@ -237,6 +261,7 @@ export default function BrickBreaker({ onExit }: { onExit: () => void }) {
     observer.observe(canvas);
 
     const anchor = () => ({ x: width / 2, y: height - 34 });
+    const aimPreviewCache: AimPreview = { angle: Number.NaN, width: 0, height: 0, brickCount: -1, points: [], target: null };
 
     const draw = (now: number) => {
       const engine = engineRef.current;
@@ -285,7 +310,7 @@ export default function BrickBreaker({ onExit }: { onExit: () => void }) {
 
       const launchPoint = anchor();
       if (!engine.launching && !engine.won && !engine.lost) {
-        drawAimPreview(ctx, engine, aimAngleRef.current);
+        drawAimPreview(ctx, engine, aimAngleRef.current, aimPreviewCache);
       }
 
       ctx.shadowColor = "#e879f9";
