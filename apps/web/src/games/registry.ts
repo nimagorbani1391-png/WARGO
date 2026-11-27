@@ -6,6 +6,7 @@ export const gameRegistry: readonly GameDefinition[] = [
   { id: "tetris", title: "تتریس", description: "قطعه‌ها را بچرخان و ردیف‌های کامل بساز.", category: "puzzle", cover: "/WARGO/games/tetris.svg", load: () => import("./tetris/Game") },
   { id: "dinosaur-runner", title: "دایناسور دونده", description: "از موانع بپر و رکوردت را ثبت کن.", category: "arcade", cover: "/WARGO/games/dinosaur-runner.svg", load: () => import("./dinosaur-runner/Game") },
   { id: "tic-tac-toe", title: "دوز", description: "مقابل ربات یا یک بازیکن دیگر بازی کن.", category: "logic", cover: "/WARGO/games/tic-tac-toe.svg", load: () => import("./tic-tac-toe/Game") },
+  { id: "dots-and-boxes", title: "نقطه‌بازی", description: "با کامل‌کردن مربع‌ها امتیاز بگیر؛ مقابل ربات یا دونفره بازی کن.", category: "logic", cover: "/WARGO/games/dots-and-boxes.svg", load: () => import("./dots-and-boxes/Game") },
   { id: "brick-breaker", title: "شکستن آجرها", description: "۱۰ توپ را مثل تیرکمان پرتاب کن و آجرها را بشکن.", category: "arcade", cover: "/WARGO/games/1000025228.webp", load: () => import("./brick-breaker/Game") },
   { id: "chess", title: "شطرنج", description: "با ربات بازی کن و سطح سختی را انتخاب کن.", category: "logic", cover: "/WARGO/games/chess-cover.svg", load: () => import("./chess/Game") },
   { id: "rock-paper-scissors", title: "سنگ، کاغذ، قیچی", description: "یک رقابت سریع و سه‌مرحله‌ای با ربات.", category: "casual", cover: "/WARGO/games/1000025222.webp", load: () => import("./rock-paper-scissors/Game") },
