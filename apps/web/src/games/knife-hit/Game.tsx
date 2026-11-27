@@ -151,7 +151,7 @@ export default function KnifeHit({ onExit }: { onExit: () => void }) {
 
       const arrived = state.flying.filter((knife) => knife.distance >= travelDistance);
       state.flying = state.flying.filter((knife) => knife.distance < travelDistance);
-      for (const knife of arrived) {
+      for (let i = 0; i < arrived.length; i += 1) {
         const impactAngle = getImpactAngle(state.angle);
         if (hasCollision(state.knives, impactAngle)) {
           finishRound(state, false);
