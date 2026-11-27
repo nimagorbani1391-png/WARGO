@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent } from "react";
 import GameFrame from "../GameFrame";
 import GameStartOverlay from "../GameStartOverlay";
-import { reportGameScore } from "../reportScore";
 
 type Point = { x: number; y: number };
 type Direction = "up" | "down" | "left" | "right";
@@ -65,7 +64,7 @@ export default function SnakeApple({ onExit }: { onExit: () => void }) {
       const eating = head.x === s.apple.x && head.y === s.apple.y;
       const body = eating ? s.snake : s.snake.slice(0, -1);
       if (head.x < 0 || head.x >= SIZE || head.y < 0 || head.y >= SIZE || body.some(p => p.x === head.x && p.y === head.y)) {
-        s.running = false; s.over = true; reportGameScore("snake-apple", s.score); setRunning(false); setOver(true); draw(); return;
+        s.running = false; s.over = true setRunning(false); setOver(true); draw(); return;
       }
       s.snake.unshift(head);
       if (eating) {
@@ -78,7 +77,7 @@ export default function SnakeApple({ onExit }: { onExit: () => void }) {
           return next;
         });
       } else s.snake.pop();
-      if (s.snake.length === SIZE * SIZE) { s.running = false; s.over = true; reportGameScore("snake-apple", s.score); setRunning(false); setOver(true); }
+      if (s.snake.length === SIZE * SIZE) { s.running = false; s.over = true setRunning(false); setOver(true); }
       draw();
     }, speed);
     return () => { window.clearInterval(interval); };
