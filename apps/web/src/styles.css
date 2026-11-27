@@ -886,8 +886,6 @@ h2 { margin: 5px 0 0; font-size: 25px; }
 }
 
 /* New arcade games: responsive stages, high-contrast controls, low-cost effects */
-.knife-stage,.doodle-stage{position:relative;display:block;width:100%;padding:0;overflow:hidden;border:1px solid rgba(112,210,255,.2);border-radius:18px;background:#0b1428;box-shadow:0 18px 48px rgba(0,0,0,.28);touch-action:none}
-.knife-stage canvas,.doodle-stage canvas{display:block;width:100%;height:auto;max-height:72dvh;object-fit:contain}
 .mole-arena{padding:16px;border:1px solid rgba(255,255,255,.1);border-radius:20px;background:radial-gradient(ellipse at 50% 0%,rgba(75,180,210,.16),transparent 65%),linear-gradient(145deg,#1b2b3d,#111a2b);box-shadow:0 18px 48px rgba(0,0,0,.25)}
 .mole-arena-top,.mole-arena-footer{display:flex;align-items:center;justify-content:space-between;color:#c5d2e1;font-size:12px}
 .mole-arena-top strong{color:#8ce7ff;font-size:25px;font-variant-numeric:tabular-nums}
@@ -907,7 +905,23 @@ h2 { margin: 5px 0 0; font-size: 25px; }
 .mole-arena-footer b{color:#8ce7ff}
 @keyframes mole-pop{from{transform:translateY(25%);opacity:.5}to{transform:translateY(0);opacity:1}}
 @keyframes mole-pulse{to{opacity:.55}}
-.doodle-stage{background:#102039}
-.doodle-touch-hints{position:absolute;inset:auto 12px 12px;display:flex;justify-content:space-between;pointer-events:none;color:rgba(220,244,255,.25);font-size:25px}
-@media(max-width:700px){.mole-arena{padding:12px;border-radius:16px}.mole-grid{gap:9px;margin:16px 0}.mole-hole{border-radius:12px}.mole-character i,.mole-character b{width:6px;height:7px}.knife-stage,.doodle-stage{border-radius:14px}}
+@media(max-width:700px){.mole-arena{padding:12px;border-radius:16px}.mole-grid{gap:9px;margin:16px 0}.mole-hole{border-radius:12px}.mole-character i,.mole-character b{width:6px;height:7px}.knife-stage{border-radius:14px}}
 @media(prefers-reduced-motion:reduce){.mole-time-danger,.mole-character{animation:none}}
+
+/* Fruit Slice: responsive touch canvas. */
+.fruit-slice-stage{display:block;width:100%;max-width:420px;margin:0 auto;padding:0;overflow:hidden;border:1px solid rgba(255,255,255,.12);border-radius:18px;background:#101b32;touch-action:none;-webkit-tap-highlight-color:transparent}
+.fruit-slice-stage canvas{display:block;width:100%;height:auto;aspect-ratio:3/4}
+.fruit-slice-stage:focus-visible{outline:2px solid #a7f3d0;outline-offset:3px}
+/* Color memory: four large, tactile color pads. */
+.color-memory-board{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:min(100%,360px);margin:18px auto}
+.color-memory-pad{min-width:0;aspect-ratio:1.18;border:2px solid rgba(255,255,255,.2);border-radius:22px;opacity:.72;filter:saturate(.8);box-shadow:inset 0 2px 8px rgba(255,255,255,.12),0 8px 18px rgba(0,0,0,.2);transition:filter .12s ease,opacity .12s ease,transform .12s ease,box-shadow .12s ease;touch-action:manipulation}
+.color-memory-pad:disabled{cursor:default}
+.color-memory-pad.is-lit{opacity:1;filter:saturate(1.35) brightness(1.5);transform:scale(.97);box-shadow:0 0 28px currentColor,inset 0 0 22px rgba(255,255,255,.3)}
+.color-memory-pad:focus-visible{outline:3px solid #fff;outline-offset:4px}
+.color-memory-pad[data-pad="0"]{background:#ef476f;color:#ef476f}
+.color-memory-pad[data-pad="1"]{background:#06b88b;color:#06b88b}
+.color-memory-pad[data-pad="2"]{background:#3478f6;color:#3478f6}
+.color-memory-pad[data-pad="3"]{background:#f4b942;color:#f4b942}
+.color-memory-status{min-height:26px;text-align:center;color:#c9c4da;font-size:12px;font-weight:700}
+@media(max-width:380px){.color-memory-board{gap:9px}.color-memory-pad{border-radius:17px}}
+@media(prefers-reduced-motion:reduce){.color-memory-pad{transition:none}}
