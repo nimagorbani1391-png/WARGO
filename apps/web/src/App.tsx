@@ -72,7 +72,7 @@ export default function App() {
       <header className="topbar">
         <a className="brand" href="/WARGO/" aria-label="صفحه اصلی WARGO"><span>WARGO</span></a>
         <button className="profile-trigger" type="button" onClick={() => setProfileOpen(true)} aria-haspopup="dialog" aria-label="نمایش پروفایل کاربر">
-          <span className={`profile-trigger-avatar ${profileAvatars[selectedAvatar].className}`}>{profileAvatars[selectedAvatar].emoji}</span><span>پروفایل</span>
+          <span className="profile-trigger-avatar profile-trigger-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 12a4.25 4.25 0 1 0 0-8.5 4.25 4.25 0 0 0 0 8.5Zm0 2c-4.15 0-7.5 2.12-7.5 4.75V21h15v-2.25C19.5 16.12 16.15 14 12 14Z" /></svg></span><span>پروفایل</span>
         </button>
       </header>
 
