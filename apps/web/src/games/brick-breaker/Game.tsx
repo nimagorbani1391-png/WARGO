@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import GameFrame from "../GameFrame";
 import GameStartOverlay from "../GameStartOverlay";
-import { reportGameScore } from "../reportScore";
 
 type Brick = { id: number; x: number; y: number; w: number; h: number; hp: number; color: string };
 type Ball = { x: number; y: number; vx: number; vy: number; delay: number };
@@ -418,7 +417,6 @@ export default function BrickBreaker({ onExit }: { onExit: () => void }) {
     };
   }, []);
 
-  useEffect(() => { if (status === "ready") resultReported.current = false; if (started && (status === "won" || status === "lost") && !resultReported.current) { resultReported.current = true; reportGameScore("brick-breaker", score); } }, [status, started, score]);
 
   const launchVolley = () => {
     const engine = engineRef.current;
