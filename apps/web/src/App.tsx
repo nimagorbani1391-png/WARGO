@@ -3,17 +3,6 @@ import type { ComponentType } from "react";
 import { gameRegistry } from "./games/registry";
 import type { GameCategory, GameDefinition } from "./types/game";
 
-const profileAvatars = [
-  { id: "fox", emoji: "🦊", name: "روباه", className: "avatar-fox" },
-  { id: "panda", emoji: "🐼", name: "پاندا", className: "avatar-panda" },
-  { id: "tiger", emoji: "🐯", name: "ببر", className: "avatar-tiger" },
-  { id: "frog", emoji: "🐸", name: "قورباغه", className: "avatar-frog" },
-  { id: "owl", emoji: "🦉", name: "جغد", className: "avatar-owl" },
-  { id: "wolf", emoji: "🐺", name: "گرگ", className: "avatar-wolf" },
-  { id: "octopus", emoji: "🐙", name: "اختاپوس", className: "avatar-octopus" },
-  { id: "penguin", emoji: "🐧", name: "پنگوئن", className: "avatar-penguin" },
-] as const;
-
 const API_URL = "https://wargo-api.nimagorbani1391.workers.dev";
 type WargoUser = { id: string; email: string; displayName: string; avatarUrl: string | null; avatarId: string | null; joinedAt: string; totalScore: number; gamesPlayed: number };
 
