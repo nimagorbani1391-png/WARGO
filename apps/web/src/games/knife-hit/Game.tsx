@@ -102,7 +102,7 @@ export default function KnifeHit({ onExit }: { onExit: () => void }) {
 
   const throwKnife = useCallback(() => {
     const current = game.current;
-    if (!running || current.over || current.remaining <= 0) return;
+    if (!running || current.over || current.remaining <= current.flying.length) return;
     // Small speed variation makes a fast-following knife able to catch the one ahead.
     const speed = KNIFE_SPEED * (0.88 + Math.random() * 0.24);
     current.flying.push({ distance: 0, speed });
