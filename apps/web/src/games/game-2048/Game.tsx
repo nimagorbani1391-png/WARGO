@@ -1,9 +1,21 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useReducer, useRef } from "react";
 import GameFrame from "../GameFrame";
 import GameStartOverlay from "../GameStartOverlay";
 
 type Board = number[][];
 type Direction = "left" | "right" | "up" | "down";
+type GameState = {
+  board: Board;
+  score: number;
+  won: boolean;
+  continued: boolean;
+  over: boolean;
+  started: boolean;
+};
+type Action =
+  | { type: "move"; direction: Direction }
+  | { type: "start" }
+  | { type: "continue" };
 
 const SIZE = 4;
 const TARGET = 2048;
@@ -15,27 +27,26 @@ const freshBoard = (): Board =>
 function spawnTile(board: Board): Board {
   const next = board.map((row) => [...row]);
   const empty: number[] = [];
-
   next.forEach((row, rowIndex) =>
     row.forEach((value, columnIndex) => {
       if (value === 0) empty.push(rowIndex * SIZE + columnIndex);
     }),
   );
-
   if (empty.length === 0) return next;
-
   const position = empty[Math.floor(Math.random() * empty.length)];
-  const row = Math.floor(position / SIZE);
-  const column = position % SIZE;
-  next[row][column] = Math.random() < 0.9 ? 2 : 4;
+  next[Math.floor(position / SIZE)][position % SIZE] =
+    Math.random() < 0.9 ? 2 : 4;
   return next;
+}
+
+function createNewBoard(): Board {
+  return spawnTile(spawnTile(freshBoard()));
 }
 
 function slideLine(line: number[]): { line: number[]; gained: number } {
   const compact = line.filter((value) => value !== 0);
   const merged: number[] = [];
   let gained = 0;
-
   for (let index = 0; index < compact.length; index += 1) {
     if (compact[index] === compact[index + 1]) {
       const value = compact[index] * 2;
@@ -46,7 +57,6 @@ function slideLine(line: number[]): { line: number[]; gained: number } {
       merged.push(compact[index]);
     }
   }
-
   while (merged.length < SIZE) merged.push(0);
   return { line: merged, gained };
 }
@@ -54,43 +64,65 @@ function slideLine(line: number[]): { line: number[]; gained: number } {
 function moveBoard(board: Board, direction: Direction): { board: Board; gained: number } {
   const next = freshBoard();
   let gained = 0;
-
   for (let index = 0; index < SIZE; index += 1) {
     let line =
       direction === "left" || direction === "right"
         ? [...board[index]]
         : board.map((row) => row[index]);
-
     if (direction === "right" || direction === "down") line.reverse();
-
     const result = slideLine(line);
     gained += result.gained;
     line = result.line;
-
     if (direction === "right" || direction === "down") line.reverse();
-
     for (let offset = 0; offset < SIZE; offset += 1) {
-      if (direction === "left" || direction === "right") {
-        next[index][offset] = line[offset];
-      } else {
-        next[offset][index] = line[offset];
-      }
+      if (direction === "left" || direction === "right") next[index][offset] = line[offset];
+      else next[offset][index] = line[offset];
     }
   }
-
   return { board: next, gained };
 }
 
 function boardsEqual(first: Board, second: Board): boolean {
-  return first.every((row, rowIndex) =>
-    row.every((value, columnIndex) => value === second[rowIndex][columnIndex]),
-  );
+  return first.every((row, r) => row.every((value, c) => value === second[r][c]));
 }
 
 function isGameOver(board: Board): boolean {
-  // WARGO rule: filling all 16 cells ends the round immediately,
-  // even if a matching pair could still be merged.
   return board.every((row) => row.every((value) => value !== 0));
+}
+
+function initialState(): GameState {
+  return {
+    board: createNewBoard(),
+    score: 0,
+    won: false,
+    continued: false,
+    over: false,
+    started: false,
+  };
+}
+
+// Reducer keeps every move atomic: rapid inputs always use the latest board.
+function gameReducer(state: GameState, action: Action): GameState {
+  if (action.type === "start") {
+    return { ...initialState(), started: true };
+  }
+  if (action.type === "continue") {
+    if (!state.won || state.continued || state.over) return state;
+    return { ...state, continued: true };
+  }
+  if (!state.started || state.over || (state.won && !state.continued)) return state;
+
+  const result = moveBoard(state.board, action.direction);
+  if (boardsEqual(state.board, result.board)) return state;
+
+  const board = spawnTile(result.board);
+  return {
+    ...state,
+    board,
+    score: state.score + result.gained,
+    won: state.won || board.some((row) => row.includes(TARGET)),
+    over: isGameOver(board),
+  };
 }
 
 function readBestScore(): number {
@@ -102,19 +134,13 @@ function readBestScore(): number {
   }
 }
 
-function createNewBoard(): Board {
-  return spawnTile(spawnTile(freshBoard()));
-}
-
 export default function Game2048({ onExit }: { onExit: () => void }) {
-  const [board, setBoard] = useState<Board>(createNewBoard);
-  const [score, setScore] = useState(0);
-  const [best, setBest] = useState(readBestScore);
-  const [won, setWon] = useState(false);
-  const [continued, setContinued] = useState(false);
-  const [over, setOver] = useState(false);
-  const [started, setStarted] = useState(false);
-  const pointerStart = useRef<{ x: number; y: number } | null>(null);
+  const [state, dispatch] = useReducer(gameReducer, undefined, initialState);
+  const [best, setBest] = useReducer(
+    (current: number, score: number) => Math.max(current, score),
+    readBestScore(),
+  );
+  const pointerStart = useRef<{ x: number; y: number; id: number } | null>(null);
 
   useEffect(() => {
     try {
@@ -124,104 +150,85 @@ export default function Game2048({ onExit }: { onExit: () => void }) {
     }
   }, [best]);
 
-  const play = useCallback(
-    (direction: Direction) => {
-      if (!started || over || (won && !continued)) return;
-
-      const result = moveBoard(board, direction);
-      if (boardsEqual(board, result.board)) return;
-
-      const next = spawnTile(result.board);
-      const nextScore = score + result.gained;
-
-      setBoard(next);
-      setScore(nextScore);
-      setBest((current) => Math.max(current, nextScore));
-
-      if (!won && next.some((row) => row.includes(TARGET))) {
-        setWon(true);
-      }
-      if (isGameOver(next)) setOver(true);
-    },
-    [board, continued, over, score, started, won],
-  );
-
   useEffect(() => {
+    const directions: Record<string, Direction> = {
+      ArrowLeft: "left",
+      ArrowRight: "right",
+      ArrowUp: "up",
+      ArrowDown: "down",
+      a: "left",
+      d: "right",
+      w: "up",
+      s: "down",
+      A: "left",
+      D: "right",
+      W: "up",
+      S: "down",
+    };
     const handleKeyDown = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
       if (
         target?.isContentEditable ||
         target?.tagName === "INPUT" ||
         target?.tagName === "TEXTAREA" ||
-        target?.tagName === "SELECT"
-      ) {
-        return;
-      }
+        target?.tagName === "SELECT" ||
+        event.altKey || event.ctrlKey || event.metaKey
+      ) return;
 
-      const directions: Record<string, Direction> = {
-        ArrowLeft: "left",
-        ArrowRight: "right",
-        ArrowUp: "up",
-        ArrowDown: "down",
-      };
       const direction = directions[event.key];
-      if (!direction || !started || over || (won && !continued)) return;
-
+      if (!direction) return;
       event.preventDefault();
-      play(direction);
+      dispatch({ type: "move", direction });
     };
-
-    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown, { passive: false });
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [continued, over, play, started, won]);
-
-  const startNewGame = () => {
-    setBoard(createNewBoard());
-    setScore(0);
-    setWon(false);
-    setContinued(false);
-    setOver(false);
-    setStarted(true);
-  };
+  }, []);
 
   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!started || over || (won && !continued)) return;
-    pointerStart.current = { x: event.clientX, y: event.clientY };
+    if (!state.started || state.over || (state.won && !state.continued)) return;
+    pointerStart.current = { x: event.clientX, y: event.clientY, id: event.pointerId };
+    try {
+      event.currentTarget.setPointerCapture(event.pointerId);
+    } catch {
+      // Pointer capture is an enhancement; the game still accepts keyboard input.
+    }
   };
 
   const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
     const start = pointerStart.current;
     pointerStart.current = null;
-    if (!start || !started || over || (won && !continued)) return;
+    if (!start || start.id !== event.pointerId) return;
+    if (!state.started || state.over || (state.won && !state.continued)) return;
 
     const deltaX = event.clientX - start.x;
     const deltaY = event.clientY - start.y;
-    const distance = Math.max(Math.abs(deltaX), Math.abs(deltaY));
-    if (distance < 28) return;
-
-    if (Math.abs(deltaX) > Math.abs(deltaY)) {
-      play(deltaX > 0 ? "right" : "left");
-    } else {
-      play(deltaY > 0 ? "down" : "up");
-    }
+    if (Math.max(Math.abs(deltaX), Math.abs(deltaY)) < 24) return;
+    const direction =
+      Math.abs(deltaX) > Math.abs(deltaY)
+        ? deltaX > 0 ? "right" : "left"
+        : deltaY > 0 ? "down" : "up";
+    dispatch({ type: "move", direction });
   };
 
-  const overlayVisible = !started || (won && !continued) || over;
-  const overlayTitle = !started
+  const overlayVisible = !state.started || (state.won && !state.continued) || state.over;
+  const overlayTitle = !state.started
     ? "آماده‌ی ۲۰۴۸؟"
-    : over
+    : state.over
       ? "حرکت دیگری باقی نمانده."
       : "آفرین! به ۲۰۴۸ رسیدی.";
-  const overlayDescription = !started
+  const overlayDescription = !state.started
     ? "عددهای برابر را ترکیب کن و به ۲۰۴۸ برس."
-    : over
-      ? `امتیاز نهایی: ${score.toLocaleString("fa-IR")}`
+    : state.over
+      ? `امتیاز نهایی: ${state.score.toLocaleString("fa-IR")}`
       : "می‌توانی بازی را ادامه بدهی یا یک صفحه‌ی تازه بسازی.";
+
+  // Keep the best score synchronized with every committed game state.
+  useEffect(() => setBest(state.score), [state.score]);
 
   return (
     <GameFrame title="2048" onExit={onExit}>
       <div className="game-stats">
-        <span>امتیاز <b>{score.toLocaleString("fa-IR")}</b></span>
+        <span>امتیاز <b>{state.score.toLocaleString("fa-IR")}</b></span>
         <span>بهترین <b>{best.toLocaleString("fa-IR")}</b></span>
       </div>
 
@@ -231,11 +238,10 @@ export default function Game2048({ onExit }: { onExit: () => void }) {
         aria-label="صفحه بازی ۲۰۴۸"
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
-        onPointerCancel={() => {
-          pointerStart.current = null;
-        }}
+        onPointerCancel={() => { pointerStart.current = null; }}
+        onLostPointerCapture={() => { pointerStart.current = null; }}
       >
-        {board.flatMap((row, rowIndex) =>
+        {state.board.flatMap((row, rowIndex) =>
           row.map((value, columnIndex) => (
             <div
               key={`${rowIndex * SIZE + columnIndex}-${value}`}
@@ -253,18 +259,20 @@ export default function Game2048({ onExit }: { onExit: () => void }) {
         visible={overlayVisible}
         title={overlayTitle}
         description={overlayDescription}
-        buttonLabel={!started ? "شروع بازی" : over ? "بازی جدید" : "ادامه بازی"}
-        onStart={over || !started ? startNewGame : () => setContinued(true)}
+        buttonLabel={!state.started ? "شروع بازی" : state.over ? "بازی جدید" : "ادامه بازی"}
+        onStart={state.over || !state.started
+          ? () => dispatch({ type: "start" })
+          : () => dispatch({ type: "continue" })}
       >
-        {started && won && !continued && !over && (
-          <button type="button" className="game-secondary" onClick={startNewGame}>
+        {state.started && state.won && !state.continued && !state.over && (
+          <button type="button" className="game-secondary" onClick={() => dispatch({ type: "start" })}>
             بازی جدید
           </button>
         )}
       </GameStartOverlay>
 
       <p className="game-help">
-        با کشیدن انگشت یا کلیدهای جهت‌دار، خانه‌ها را حرکت بده. هر حرکت فقط یک‌بار هر جفت عدد برابر را ادغام می‌کند.
+        با کشیدن انگشت یا کلیدهای جهت‌دار (یا WASD)، خانه‌ها را حرکت بده. هر حرکت فقط یک‌بار هر جفت عدد برابر را ادغام می‌کند.
       </p>
     </GameFrame>
   );
