@@ -13,10 +13,18 @@ function makeWorld():World{
  return{x:190,y:510,vy:-520,camera:0,platforms,score:0,last:0,raf:0,over:false};
 }
 export default function DoodleJump({onExit}:{onExit:()=>void}){
- const canvas=useRef<HTMLCanvasElement>(null),world=useRef<World>(makeWorld()),keys=useRef({left:false,right:false});
- const [running,setRunning]=useState(false),[score,setScore]=useState(0),[best,setBest]=useState(readBest),[over,setOver]=useState(false);
+ const canvas=useRef<HTMLCanvasElement>(null),world=useRef<World>(makeWorld()),keys=useRef({left:false,right:false}),tilt=useRef(0),tiltBaseline=useRef<number|null>(null);
+ const [running,setRunning]=useState(false),[score,setScore]=useState(0),[best,setBest]=useState(readBest),[over,setOver]=useState(false),[tiltMessage,setTiltMessage]=useState("گوشی را به چپ و راست خم کن تا حرکت کنی.");
  const reportedScore=useRef(0);
- const start=useCallback(()=>{world.current=makeWorld();keys.current={left:false,right:false};reportedScore.current=0;setScore(0);setOver(false);setRunning(true)},[]);
+ const start=useCallback(async()=>{
+  tilt.current=0;tiltBaseline.current=null;keys.current={left:false,right:false};
+  const orientation=DeviceOrientationEvent as typeof DeviceOrientationEvent & {requestPermission?:()=>Promise<"granted"|"denied">};
+  if(typeof orientation.requestPermission==="function"){
+   try{const permission=await orientation.requestPermission();if(permission!=="granted")setTiltMessage("دسترسی حسگر فعال نشد؛ برای حرکت از کلیدهای جهت‌دار استفاده کن.");else setTiltMessage("گوشی را به چپ و راست خم کن تا حرکت کنی.");}
+   catch{setTiltMessage("دسترسی حسگر ممکن نشد؛ برای حرکت از کلیدهای جهت‌دار استفاده کن.");}
+  }else if(!("DeviceOrientationEvent" in window)){setTiltMessage("حسگر حرکتی در این مرورگر در دسترس نیست؛ از کلیدهای جهت‌دار استفاده کن.");}
+  world.current=makeWorld();reportedScore.current=0;setScore(0);setOver(false);setRunning(true);
+ },[]);
  const setDirection=(side:"left"|"right",value:boolean)=>{keys.current[side]=value};
  useEffect(()=>{
   const c=canvas.current,ctx=c?.getContext("2d");if(!c||!ctx)return;
@@ -24,7 +32,7 @@ export default function DoodleJump({onExit}:{onExit:()=>void}){
   const frame=(t:number)=>{
    const g=world.current,dt=Math.min((t-(g.last||t))/1000,.032);g.last=t;
    if(running&&!g.over){
-    const dir=(keys.current.right?1:0)-(keys.current.left?1:0);g.x+=dir*300*dt;if(g.x<-18)g.x=W+18;if(g.x>W+18)g.x=-18;
+    const dir=Math.abs(tilt.current)>.08?tilt.current:(keys.current.right?1:0)-(keys.current.left?1:0);g.x+=dir*300*dt;if(g.x<-18)g.x=W+18;if(g.x>W+18)g.x=-18;
     const oldY=g.y;g.vy+=1250*dt;g.y+=g.vy*dt;
     if(g.y< H*.42&&g.vy<0){const shift=H*.42-g.y;g.y=H*.42;g.camera+=shift;g.score=Math.max(g.score,Math.floor(g.camera/10));}
     if(g.vy>0){for(const p of g.platforms){const screenY=p.y-g.camera;if(oldY+20<=screenY&&g.y+20>=screenY&&g.x+17>p.x&&g.x-17<p.x+p.w){g.y=screenY-20;g.vy=p.kind==="spring"?-900:-650;break;}}}
@@ -49,17 +57,27 @@ export default function DoodleJump({onExit}:{onExit:()=>void}){
  },[running]);
  useEffect(()=>()=>cancelAnimationFrame(world.current.raf),[]);
  useEffect(()=>{
+  if(!running)return;
+  const onOrientation=(event:DeviceOrientationEvent)=>{
+   if(event.gamma===null)return;
+   if(tiltBaseline.current===null){tiltBaseline.current=event.gamma;return;}
+   const delta=event.gamma-tiltBaseline.current;
+   tilt.current=Math.max(-1,Math.min(1,delta/25));
+  };
+  window.addEventListener("deviceorientation",onOrientation);
+  return()=>{window.removeEventListener("deviceorientation",onOrientation);tilt.current=0;tiltBaseline.current=null;};
+ },[running]);
+ useEffect(()=>{
   const down=(e:KeyboardEvent)=>{if(e.code==="ArrowLeft"||e.code==="KeyA"){keys.current.left=true;e.preventDefault()}if(e.code==="ArrowRight"||e.code==="KeyD"){keys.current.right=true;e.preventDefault()}};
   const up=(e:KeyboardEvent)=>{if(e.code==="ArrowLeft"||e.code==="KeyA")keys.current.left=false;if(e.code==="ArrowRight"||e.code==="KeyD")keys.current.right=false};
   window.addEventListener("keydown",down);window.addEventListener("keyup",up);return()=>{window.removeEventListener("keydown",down);window.removeEventListener("keyup",up)};
  },[]);
  return <GameFrame title="پرش بی‌پایان" onExit={onExit}>
   <div className="game-stats"><span>ارتفاع <b>{score}</b></span><span>رکورد <b>{best}</b></span></div>
-  <div className="doodle-stage" onPointerDown={e=>{const r=e.currentTarget.getBoundingClientRect();setDirection(e.clientX<r.left+r.width/2?"left":"right",true)}} onPointerUp={()=>{setDirection("left",false);setDirection("right",false)}} onPointerCancel={()=>{setDirection("left",false);setDirection("right",false)}} onPointerLeave={()=>{setDirection("left",false);setDirection("right",false)}}>
+  <div className="doodle-stage">
    <canvas ref={canvas} aria-label="بازی پرش بی‌پایان"/>
-   <div className="doodle-touch-hints" aria-hidden="true"><span>◀</span><span>▶</span></div>
   </div>
-  <GameStartOverlay visible={!running} title={over?"از سکو افتادی!":"بپر و بالاتر برو"} description={over?`ارتفاع ثبت‌شده: ${score}. یک بار دیگر رکوردت را بهتر کن.`:"روی نیمه چپ یا راست صفحه نگه دار تا حرکت کنی؛ روی سکوها فرود بیا."} buttonLabel={over?"تلاش دوباره":"شروع بازی"} onStart={start}/>
-  <p className="game-help">موبایل: نیمه چپ یا راست میدان را نگه دار · رایانه: کلیدهای ← و → یا A و D</p>
+  <GameStartOverlay visible={!running} title={over?"از سکو افتادی!":"بپر و بالاتر برو"} description={over?`ارتفاع ثبت‌شده: ${score}. یک بار دیگر رکوردت را بهتر کن.`:"گوشی را به چپ و راست خم کن تا شخصیت حرکت کند؛ روی سکوها فرود بیا."} buttonLabel={over?"تلاش دوباره":"شروع بازی"} onStart={start}/>
+  <p className="game-help">{tiltMessage} رایانه: کلیدهای ← و → یا A و D</p>
  </GameFrame>;
 }
