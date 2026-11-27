@@ -28,6 +28,13 @@ export default function App() {
   const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
+    const currentUrl = new URL(window.location.href);
+    if (currentUrl.searchParams.get("auth") === "success") {
+      currentUrl.searchParams.delete("auth");
+      window.history.replaceState({}, "", currentUrl.toString());
+      window.location.reload();
+      return;
+    }
     let active = true;
     fetch(`${API_URL}/api/me`, { credentials: "include", cache: "no-store" })
       .then((response) => response.ok ? response.json() : Promise.reject(new Error("auth")))
