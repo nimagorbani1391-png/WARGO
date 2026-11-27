@@ -925,3 +925,40 @@ h2 { margin: 5px 0 0; font-size: 25px; }
 .color-memory-status{min-height:26px;text-align:center;color:#c9c4da;font-size:12px;font-weight:700}
 @media(max-width:380px){.color-memory-board{gap:9px}.color-memory-pad{border-radius:17px}}
 @media(prefers-reduced-motion:reduce){.color-memory-pad{transition:none}}
+
+/* Dots & Boxes: compact, tactile board designed for touch screens. */
+.dots-mode{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 auto 13px;max-width:420px}
+.dots-mode button{min-height:42px;border:1px solid rgba(196,181,253,.2);border-radius:11px;background:#202337;color:#c8c3d8;font-size:12px;font-weight:800;cursor:pointer}
+.dots-mode button.selected{border-color:#b9a7ff;background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(167,139,250,.1));color:#eee8ff;box-shadow:inset 0 0 0 1px rgba(196,181,253,.12)}
+.dots-status{display:flex;align-items:center;justify-content:center;gap:9px;min-height:46px;margin:0 auto 13px;padding:9px 12px;border:1px solid rgba(196,181,253,.14);border-radius:12px;background:linear-gradient(110deg,rgba(167,139,250,.1),rgba(255,255,255,.025));color:#e9e4f7;text-align:center}
+.dots-status>span{font-size:19px}.dots-status strong{font-size:12px}.dots-status.is-finished{border-color:rgba(141,224,187,.4);background:rgba(39,112,84,.14)}
+.dots-x{color:#b9a7ff}.dots-o{color:#82dfc0}
+.dots-board-wrap{width:min(100%,480px);margin:0 auto;padding:clamp(7px,2.5vw,14px);border:1px solid rgba(196,181,253,.19);border-radius:19px;background:radial-gradient(ellipse at 50% 0%,rgba(167,139,250,.13),transparent 70%),linear-gradient(145deg,#20243a,#151b2a);box-shadow:0 16px 38px rgba(0,0,0,.23),inset 0 1px rgba(255,255,255,.04)}
+.dots-board{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));grid-template-rows:repeat(7,minmax(0,1fr));aspect-ratio:1;width:100%;touch-action:manipulation;user-select:none}
+.dots-node,.dots-box,.dots-edge{position:relative;display:grid;place-items:center;min-width:0;min-height:0}
+.dots-node{z-index:2;pointer-events:none}
+.dots-node i{width:clamp(7px,2.2vw,11px);height:clamp(7px,2.2vw,11px);border-radius:50%;background:linear-gradient(145deg,#fff,#aaa6c4);box-shadow:0 0 0 2px rgba(196,181,253,.12),0 1px 6px rgba(0,0,0,.6)}
+.dots-box{border-radius:7px;transition:background .16s ease,box-shadow .16s ease}
+.dots-box.owned-x{background:linear-gradient(145deg,rgba(167,139,250,.34),rgba(111,78,190,.2));box-shadow:inset 0 0 18px rgba(167,139,250,.12)}
+.dots-box.owned-o{background:linear-gradient(145deg,rgba(92,214,174,.3),rgba(34,129,105,.17));box-shadow:inset 0 0 18px rgba(92,214,174,.1)}
+.dots-box b{font-size:clamp(18px,5vw,29px);line-height:1;font-weight:900}
+.dots-box.owned-x b{color:#c9b9ff;text-shadow:0 0 15px rgba(167,139,250,.55)}
+.dots-box.owned-o b{color:#91efd0;text-shadow:0 0 15px rgba(92,214,174,.45)}
+.dots-edge{z-index:1;padding:0;border:0;background:transparent;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.dots-edge i{display:block;border-radius:999px;background:rgba(210,211,229,.12);transition:background .12s ease,box-shadow .12s ease,transform .12s ease}
+.dots-edge.horizontal i{width:76%;height:clamp(5px,1.45vw,8px)}
+.dots-edge.vertical i{width:clamp(5px,1.45vw,8px);height:76%}
+.dots-edge:not(:disabled):active i{transform:scale(.82);background:rgba(255,255,255,.5)}
+.dots-edge:disabled{cursor:default}
+.dots-edge.edge-x i{background:linear-gradient(90deg,#a78bfa,#d6c7ff);box-shadow:0 0 9px rgba(167,139,250,.55)}
+.dots-edge.edge-o i{background:linear-gradient(90deg,#4bc99e,#a0f3d5);box-shadow:0 0 9px rgba(92,214,174,.48)}
+.dots-edge.last-edge i{filter:brightness(1.45)}
+.dots-edge:focus-visible{outline:2px solid #fff;outline-offset:-2px;border-radius:6px}
+.dots-legend{display:flex;justify-content:center;flex-wrap:wrap;gap:14px;margin:13px 0 2px;color:#aaa7bb;font-size:10px}
+.dots-legend span{display:inline-flex;align-items:center;gap:6px}
+.dots-legend i{display:inline-block;width:9px;height:9px;border-radius:3px}
+.legend-x{background:#b9a7ff}.legend-o{background:#78dfbb}.legend-empty{background:rgba(210,211,229,.25)}
+.dots-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+.dots-stats>span{font-size:10px}
+@media(max-width:380px){.dots-board-wrap{padding:6px;border-radius:14px}.dots-box{border-radius:4px}.dots-mode button{min-height:40px}.dots-legend{gap:9px;font-size:9px}}
+@media(prefers-reduced-motion:reduce){.dots-box,.dots-edge i{transition:none}}
