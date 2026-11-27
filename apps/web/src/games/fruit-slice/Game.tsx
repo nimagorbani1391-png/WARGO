@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type PointerEvent } from "react";
 import GameFrame from "../GameFrame";
 import GameStartOverlay from "../GameStartOverlay";
 
@@ -11,7 +11,7 @@ export default function FruitSlice({onExit}:{onExit:()=>void}){
  const canvas=useRef<HTMLCanvasElement>(null),world=useRef<World>(makeWorld()),pointer=useRef<{down:boolean;x:number;y:number}>({down:false,x:0,y:0});
  const [running,setRunning]=useState(false),[score,setScore]=useState(0),[best,setBest]=useState(readBest),[lives,setLives]=useState(3),[over,setOver]=useState(false);
  const start=useCallback(()=>{world.current=makeWorld();pointer.current.down=false;setScore(0);setLives(3);setOver(false);setRunning(true)},[]);
- const point=(event:React.PointerEvent<HTMLDivElement>)=>{const rect=event.currentTarget.getBoundingClientRect();return{x:(event.clientX-rect.left)*W/rect.width,y:(event.clientY-rect.top)*H/rect.height}};
+ const point=(event:PointerEvent<HTMLDivElement>)=>{const rect=event.currentTarget.getBoundingClientRect();return{x:(event.clientX-rect.left)*W/rect.width,y:(event.clientY-rect.top)*H/rect.height}};
  const sliceAt=useCallback((x:number,y:number)=>{
   const g=world.current;g.trail.push({x,y,life:.22});
   for(const item of g.items){if(item.hit)continue;const dx=item.x-x,dy=item.y-y;if(dx*dx+dy*dy<(item.r+16)*(item.r+16)){item.hit=true;if(item.kind==="bomb"){g.over=true;setRunning(false);setOver(true)}else{g.score+=1;setScore(g.score);if(g.score>readBest()){try{localStorage.setItem(BEST_KEY,String(g.score))}catch{/* Optional storage. */}setBest(g.score)}}}}
