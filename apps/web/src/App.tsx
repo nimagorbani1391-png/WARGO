@@ -31,6 +31,9 @@ export default function App() {
   const [contestOpen, setContestOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [selectedAvatar, setSelectedAvatar] = useState(0);
+  const [displayName, setDisplayName] = useState("بازیکن WARGO");
+  const [nameDraft, setNameDraft] = useState("بازیکن WARGO");
+  const [editingName, setEditingName] = useState(false);
   const [contestEmail, setContestEmail] = useState("");
   const [contestPreview, setContestPreview] = useState(false);
 
@@ -150,7 +153,13 @@ export default function App() {
       {profileOpen && <div className="profile-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setProfileOpen(false); }}>
         <section className="profile-panel" role="dialog" aria-modal="true" aria-labelledby="profile-title" dir="rtl">
           <button className="profile-close" type="button" onClick={() => setProfileOpen(false)} aria-label="بستن پروفایل">×</button>
-          <div className="profile-panel-heading"><span className="profile-preview-label">پیش‌نمایش پروفایل</span><span className={`profile-avatar ${profileAvatars[selectedAvatar].className}`}>{profileAvatars[selectedAvatar].emoji}</span><h2 id="profile-title">بازیکن WARGO</h2><p>عضو مهمان · حساب کاربری هنوز فعال نشده</p></div>
+          <div className="profile-panel-heading"><span className="profile-preview-label">پیش‌نمایش پروفایل</span><span className={`profile-avatar ${profileAvatars[selectedAvatar].className}`}>{profileAvatars[selectedAvatar].emoji}</span><div className="profile-name-row">
+            {editingName ? <form className="profile-name-form" onSubmit={(event) => { event.preventDefault(); const nextName = nameDraft.trim(); if (nextName) { setDisplayName(nextName); setEditingName(false); } }}>
+              <input aria-label="نام نمایشی" value={nameDraft} onChange={(event) => setNameDraft(event.target.value)} maxLength={24} autoFocus required />
+              <button type="submit" aria-label="ذخیره نام">✓</button>
+              <button type="button" aria-label="لغو تغییر نام" onClick={() => { setNameDraft(displayName); setEditingName(false); }}>×</button>
+            </form> : <><h2 id="profile-title">{displayName}</h2><button className="profile-name-edit" type="button" aria-label="تغییر نام کاربر" title="تغییر نام" onClick={() => { setNameDraft(displayName); setEditingName(true); }}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25Zm17.71-10.04a1 1 0 0 0 0-1.42l-2.5-2.5a1 1 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 2-1.66Z"/></svg></button></>}
+          </div><p>عضو مهمان · حساب کاربری هنوز فعال نشده</p></div>
           <div className="profile-avatar-picker">
             <div className="profile-section-title"><h3>انتخاب تصویر پروفایل</h3><span>یکی را انتخاب کن</span></div>
             <div className="profile-avatar-options" role="group" aria-label="تصاویر آماده پروفایل">
