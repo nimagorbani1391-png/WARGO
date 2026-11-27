@@ -53,7 +53,7 @@ function scoreMove(edges: readonly (Player | undefined)[], owners: readonly BoxO
 
 /** The robot takes available boxes first, otherwise chooses a move that does not
  * give the opponent a third side. When forced, it minimizes immediate giveaways. */
-function chooseRobotMove(edges: readonly Player[], owners: readonly BoxOwner[]): number {
+function chooseRobotMove(edges: readonly (Player | undefined)[], owners: readonly BoxOwner[]): number {
   const available = edges.map((owner, index) => owner === undefined ? index : -1).filter((index) => index >= 0);
   if (available.length === 0) return -1;
 
@@ -192,7 +192,7 @@ export default function DotsAndBoxes({ onExit }: { onExit: () => void }) {
               key={index}
               type="button"
               className={`dots-edge ${row % 2 === 0 ? "horizontal" : "vertical"} ${owner === "X" ? "edge-x" : owner === "O" ? "edge-o" : ""} ${isLast ? "last-edge" : ""}`}
-              onClick={() => applyMove(edge, "X")}
+              onClick={() => applyMove(edge, turn)}
               disabled={!started || finished || owner !== undefined || robotThinking || (mode === "ai" && turn !== "X")}
               aria-label={owner ? `خط ${edge + 1} توسط ${owner} رسم شده` : `رسم خط ${edge + 1}`}
             ><i /></button>;
