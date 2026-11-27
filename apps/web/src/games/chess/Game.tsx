@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Chess, type Move, type Square } from "chess.js";
 import GameFrame from "../GameFrame";
 import GameStartOverlay from "../GameStartOverlay";
+import { reportGameScore } from "../reportScore";
 
 const symbols: Record<string, string> = { wk: "♔", wq: "♕", wr: "♖", wb: "♗", wn: "♘", wp: "♙", bk: "♚", bq: "♛", br: "♜", bb: "♝", bn: "♞", bp: "♟" };
 const values: Record<string, number> = { p: 100, n: 320, b: 330, r: 500, q: 900, k: 20000 };
@@ -62,6 +63,8 @@ export default function ChessGame({ onExit }: { onExit: () => void }) {
     }, 250);
     return () => window.clearTimeout(timer);
   }, [fen, difficulty, game, started]);
+
+  useEffect(() => { if (started && game.isGameOver()) reportGameScore("chess", game.isCheckmate() && game.turn() === "b" ? 3 : game.isDraw() ? 1 : 0); }, [started, fen]);
 
   const message = game.isCheckmate() ? "کیش‌ومات! " + (game.turn() === "w" ? "ربات برنده شد." : "تو برنده شدی!") : game.isDraw() ? "بازی مساوی شد." : thinking ? "ربات در حال فکر کردن است…" : game.isCheck() ? "کیش!" : game.turn() === "w" ? "نوبت توست؛ سفید بازی می‌کند." : "نوبت ربات است.";
   function play(square: Square) {
