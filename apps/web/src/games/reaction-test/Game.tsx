@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import GameFrame from "../GameFrame";
 import GameStartOverlay from "../GameStartOverlay";
+import { reportGameScore } from "../reportScore";
 
 const BEST_KEY = "wargo:reaction-best";
 type Phase = "ready" | "waiting" | "go" | "result" | "early";
@@ -58,6 +59,7 @@ export default function ReactionTest({ onExit }: { onExit: () => void }) {
       try { localStorage.setItem(BEST_KEY, String(next)); } catch { /* Optional storage. */ }
       return next;
     });
+    reportGameScore("reaction-test", Math.max(1, Math.min(10000, Math.round(100000 / Math.max(1, elapsed)))));
     setPhase("result");
   }
 
