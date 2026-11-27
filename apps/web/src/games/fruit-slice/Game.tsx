@@ -2,7 +2,8 @@ import { useCallback, useEffect, useRef, useState, type PointerEvent } from "rea
 import GameFrame from "../GameFrame";
 import GameStartOverlay from "../GameStartOverlay";
 
-const W = 420, H = 560, BEST_KEY = "wargo:fruit-slice-best";\nconst SWIPE_THRESHOLD = 12;
+const W = 420, H = 560, BEST_KEY = "wargo:fruit-slice-best";
+const SWIPE_THRESHOLD = 12;
 type Item = { x:number; y:number; vx:number; vy:number; r:number; kind:"fruit"|"bomb"; hue:number; hit:boolean };
 type World = { items:Item[]; score:number; lives:number; spawn:number; last:number; raf:number; over:boolean; trail:{x:number;y:number;life:number}[] };
 function readBest(){try{return Math.max(0,Number(localStorage.getItem(BEST_KEY))||0)}catch{return 0}}
