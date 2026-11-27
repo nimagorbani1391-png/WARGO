@@ -15,7 +15,8 @@ function makeWorld():World{
 export default function DoodleJump({onExit}:{onExit:()=>void}){
  const canvas=useRef<HTMLCanvasElement>(null),world=useRef<World>(makeWorld()),keys=useRef({left:false,right:false});
  const [running,setRunning]=useState(false),[score,setScore]=useState(0),[best,setBest]=useState(readBest),[over,setOver]=useState(false);
- const start=useCallback(()=>{world.current=makeWorld();keys.current={left:false,right:false};setScore(0);setOver(false);setRunning(true)},[]);
+ const reportedScore=useRef(0);
+ const start=useCallback(()=>{world.current=makeWorld();keys.current={left:false,right:false};reportedScore.current=0;setScore(0);setOver(false);setRunning(true)},[]);
  const setDirection=(side:"left"|"right",value:boolean)=>{keys.current[side]=value};
  useEffect(()=>{
   const c=canvas.current,ctx=c?.getContext("2d");if(!c||!ctx)return;
@@ -28,7 +29,7 @@ export default function DoodleJump({onExit}:{onExit:()=>void}){
     if(g.y< H*.42&&g.vy<0){const shift=H*.42-g.y;g.y=H*.42;g.camera+=shift;g.score=Math.max(g.score,Math.floor(g.camera/10));}
     if(g.vy>0){for(const p of g.platforms){const screenY=p.y-g.camera;if(oldY+20<=screenY&&g.y+20>=screenY&&g.x+17>p.x&&g.x-17<p.x+p.w){g.y=screenY-20;g.vy=p.kind==="spring"?-900:-650;break;}}}
     for(const p of g.platforms){if(p.y-g.camera<-30){p.y+=660+Math.random()*45;p.x=12+Math.random()*(W-p.w-24);p.kind=Math.random()<.12?"spring":"normal";}}
-    setScore(s=>{if(g.score>s){if(g.score>readBest()){try{localStorage.setItem(BEST_KEY,String(g.score))}catch{/* Optional storage. */}setBest(g.score)}return g.score;}return s;});
+    if(g.score>reportedScore.current){reportedScore.current=g.score;setScore(g.score);setBest(b=>{if(g.score>b){try{localStorage.setItem(BEST_KEY,String(g.score))}catch{/* Optional storage. */}return g.score;}return b;});}
     if(g.y>H+35){g.over=true;setRunning(false);setOver(true);}
    }
    const bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,"#102846");bg.addColorStop(1,"#142039");ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
