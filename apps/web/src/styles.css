@@ -1128,3 +1128,18 @@ h2 { margin: 5px 0 0; font-size: 25px; }
 
 .profile-login-button{margin-top:10px;padding:8px 15px;border:1px solid rgba(196,181,253,.28);border-radius:10px;background:rgba(167,139,250,.12);color:#e9e3ff;font:inherit;font-size:11px;font-weight:800;cursor:pointer}.profile-login-button:hover{background:rgba(167,139,250,.2)}
 
+
+
+/* Simplified account profile: name, email and membership date only. */
+.profile-panel{width:min(100%,410px);padding:25px}
+.profile-simple-heading{padding:10px 0 20px}
+.profile-simple-heading h2{margin:0;font-size:19px;font-weight:900}
+.profile-info-list{display:grid;gap:0;border:1px solid rgba(255,255,255,.09);border-radius:14px;background:rgba(255,255,255,.025)}
+.profile-info-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:58px;padding:12px 15px}
+.profile-info-row+.profile-info-row{border-top:1px solid rgba(255,255,255,.07)}
+.profile-info-row>span{flex:0 0 auto;color:#aaa6bb;font-size:12px}
+.profile-info-row>strong{min-width:0;color:#f0ecfa;font-size:12px;font-weight:700;text-align:left;overflow-wrap:anywhere}
+.profile-info-row .profile-name-row{justify-content:flex-start;min-height:30px;margin:0}
+.profile-info-row .profile-name-row>strong{font-size:13px}
+.profile-login-button{display:block;margin:15px auto 0}
+@media(max-width:700px){.profile-panel{padding:23px 16px 18px}.profile-info-row{min-height:55px;padding:11px 12px}}
