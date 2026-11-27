@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400">
+<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#272440"/><stop offset="1" stop-color="#111a2a"/></linearGradient><linearGradient id="x"><stop stop-color="#a78bfa"/><stop offset="1" stop-color="#e0d4ff"/></linearGradient><linearGradient id="o"><stop stop-color="#4bc99e"/><stop offset="1" stop-color="#a0f3d5"/></linearGradient></defs>
+<rect width="640" height="400" rx="32" fill="url(#bg)"/><circle cx="320" cy="200" r="175" fill="#a78bfa" opacity=".06"/>
+<g stroke="#ffffff" stroke-opacity=".14" stroke-width="10" stroke-linecap="round"><path d="M190 105H450M190 200H450M190 295H450M190 105V295M320 105V295M450 105V295"/></g>
+<g stroke="url(#x)" stroke-width="13" stroke-linecap="round"><path d="M190 105H320M190 105V200M320 200H450"/></g>
+<g stroke="url(#o)" stroke-width="13" stroke-linecap="round"><path d="M320 105V200M450 200V295M190 295H320"/></g>
+<g fill="#f5f2ff"><circle cx="190" cy="105" r="11"/><circle cx="320" cy="105" r="11"/><circle cx="450" cy="105" r="11"/><circle cx="190" cy="200" r="11"/><circle cx="320" cy="200" r="11"/><circle cx="450" cy="200" r="11"/><circle cx="190" cy="295" r="11"/><circle cx="320" cy="295" r="11"/><circle cx="450" cy="295" r="11"/></g>
+<rect x="206" y="120" width="94" height="68" rx="12" fill="#a78bfa" opacity=".19"/><text x="253" y="169" text-anchor="middle" fill="#e8deff" font-size="43" font-family="Arial" font-weight="700">×</text>
+<rect x="336" y="215" width="94" height="68" rx="12" fill="#4bc99e" opacity=".17"/><text x="383" y="264" text-anchor="middle" fill="#a0f3d5" font-size="43" font-family="Arial" font-weight="700">○</text>
+<text x="320" y="365" text-anchor="middle" fill="#d8d0ee" font-size="22" font-family="Arial" font-weight="700">DOTS &amp; BOXES</text></svg>
