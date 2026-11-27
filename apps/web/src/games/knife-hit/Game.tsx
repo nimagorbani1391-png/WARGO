@@ -126,7 +126,7 @@ export default function KnifeHit({ onExit }: { onExit: () => void }) {
     const update = (state: State, dt: number) => {
       if (state.over) return;
 
-      const rotationSpeed = 0.78 + Math.min(state.score, 30) * 0.009;
+      const rotationSpeed = 1.35 + Math.min(state.score, 30) * 0.035;
       state.angle = normalizeAngle(state.angle + rotationSpeed * dt);
 
       if (state.flying === null) return;
