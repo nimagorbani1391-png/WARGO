@@ -15,7 +15,7 @@ const profileAvatars = [
 ] as const;
 
 const API_URL = "https://wargo-api.nimagorbani1391.workers.dev";
-type WargoUser = { id: string; email: string; displayName: string; avatarUrl: string | null; joinedAt: string; totalScore: number; gamesPlayed: number };
+type WargoUser = { id: string; email: string; displayName: string; avatarUrl: string | null; avatarId: string | null; joinedAt: string; totalScore: number; gamesPlayed: number };
 
 const categories: { id: GameCategory | "all"; label: string; icon: string }[] = [
   { id: "all", label: "همه", icon: "✦" },
@@ -46,13 +46,13 @@ export default function App() {
     let active = true;
     fetch(`${API_URL}/api/me`, { credentials: "include", cache: "no-store" })
       .then((response) => response.ok ? response.json() : Promise.reject(new Error("auth")))
-      .then((data: { user: WargoUser | null }) => { if (active) { setUser(data.user); if (data.user?.displayName) { setDisplayName(data.user.displayName); setNameDraft(data.user.displayName); } } })
+      .then((data: { user: WargoUser | null }) => { if (active) { setUser(data.user); if (data.user?.displayName) { setDisplayName(data.user.displayName); setNameDraft(data.user.displayName); if (data.user.avatarId) { const avatarIndex = profileAvatars.findIndex((avatar) => avatar.id === data.user?.avatarId); if (avatarIndex >= 0) setSelectedAvatar(avatarIndex); } } } })
       .catch(() => { if (active) setUser(null); })
       .finally(() => { if (active) setAuthLoading(false); });
     return () => { active = false; };
   }, []);
 
-  function startGoogleLogin() { window.location.href = `${API_URL}/auth/google/start`; }
+  async function saveProfile(nextName = displayName, nextAvatar = selectedAvatar) {\n    if (!user) return;\n    const response = await fetch(`${API_URL}/api/profile`, { method: "PUT", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ displayName: nextName.trim(), avatarId: profileAvatars[nextAvatar].id }) });\n    if (!response.ok) throw new Error("ذخیره پروفایل ناموفق بود");\n    setUser((current) => current ? { ...current, displayName: nextName.trim(), avatarId: profileAvatars[nextAvatar].id } : current);\n  }\n\n  function startGoogleLogin() { window.location.href = `${API_URL}/auth/google/start`; }
   async function logout() {
     try { await fetch(`${API_URL}/auth/logout`, { method: "POST", credentials: "include" }); } finally { setUser(null); setDisplayName("بازیکن WARGO"); setNameDraft("بازیکن WARGO"); }
   }
@@ -174,7 +174,7 @@ export default function App() {
         <section className="profile-panel" role="dialog" aria-modal="true" aria-labelledby="profile-title" dir="rtl">
           <button className="profile-close" type="button" onClick={() => setProfileOpen(false)} aria-label="بستن پروفایل">×</button>
           <div className="profile-panel-heading"><span className="profile-preview-label">پیش‌نمایش پروفایل</span><span className={`profile-avatar ${profileAvatars[selectedAvatar].className}`}>{profileAvatars[selectedAvatar].emoji}</span><div className="profile-name-row">
-            {editingName ? <form className="profile-name-form" onSubmit={(event) => { event.preventDefault(); const nextName = nameDraft.trim(); if (nextName) { setDisplayName(nextName); setEditingName(false); } }}>
+            {editingName ? <form className="profile-name-form" onSubmit={(event) => { event.preventDefault(); const nextName = nameDraft.trim(); if (nextName) { setDisplayName(nextName); if (user) void saveProfile(nextName).catch(() => setDisplayName(user.displayName)); setEditingName(false); } }}>
               <input aria-label="نام نمایشی" value={nameDraft} onChange={(event) => setNameDraft(event.target.value)} maxLength={24} autoFocus required />
               <button type="submit" aria-label="ذخیره نام">✓</button>
               <button type="button" aria-label="لغو تغییر نام" onClick={() => { setNameDraft(displayName); setEditingName(false); }}>×</button>
@@ -183,7 +183,7 @@ export default function App() {
           <div className="profile-avatar-picker">
             <div className="profile-section-title"><h3>انتخاب تصویر پروفایل</h3><span>یکی را انتخاب کن</span></div>
             <div className="profile-avatar-options" role="group" aria-label="تصاویر آماده پروفایل">
-              {profileAvatars.map((avatar, index) => <button key={avatar.id} type="button" className={`profile-avatar-option ${avatar.className} ${selectedAvatar === index ? "is-selected" : ""}`} onClick={() => setSelectedAvatar(index)} aria-label={`انتخاب تصویر ${avatar.name}`} aria-pressed={selectedAvatar === index}>{avatar.emoji}</button>)}
+              {profileAvatars.map((avatar, index) => <button key={avatar.id} type="button" className={`profile-avatar-option ${avatar.className} ${selectedAvatar === index ? "is-selected" : ""}`} onClick={() => { setSelectedAvatar(index); if (user) void saveProfile(displayName, index).catch(() => setSelectedAvatar(profileAvatars.findIndex((item) => item.id === user.avatarId) >= 0 ? profileAvatars.findIndex((item) => item.id === user.avatarId) : 0)); }} aria-label={`انتخاب تصویر ${avatar.name}`} aria-pressed={selectedAvatar === index}>{avatar.emoji}</button>)}
             </div>
           </div>
           <div className="profile-stats">
