@@ -32,7 +32,6 @@ export default function App() {
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [selectedAvatar, setSelectedAvatar] = useState(0);
   const [displayName, setDisplayName] = useState("بازیکن WARGO");
   const [nameDraft, setNameDraft] = useState("بازیکن WARGO");
   const [editingName, setEditingName] = useState(false);
@@ -43,17 +42,17 @@ export default function App() {
     let active = true;
     fetch(`${API_URL}/api/me`, { credentials: "include", cache: "no-store" })
       .then((response) => response.ok ? response.json() : Promise.reject(new Error("auth")))
-      .then((data: { user: WargoUser | null }) => { if (active) { setUser(data.user); if (data.user?.displayName) { setDisplayName(data.user.displayName); setNameDraft(data.user.displayName); if (data.user.avatarId) { const avatarIndex = profileAvatars.findIndex((avatar) => avatar.id === data.user?.avatarId); if (avatarIndex >= 0) setSelectedAvatar(avatarIndex); } } } })
+      .then((data: { user: WargoUser | null }) => { if (active) { setUser(data.user); if (data.user?.displayName) { setDisplayName(data.user.displayName); setNameDraft(data.user.displayName); } } })
       .catch(() => { if (active) setUser(null); })
       .finally(() => { if (active) setAuthLoading(false); });
     return () => { active = false; };
   }, []);
 
-  async function saveProfile(nextName = displayName, nextAvatar = selectedAvatar) {
+  async function saveProfile(nextName = displayName) {
     if (!user) return;
-    const response = await fetch(`${API_URL}/api/profile`, { method: "PUT", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ displayName: nextName.trim(), avatarId: profileAvatars[nextAvatar].id }) });
+    const response = await fetch(`${API_URL}/api/profile`, { method: "PUT", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ displayName: nextName.trim() }) });
     if (!response.ok) throw new Error("ذخیره پروفایل ناموفق بود");
-    setUser((current) => current ? { ...current, displayName: nextName.trim(), avatarId: profileAvatars[nextAvatar].id } : current);
+    setUser((current) => current ? { ...current, displayName: nextName.trim() } : current);
   }
 
   function startGoogleLogin() { window.location.href = `${API_URL}/auth/google/start`; }
@@ -152,36 +151,24 @@ export default function App() {
       {profileOpen && <div className="profile-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setProfileOpen(false); }}>
         <section className="profile-panel" role="dialog" aria-modal="true" aria-labelledby="profile-title" dir="rtl">
           <button className="profile-close" type="button" onClick={() => setProfileOpen(false)} aria-label="بستن پروفایل">×</button>
-          <div className="profile-panel-heading"><span className="profile-preview-label">پیش‌نمایش پروفایل</span><span className={`profile-avatar ${profileAvatars[selectedAvatar].className}`}>{profileAvatars[selectedAvatar].emoji}</span><div className="profile-name-row">
-            {editingName ? <form className="profile-name-form" onSubmit={(event) => { event.preventDefault(); const nextName = nameDraft.trim(); if (nextName) { setDisplayName(nextName); if (user) void saveProfile(nextName).catch(() => setDisplayName(user.displayName)); setEditingName(false); } }}>
-              <input aria-label="نام نمایشی" value={nameDraft} onChange={(event) => setNameDraft(event.target.value)} maxLength={24} autoFocus required />
-              <button type="submit" aria-label="ذخیره نام">✓</button>
-              <button type="button" aria-label="لغو تغییر نام" onClick={() => { setNameDraft(displayName); setEditingName(false); }}>×</button>
-            </form> : <><h2 id="profile-title">{displayName}</h2><button className="profile-name-edit" type="button" aria-label="تغییر نام کاربر" title="تغییر نام" onClick={() => { setNameDraft(displayName); setEditingName(true); }}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25Zm17.71-10.04a1 1 0 0 0 0-1.42l-2.5-2.5a1 1 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 2-1.66Z"/></svg></button></>}
-          </div><p>{authLoading ? "در حال بررسی حساب..." : user ? user.email : "عضو مهمان · حساب کاربری هنوز فعال نشده"}</p>{!authLoading && (user ? <button className="profile-login-button" type="button" onClick={() => void logout()}>خروج از حساب</button> : <button className="profile-login-button" type="button" onClick={startGoogleLogin}>ورود با حساب Google</button>)}</div>
-          <div className="profile-avatar-picker">
-            <div className="profile-section-title"><h3>انتخاب تصویر پروفایل</h3><span>یکی را انتخاب کن</span></div>
-            <div className="profile-avatar-options" role="group" aria-label="تصاویر آماده پروفایل">
-              {profileAvatars.map((avatar, index) => <button key={avatar.id} type="button" className={`profile-avatar-option ${avatar.className} ${selectedAvatar === index ? "is-selected" : ""}`} onClick={() => { setSelectedAvatar(index); if (user) void saveProfile(displayName, index).catch(() => setSelectedAvatar(profileAvatars.findIndex((item) => item.id === user.avatarId) >= 0 ? profileAvatars.findIndex((item) => item.id === user.avatarId) : 0)); }} aria-label={`انتخاب تصویر ${avatar.name}`} aria-pressed={selectedAvatar === index}>{avatar.emoji}</button>)}
+          <div className="profile-panel-heading profile-simple-heading">
+            <h2 id="profile-title">اطلاعات حساب</h2>
+          </div>
+          <div className="profile-info-list">
+            <div className="profile-info-row">
+              <span>نام</span>
+              <div className="profile-name-row">
+                {editingName ? <form className="profile-name-form" onSubmit={(event) => { event.preventDefault(); const nextName = nameDraft.trim(); if (nextName) { setDisplayName(nextName); if (user) void saveProfile(nextName).catch(() => setDisplayName(user.displayName)); setEditingName(false); } }}>
+                  <input aria-label="نام نمایشی" value={nameDraft} onChange={(event) => setNameDraft(event.target.value)} maxLength={24} autoFocus required />
+                  <button type="submit" aria-label="ذخیره نام">✓</button>
+                  <button type="button" aria-label="لغو تغییر نام" onClick={() => { setNameDraft(displayName); setEditingName(false); }}>×</button>
+                </form> : <><strong>{displayName}</strong><button className="profile-name-edit" type="button" aria-label="تغییر نام کاربر" title="تغییر نام" onClick={() => { setNameDraft(displayName); setEditingName(true); }}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25Zm17.71-10.04a1 1 0 0 0 0-1.42l-2.5-2.5a1 1 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 2-1.66Z"/></svg></button></>}
+              </div>
             </div>
+            <div className="profile-info-row"><span>ایمیل</span><strong>{authLoading ? "در حال بررسی حساب..." : user ? user.email : "وارد حساب نشده‌ای"}</strong></div>
+            <div className="profile-info-row"><span>تاریخ عضویت</span><strong>{user?.joinedAt ? new Date(user.joinedAt).toLocaleDateString("fa-IR") : "—"}</strong></div>
           </div>
-          <div className="profile-stats">
-            <div><strong>محلی</strong><span>امتیازهای بازی در مرورگر</span></div>
-            
-            <div><strong>{user?.joinedAt ? new Date(user.joinedAt).toLocaleDateString("fa-IR") : "—"}</strong><span>تاریخ عضویت</span></div>
-          </div>
-          <div className="profile-section-title"><h3>بازی‌های موردعلاقه</h3><span>نمونه نمایشی</span></div>
-          <div className="profile-favorite-games"><span>شطرنج</span><span>۲۰۴۸</span><span>مار و سیب</span></div>
-          <div className="profile-section-title"><h3>دستاوردها</h3><span>۶ نشان</span></div>
-          <div className="profile-achievements">
-            <div><i>✦</i><b>شروع ماجراجویی</b><small>اولین بازی</small></div>
-            
-            <div><i>◈</i><b>رکوردشکن</b><small>ثبت رکورد</small></div>
-            <div><i>⚡</i><b>سریع‌دست</b><small>واکنش سریع</small></div>
-            <div><i>♜</i><b>استراتژیست</b><small>بازی فکری</small></div>
-            <div><i>★</i><b>وفادار</b><small>بازگشت به بازی</small></div>
-          </div>
-          <div className="profile-panel-note">{user ? "حساب گوگل به WARGO متصل است." : "برای ساخت حساب و نمایش اطلاعات واقعی، با Google وارد شو."}</div>
+          {!authLoading && (user ? <button className="profile-login-button" type="button" onClick={() => void logout()}>خروج از حساب</button> : <button className="profile-login-button" type="button" onClick={startGoogleLogin}>ورود با حساب Google</button>)}
         </section>
       </div>}
 
