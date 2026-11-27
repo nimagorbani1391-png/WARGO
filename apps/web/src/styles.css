@@ -1143,3 +1143,40 @@ h2 { margin: 5px 0 0; font-size: 25px; }
 .profile-info-row .profile-name-row>strong{font-size:13px}
 .profile-login-button{display:block;margin:15px auto 0}
 @media(max-width:700px){.profile-panel{padding:23px 16px 18px}.profile-info-row{min-height:55px;padding:11px 12px}}
+
+
+/* WARGO mobile-first layout on every viewport: no desktop page layout. */
+@media (min-width: 701px) {
+  .app-shell { width: min(100% - 28px, 560px); margin-inline: auto; }
+  .topbar { height: 66px; }
+  .topbar-caption, .desktop-hero, .desktop-search { display: none !important; }
+  .brand { font-size: 22px; }
+  .mobile-home { display: block !important; padding: 30px 0 0; }
+  .mobile-welcome h1 { margin: 8px 0 5px; font-size: 27px; line-height: 1.5; }
+  .mobile-welcome p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.9; }
+  .mobile-search { width: 100%; margin-top: 20px; border-radius: 13px; }
+  .mobile-search input { height: 48px; font-size: 13px; }
+  .mobile-random { display: flex; justify-content: center; width: 100%; min-height: 48px; margin-top: 12px; border-radius: 13px; font-size: 14px; }
+  .mobile-section { display: block !important; margin-top: 30px; }
+  .mobile-section-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 13px; }
+  .mobile-section-heading h2 { margin-top: 3px; font-size: 17px; }
+  .category-section { margin-top: 27px; }
+  .category-list { display: flex; gap: 8px; overflow-x: auto; padding: 1px 1px 7px; scrollbar-width: none; }
+  .category-list::-webkit-scrollbar { display: none; }
+  .category-chip { flex: 0 0 auto; min-height: 38px; padding: 0 13px; font-size: 11px; }
+  .library { padding: 30px 0 42px; }
+  .section-heading { margin-bottom: 14px; }
+  .section-heading h2 { font-size: 19px; }
+  .game-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+  .game-card { border-radius: 12px; }
+  .game-card img { aspect-ratio: 4 / 3; }
+  .game-card div { padding: 8px; }
+  .game-card h3 { margin: 0; font-size: 11px; line-height: 1.7; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+  .game-card p { display: none; }
+  .empty-state { min-height: 190px; padding: 30px 18px; border-radius: 15px; }
+  .footer { font-size: 10px; padding: 17px 0 22px; }
+  .profile-trigger { right: 0; min-height: 39px; padding: 4px 9px 4px 5px; font-size: 11px; }
+  .profile-trigger-avatar { width: 27px; height: 27px; }
+  .profile-panel { padding: 23px 16px 18px; }
+  .profile-info-row { min-height: 55px; padding: 11px 12px; }
+}
