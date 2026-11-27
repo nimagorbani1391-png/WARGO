@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import GameFrame from "../GameFrame";
 import GameStartOverlay from "../GameStartOverlay";
+import { reportGameScore } from "../reportScore";
 
 type Player = "X" | "O";
 type Mode = "ai" | "two";
@@ -99,6 +100,8 @@ export default function DotsAndBoxes({ onExit }: { onExit: () => void }) {
   const totalBoxes = BOXES * BOXES;
   const finished = owners.every((owner) => owner !== null);
   const remaining = totalBoxes - owners.filter(Boolean).length;
+  useEffect(() => { if (started && finished) reportGameScore("dots-and-boxes", scores.X); }, [started, finished]);
+
   const status = finished
     ? scores.X > scores.O ? "بازیکن X برنده شد!" : scores.O > scores.X ? (mode === "ai" ? "ربات برنده شد!" : "بازیکن O برنده شد!") : "بازی مساوی شد!"
     : robotThinking ? "ربات در حال فکر کردن است..." : mode === "ai" ? (turn === "X" ? "نوبت توست؛ یک خط بکش." : "نوبت ربات است.") : `نوبت بازیکن ${turn}`;
