@@ -21,12 +21,12 @@ export default function WhackAMole({ onExit }: { onExit: () => void }) {
   useEffect(()=>{
     if(!running)return;
     const clock=window.setInterval(()=>setTime(t=>{if(t<=1){setRunning(false);setActive(-1);return 0;}return t-1;}),1000);
-    const spawn=window.setInterval(()=>{setActive(current=>{previous.current=current;return nextHole(current);});hitLock.current=false;},Math.max(390,690-Math.floor(score/50)*35));
+    const spawn=window.setInterval(()=>{setActive(current=>{previous.current=current;return nextHole(current);});hitLock.current=false;},560);
     return()=>{clearInterval(clock);clearInterval(spawn);};
-  },[running,score]);
+  },[running]);
 
   const hit=(index:number)=>{
-    if(!running||index!==active||hitLock.current)return;
+    if(!running)return;if(index!==active){setMisses(m=>m+1);return;}if(hitLock.current)return;
     hitLock.current=true;
     setScore(s=>{const n=s+10;setBest(b=>{const v=Math.max(b,n);try{localStorage.setItem(BEST_KEY,String(v));}catch{/* Optional storage. */}return v;});return n;});
     setActive(-1);
