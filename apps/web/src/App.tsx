@@ -29,7 +29,8 @@ export default function App() {
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [contestOpen, setContestOpen] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);\n  const [selectedAvatar, setSelectedAvatar] = useState(0);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [selectedAvatar, setSelectedAvatar] = useState(0);
   const [contestEmail, setContestEmail] = useState("");
   const [contestPreview, setContestPreview] = useState(false);
 
