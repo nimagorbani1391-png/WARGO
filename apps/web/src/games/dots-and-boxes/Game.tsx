@@ -6,7 +6,7 @@ type Player = "X" | "O";
 type Mode = "ai" | "two";
 type BoxOwner = Player | null;
 
-const DOTS = 4;
+const DOTS = 6;
 const BOXES = DOTS - 1;
 const EDGE_COUNT = DOTS * BOXES * 2;
 
@@ -172,9 +172,9 @@ export default function DotsAndBoxes({ onExit }: { onExit: () => void }) {
 
       <div className="dots-board-wrap">
         <div className="dots-board" role="group" aria-label="صفحه نقطه‌بازی">
-          {Array.from({ length: 49 }, (_, index) => {
-            const row = Math.floor(index / 7);
-            const col = index % 7;
+          {Array.from({ length: DOTS * DOTS }, (_, index) => {
+            const row = Math.floor(index / DOTS);
+            const col = index % DOTS;
             if (row % 2 === 0 && col % 2 === 0) {
               return <div key={index} className="dots-node" aria-hidden="true"><i /></div>;
             }
