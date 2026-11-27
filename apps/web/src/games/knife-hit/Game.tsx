@@ -39,7 +39,7 @@ export default function KnifeHit({ onExit }: { onExit: () => void }) {
         g.angle += dt * (0.78 + Math.min(g.score, 30) * 0.009);
         if (g.flying !== null) {
           g.flying += dt * 760;
-          if (g.flying >= CY + R + 18) {
+          if (g.flying >= H - 35 - (CY + R + 18)) {
             const impact = -Math.PI / 2 - g.angle;
             const collision = g.knives.some(k => {
               const diff = Math.atan2(Math.sin(k.angle - impact), Math.cos(k.angle - impact));
@@ -69,7 +69,7 @@ export default function KnifeHit({ onExit }: { onExit: () => void }) {
       g.knives.forEach(k=>{ctx.save();ctx.rotate(k.angle);drawKnife(ctx,0,-R-5);ctx.restore();});
       ctx.restore();
       // Current knife and remaining counter
-      if (g.flying !== null) drawKnife(ctx,CX,CY+R+18-g.flying);
+      if (g.flying !== null) drawKnife(ctx,CX,H-35-g.flying);
       ctx.fillStyle="#eaf3ff"; ctx.font="700 18px sans-serif"; ctx.textAlign="center"; ctx.fillText("KNIVES",W/2,36);
       ctx.font="800 30px sans-serif"; ctx.fillStyle="#70e1ff"; ctx.fillText(String(g.remaining),W/2,72);
       ctx.fillStyle="rgba(255,255,255,.22)"; ctx.fillRect(30,H-35,W-60,5);
