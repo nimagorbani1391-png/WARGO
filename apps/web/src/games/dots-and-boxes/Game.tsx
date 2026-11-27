@@ -143,7 +143,13 @@ export default function DotsAndBoxes({ onExit }: { onExit: () => void }) {
   }
 
   function changeMode(nextMode: Mode) {
-    if (nextMode !== mode) resetRound(nextMode, true);
+    if (nextMode === mode) return;
+    setMode(nextMode);
+    setEdges(Array(EDGE_COUNT).fill(undefined));
+    setOwners(Array(BOXES * BOXES).fill(null));
+    setTurn("X");
+    setRobotThinking(false);
+    setScores({ X: 0, O: 0 });
   }
 
   return (
