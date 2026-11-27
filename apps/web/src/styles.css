@@ -998,3 +998,39 @@ h2 { margin: 5px 0 0; font-size: 25px; }
 @media (prefers-reduced-motion: reduce) {
   .knife-stage { scroll-behavior: auto; }
 }
+
+
+/* Coin Toss: polished metallic coin with a real 3D flip. */
+.coin-game{width:100%;max-width:460px;margin:0 auto;padding:4px 0 18px;text-align:center;color:#f5f1ff}
+.coin-intro{margin:4px 0 18px}.coin-eyebrow{color:#c7a96b;font-size:11px;font-weight:800;letter-spacing:1px}
+.coin-intro h2{margin:7px 0 5px;font-size:clamp(25px,7vw,34px);font-weight:900}
+.coin-intro p{margin:0;color:#aaa6bd;font-size:12px}
+.coin-choice{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:340px;margin:0 auto}
+.coin-choice-button{display:flex;align-items:center;justify-content:center;gap:9px;min-height:58px;border:1px solid rgba(218,190,125,.25);border-radius:15px;background:linear-gradient(145deg,#29283b,#1b1c2d);color:#d9d3e7;font-size:15px;font-weight:800;cursor:pointer;transition:background .16s,border-color .16s,transform .16s}
+.coin-choice-button.selected{border-color:#e3c477;background:linear-gradient(145deg,rgba(181,143,63,.28),rgba(91,70,37,.22));color:#ffe5a0;box-shadow:0 0 20px rgba(219,177,86,.12),inset 0 0 0 1px rgba(255,220,145,.12)}
+.coin-choice-button:active:not(:disabled){transform:scale(.97)}.coin-choice-button:disabled{opacity:.7}
+.coin-choice-symbol{font-size:23px;color:#e6c77e}
+.coin-stage{position:relative;display:grid;place-items:center;height:210px;margin:10px auto 2px;perspective:900px;isolation:isolate}
+.coin-3d{position:relative;width:132px;height:132px;transform-style:preserve-3d;transform:rotateX(-12deg);filter:drop-shadow(0 12px 13px rgba(0,0,0,.35))}
+.coin-face{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:7px double #a77932;border-radius:50%;background:radial-gradient(circle at 32% 25%,#fff0b6 0%,#e7c36f 24%,#bd8b39 61%,#78501f 100%);color:#69451b;box-shadow:inset 0 0 0 2px rgba(255,244,190,.8),inset 0 0 14px rgba(92,55,12,.5),inset 0 5px 8px rgba(255,255,255,.4);backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.coin-face:after{content:"";position:absolute;inset:8px;border:1px solid rgba(105,69,27,.5);border-radius:50%}
+.coin-face b{z-index:1;font-size:27px;font-weight:1000;text-shadow:0 1px 0 rgba(255,239,183,.7)}
+.coin-face small{z-index:1;font-size:8px;font-weight:900;letter-spacing:2px}
+.coin-rim{z-index:1;display:grid;place-items:center;width:32px;height:32px;border:1px solid rgba(105,69,27,.55);border-radius:50%;font-size:19px;font-weight:900}
+.coin-tails{transform:rotateY(180deg);background:radial-gradient(circle at 32% 25%,#f5e7ff 0%,#c9b5e3 25%,#8d72b2 65%,#4b3a69 100%);border-color:#725a9b;color:#3d2d59}
+.coin-tails .coin-rim{border-color:rgba(61,45,89,.6)}
+.coin-shadow{position:absolute;bottom:22px;width:115px;height:17px;border-radius:50%;background:rgba(0,0,0,.38);filter:blur(9px);transform:scaleX(1);transition:transform .2s}
+.coin-stage.is-spinning .coin-shadow{animation:coin-shadow 1.85s ease-in-out}
+.coin-animate{animation:coin-flip 1.85s cubic-bezier(.18,.72,.2,1) both}
+.coin-message{display:flex;min-height:62px;flex-direction:column;align-items:center;justify-content:center;gap:5px;margin:4px 0 12px}
+.coin-message strong{font-size:17px;font-weight:900}.coin-message span{color:#aaa6bd;font-size:11px}
+.coin-message .coin-win{color:#7ce6ae}.coin-message .coin-lose{color:#ff8d91}
+.coin-toss-button{width:min(100%,340px);min-height:52px;border:1px solid #e5c47c;border-radius:14px;background:linear-gradient(135deg,#e7c477,#a97932);color:#251b0d;font-size:15px;font-weight:1000;box-shadow:0 8px 22px rgba(170,125,48,.2);cursor:pointer;touch-action:manipulation}
+.coin-toss-button:disabled{opacity:.5;cursor:not-allowed;filter:saturate(.55)}
+.coin-toss-button:active:not(:disabled){transform:translateY(1px)}
+.coin-round{margin-top:13px;color:#918da5;font-size:10px}.coin-round b{color:#e4d6b4;font-variant-numeric:tabular-nums}
+.coin-choice-button:focus-visible,.coin-toss-button:focus-visible{outline:2px solid #ffe4a0;outline-offset:3px}
+@keyframes coin-flip{0%{transform:rotateX(-12deg) rotateY(0deg) rotateZ(-8deg)}45%{transform:rotateX(28deg) rotateY(1080deg) rotateZ(8deg)}100%{transform:rotateX(-12deg) rotateY(var(--coin-end,1800deg)) rotateZ(0deg)}}
+@keyframes coin-shadow{0%,100%{transform:scaleX(1);opacity:.65}50%{transform:scaleX(.62);opacity:.3}}
+@media(max-width:380px){.coin-stage{height:190px}.coin-3d{width:118px;height:118px}.coin-choice{gap:8px}.coin-choice-button{min-height:54px}}
+@media(prefers-reduced-motion:reduce){.coin-animate,.coin-stage.is-spinning .coin-shadow{animation-duration:.5s}}
