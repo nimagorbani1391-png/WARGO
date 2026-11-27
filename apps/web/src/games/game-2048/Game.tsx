@@ -141,7 +141,6 @@ export default function Game2048({ onExit }: { onExit: () => void }) {
     readBestScore(),
   );
   const pointerStart = useRef<{ x: number; y: number; id: number } | null>(null);
-  const resultReported = useRef(false);
 
   useEffect(() => {
     try {
