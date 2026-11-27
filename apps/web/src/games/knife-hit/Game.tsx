@@ -11,7 +11,8 @@ const R = 82;
 const NEED = 22;
 const FIXED_STEP = 1 / 120;
 const MAX_FRAME_DELTA = 0.05;
-const KNIFE_SPEED = 2800;
+const KNIFE_SPEED = 3600;
+const FLYING_COLLISION_DISTANCE = 30;
 const KNIFE_HALF_WIDTH = 6;
 const COLLISION_CLEARANCE = 3;
 const COLLISION_RADIUS = R + 5;
@@ -20,10 +21,11 @@ const COLLISION_ANGLE = 2 * Math.asin(
 );
 
 type Knife = { angle: number };
+type FlyingKnife = { distance: number; speed: number };
 type State = {
   angle: number;
   knives: Knife[];
-  flying: number | null;
+  flying: FlyingKnife[];
   remaining: number;
   score: number;
   last: number;
@@ -45,7 +47,7 @@ function makeState(): State {
   return {
     angle: 0,
     knives: [],
-    flying: null,
+    flying: [],
     remaining: NEED,
     score: 0,
     last: 0,
@@ -100,8 +102,10 @@ export default function KnifeHit({ onExit }: { onExit: () => void }) {
 
   const throwKnife = useCallback(() => {
     const current = game.current;
-    if (!running || current.over || current.flying !== null || current.remaining <= 0) return;
-    current.flying = 0;
+    if (!running || current.over || current.remaining <= 0) return;
+    // Small speed variation makes a fast-following knife able to catch the one ahead.
+    const speed = KNIFE_SPEED * (0.88 + Math.random() * 0.24);
+    current.flying.push({ distance: 0, speed });
   }, [running]);
 
   useEffect(() => {
@@ -117,7 +121,7 @@ export default function KnifeHit({ onExit }: { onExit: () => void }) {
     const finishRound = (state: State, success: boolean) => {
       state.over = true;
       state.won = success;
-      state.flying = null;
+      state.flying = [];
       setWon(success);
       setOver(true);
       setRunning(false);
@@ -129,35 +133,49 @@ export default function KnifeHit({ onExit }: { onExit: () => void }) {
       const rotationSpeed = 1.35 + Math.min(state.score, 30) * 0.035;
       state.angle = normalizeAngle(state.angle + rotationSpeed * dt);
 
-      if (state.flying === null) return;
+      if (state.flying.length === 0) return;
 
-      state.flying += KNIFE_SPEED * dt;
       const travelDistance = H - 35 - (CY + R + 18);
-      if (state.flying < travelDistance) return;
+      state.flying.forEach((knife) => { knife.distance += knife.speed * dt; });
 
-      const impactAngle = getImpactAngle(state.angle);
-      if (hasCollision(state.knives, impactAngle)) {
-        finishRound(state, false);
-        return;
-      }
-
-      state.knives.push({ angle: impactAngle });
-      state.flying = null;
-      state.remaining -= 1;
-      state.score += 1;
-      setRemaining(state.remaining);
-      setScore(state.score);
-
-      if (state.score > readBest()) {
-        try {
-          localStorage.setItem(BEST_KEY, String(state.score));
-        } catch {
-          // Local storage is optional; the current session still works.
+      // Two knives in the same lane collide when the faster trailing one catches up.
+      const ordered = [...state.flying].sort((a, b) => b.distance - a.distance);
+      for (let i = 0; i < ordered.length - 1; i += 1) {
+        const front = ordered[i];
+        const behind = ordered[i + 1];
+        if (behind.speed > front.speed && front.distance - behind.distance <= FLYING_COLLISION_DISTANCE) {
+          finishRound(state, false);
+          return;
         }
-        setBest(state.score);
       }
 
-      if (state.remaining === 0) finishRound(state, true);
+      const arrived = state.flying.filter((knife) => knife.distance >= travelDistance);
+      state.flying = state.flying.filter((knife) => knife.distance < travelDistance);
+      for (const knife of arrived) {
+        const impactAngle = getImpactAngle(state.angle);
+        if (hasCollision(state.knives, impactAngle)) {
+          finishRound(state, false);
+          return;
+        }
+        state.knives.push({ angle: impactAngle });
+        state.remaining -= 1;
+        state.score += 1;
+        setRemaining(state.remaining);
+        setScore(state.score);
+
+        if (state.score > readBest()) {
+          try {
+            localStorage.setItem(BEST_KEY, String(state.score));
+          } catch {
+            // Local storage is optional; the current session still works.
+          }
+          setBest(state.score);
+        }
+        if (state.remaining === 0) {
+          finishRound(state, true);
+          return;
+        }
+      }
     };
 
     const draw = (state: State) => {
@@ -219,9 +237,9 @@ export default function KnifeHit({ onExit }: { onExit: () => void }) {
       });
       ctx.restore();
 
-      if (state.flying !== null) {
-        drawKnife(ctx, CX, H - 35 - state.flying);
-      }
+      state.flying.forEach((knife) => {
+        drawKnife(ctx, CX, H - 35 - knife.distance);
+      });
 
       ctx.fillStyle = "#eaf3ff";
       ctx.font = "700 18px sans-serif";
