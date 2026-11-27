@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import GameFrame from "../GameFrame";
 import GameStartOverlay from "../GameStartOverlay";
+import { reportGameScore } from "../reportScore";
 
 const BEST_KEY = "wargo:knife-hit-best";
 const W = 420;
@@ -307,6 +308,8 @@ export default function KnifeHit({ onExit }: { onExit: () => void }) {
     game.current.raf = requestAnimationFrame(frame);
     return () => cancelAnimationFrame(game.current.raf);
   }, [running]);
+
+  useEffect(() => { if (over) reportGameScore("knife-hit", score); }, [over]);
 
   useEffect(() => () => cancelAnimationFrame(game.current.raf), []);
 
