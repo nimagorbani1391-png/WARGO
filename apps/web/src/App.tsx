@@ -16,7 +16,7 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState<GameCategory | "all">("all");
   const [opened, setOpened] = useState<{ game: GameDefinition; View: ComponentType<{ onExit: () => void }> } | null>(null);
   const [loadingId, setLoadingId] = useState<string | null>(null);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);\n  const [contestOpen, setContestOpen] = useState(false);\n  const [contestEmail, setContestEmail] = useState("");\n  const [contestPreview, setContestPreview] = useState(false);
 
   const games = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase("fa");
@@ -78,6 +78,31 @@ export default function App() {
         <div className="hero-art" aria-hidden="true"><div className="orbit orbit-one" /><div className="orbit orbit-two" /><div className="game-tile tile-one">✳</div><div className="game-tile tile-two">◈</div><div className="game-tile tile-three">⌘</div><div className="hero-core">W</div></div>
       </section>
 
+      <section className="contest-section" aria-labelledby="contest-title">
+        <div className="contest-card">
+          <div className="contest-copy">
+            <div className="contest-kicker"><span className="contest-live-dot" /> رقابت ویژه WARGO</div>
+            <h2 id="contest-title">۱۰ روز فرصت داری؛<br /><span>برای یک جایزه واقعی بجنگ!</span></h2>
+            <p className="contest-lead">بازی کن، امتیاز جمع کن و خودت رو به صدر برسون. اولین نفری که به هدف یک‌میلیونی برسه، برنده مسابقه‌ست.</p>
+            <div className="contest-facts">
+              <div><span className="contest-fact-icon">◷</span><span><b>۱۰ روز</b><small>مدت رقابت</small></span></div>
+              <div><span className="contest-fact-icon">♛</span><span><b>فقط ۱ نفر</b><small>برنده نهایی</small></span></div>
+              <div><span className="contest-fact-icon">▤</span><span><b>اینترنت هدیه</b><small>جایزه مسابقه</small></span></div>
+            </div>
+            <button className="contest-cta" type="button" onClick={() => { setContestPreview(false); setContestOpen(true); }}>
+              ورود به مسابقه <span aria-hidden="true">←</span>
+            </button>
+            <div className="contest-note">قوانین و شرایط پیش از شروع رسمی نمایش داده می‌شوند.</div>
+          </div>
+          <div className="contest-visual" aria-hidden="true">
+            <div className="contest-orbit contest-orbit-a" /><div className="contest-orbit contest-orbit-b" />
+            <div className="contest-trophy">♛</div>
+            <div className="contest-target"><small>هدف مسابقه</small><strong>۱,۰۰۰,۰۰۰</strong><span>امتیاز</span></div>
+            <div className="contest-spark spark-a">✦</div><div className="contest-spark spark-b">✧</div><div className="contest-spark spark-c">✦</div>
+          </div>
+        </div>
+      </section>
+
       <section className="recent-section mobile-section" aria-labelledby="recent-title">
         <div className="mobile-section-heading"><div><h2 id="recent-title">بازی‌های اخیر تو</h2></div></div>
         <RecentGames key={opened?.game.id || "closed"} onOpen={(id) => { const game = gameRegistry.find((item) => item.id === id); if (game) void launchGame(game); }} />
@@ -103,7 +128,30 @@ export default function App() {
       </section>
       <footer className="footer"><span>WARGO</span></footer>
 
-      {opened && ActiveGame && <div className="game-overlay" role="dialog" aria-modal="true" aria-label={opened.game.title}>
+      {contestOpen && <div className="contest-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setContestOpen(false); }}>
+        <section className="contest-modal" role="dialog" aria-modal="true" aria-labelledby="contest-modal-title" dir="rtl">
+          <button className="contest-modal-close" type="button" onClick={() => setContestOpen(false)} aria-label="بستن">×</button>
+          {!contestPreview ? <>
+            <div className="contest-modal-emblem">♛</div>
+            <span className="contest-modal-kicker">یک قدم تا شروع رقابت</span>
+            <h2 id="contest-modal-title">آماده‌ای وارد رقابت بشی؟</h2>
+            <p>برای ادامه، ایمیلت رو وارد کن. ثبت‌نام نهایی بعد از فعال‌شدن زیرساخت مسابقه انجام می‌شه.</p>
+            <form className="contest-email-form" onSubmit={(event) => { event.preventDefault(); setContestPreview(true); }}>
+              <label htmlFor="contest-email">آدرس ایمیل</label>
+              <input id="contest-email" type="email" autoComplete="email" inputMode="email" placeholder="you@example.com" value={contestEmail} onChange={(event) => setContestEmail(event.target.value)} required />
+              <button className="contest-cta" type="submit">ادامه <span aria-hidden="true">←</span></button>
+            </form>
+            <small className="contest-privacy">فعلاً این فرم نمایشی است؛ ایمیل ذخیره یا ارسال نمی‌شود.</small>
+          </> : <>
+            <div className="contest-modal-emblem">✓</div>
+            <span className="contest-modal-kicker">پیش‌نمایش فرم</span>
+            <h2 id="contest-modal-title">ظاهر ثبت‌نام آماده‌ست!</h2>
+            <p>اتصال ثبت‌نام واقعی به سرور هنوز انجام نشده؛ ایمیل <bdi>{contestEmail}</bdi> در جایی ذخیره نشده است.</p>
+            <button className="contest-cta" type="button" onClick={() => { setContestOpen(false); setContestEmail(""); }}>متوجه شدم</button>
+          </>}
+        </section>
+      </div>}
+\n      {opened && ActiveGame && <div className="game-overlay" role="dialog" aria-modal="true" aria-label={opened.game.title}>
         <Suspense fallback={<div className="game-loading">در حال بارگذاری بازی…</div>}>
           <ActiveGame onExit={() => setOpened(null)} />
         </Suspense>
