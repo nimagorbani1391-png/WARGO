@@ -18,6 +18,7 @@ export default function App() {
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [contestOpen, setContestOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const [contestEmail, setContestEmail] = useState("");
   const [contestPreview, setContestPreview] = useState(false);
 
@@ -58,6 +59,9 @@ export default function App() {
     <main className="app-shell">
       <header className="topbar">
         <a className="brand" href="/WARGO/" aria-label="صفحه اصلی WARGO"><span>WARGO</span></a>
+        <button className="profile-trigger" type="button" onClick={() => setProfileOpen(true)} aria-haspopup="dialog" aria-label="نمایش پروفایل کاربر">
+          <span className="profile-trigger-avatar">W</span><span>پروفایل</span>
+        </button>
       </header>
 
       <section className="mobile-home" aria-label="پیدا کردن بازی">
@@ -130,6 +134,26 @@ export default function App() {
           </button>)}</div>}
       </section>
       <footer className="footer"><span>WARGO</span></footer>
+
+      {profileOpen && <div className="profile-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setProfileOpen(false); }}>
+        <section className="profile-panel" role="dialog" aria-modal="true" aria-labelledby="profile-title" dir="rtl">
+          <button className="profile-close" type="button" onClick={() => setProfileOpen(false)} aria-label="بستن پروفایل">×</button>
+          <div className="profile-panel-heading"><span className="profile-preview-label">پیش‌نمایش پروفایل</span><span className="profile-avatar">W</span><h2 id="profile-title">بازیکن WARGO</h2><p>عضو مهمان · حساب کاربری هنوز فعال نشده</p></div>
+          <div className="profile-stats">
+            <div><strong>—</strong><span>مجموع امتیاز</span></div>
+            <div><strong>—</strong><span>بازی‌های انجام‌شده</span></div>
+            <div><strong>—</strong><span>رتبه کلی</span></div>
+          </div>
+          <div className="profile-section-title"><h3>دستاوردها</h3><span>به‌زودی</span></div>
+          <div className="profile-achievements">
+            <div><i>✦</i><b>شروع ماجراجویی</b><small>اولین بازی</small></div>
+            <div><i>♛</i><b>قهرمان WARGO</b><small>رسیدن به رتبه برتر</small></div>
+            <div><i>◈</i><b>بازیکن حرفه‌ای</b><small>ثبت چند رکورد</small></div>
+          </div>
+          <div className="profile-panel-note">این صفحه فعلاً نمایشی است؛ اطلاعاتی دریافت یا ذخیره نمی‌شود.</div>
+          <button className="profile-edit-button" type="button" disabled>ویرایش پروفایل · به‌زودی</button>
+        </section>
+      </div>}
 
       {contestOpen && <div className="contest-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setContestOpen(false); }}>
         <section className="contest-modal" role="dialog" aria-modal="true" aria-labelledby="contest-modal-title" dir="rtl">
