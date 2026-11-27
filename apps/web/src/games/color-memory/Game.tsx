@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import GameFrame from "../GameFrame";
 import GameStartOverlay from "../GameStartOverlay";
+import { reportGameScore } from "../reportScore";
 
 const BEST_KEY = "wargo:color-memory-best";
 const COLORS = ["قرمز", "سبز", "آبی", "زرد"];
@@ -82,6 +83,8 @@ export default function ColorMemory({ onExit }: { onExit: () => void }) {
       setInputCount(index + 1);
     }
   }
+
+  useEffect(() => { if (phase === "over") reportGameScore("color-memory", Math.max(0, round - 1)); }, [phase]);
 
   return <GameFrame title="حافظه رنگی" onExit={onExit}>
     <div className="game-stats">
