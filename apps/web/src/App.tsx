@@ -3,6 +3,17 @@ import type { ComponentType } from "react";
 import { gameRegistry } from "./games/registry";
 import type { GameCategory, GameDefinition } from "./types/game";
 
+const profileAvatars = [
+  { id: "fox", emoji: "🦊", name: "روباه", className: "avatar-fox" },
+  { id: "panda", emoji: "🐼", name: "پاندا", className: "avatar-panda" },
+  { id: "tiger", emoji: "🐯", name: "ببر", className: "avatar-tiger" },
+  { id: "frog", emoji: "🐸", name: "قورباغه", className: "avatar-frog" },
+  { id: "owl", emoji: "🦉", name: "جغد", className: "avatar-owl" },
+  { id: "wolf", emoji: "🐺", name: "گرگ", className: "avatar-wolf" },
+  { id: "octopus", emoji: "🐙", name: "اختاپوس", className: "avatar-octopus" },
+  { id: "penguin", emoji: "🐧", name: "پنگوئن", className: "avatar-penguin" },
+] as const;
+
 const categories: { id: GameCategory | "all"; label: string; icon: string }[] = [
   { id: "all", label: "همه", icon: "✦" },
   { id: "puzzle", label: "معمایی", icon: "◇" },
@@ -18,7 +29,7 @@ export default function App() {
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [contestOpen, setContestOpen] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);\n  const [selectedAvatar, setSelectedAvatar] = useState(0);
   const [contestEmail, setContestEmail] = useState("");
   const [contestPreview, setContestPreview] = useState(false);
 
@@ -60,7 +71,7 @@ export default function App() {
       <header className="topbar">
         <a className="brand" href="/WARGO/" aria-label="صفحه اصلی WARGO"><span>WARGO</span></a>
         <button className="profile-trigger" type="button" onClick={() => setProfileOpen(true)} aria-haspopup="dialog" aria-label="نمایش پروفایل کاربر">
-          <span className="profile-trigger-avatar">W</span><span>پروفایل</span>
+          <span className={`profile-trigger-avatar ${profileAvatars[selectedAvatar].className}`}>{profileAvatars[selectedAvatar].emoji}</span><span>پروفایل</span>
         </button>
       </header>
 
@@ -138,17 +149,27 @@ export default function App() {
       {profileOpen && <div className="profile-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setProfileOpen(false); }}>
         <section className="profile-panel" role="dialog" aria-modal="true" aria-labelledby="profile-title" dir="rtl">
           <button className="profile-close" type="button" onClick={() => setProfileOpen(false)} aria-label="بستن پروفایل">×</button>
-          <div className="profile-panel-heading"><span className="profile-preview-label">پیش‌نمایش پروفایل</span><span className="profile-avatar">W</span><h2 id="profile-title">بازیکن WARGO</h2><p>عضو مهمان · حساب کاربری هنوز فعال نشده</p></div>
+          <div className="profile-panel-heading"><span className="profile-preview-label">پیش‌نمایش پروفایل</span><span className={`profile-avatar ${profileAvatars[selectedAvatar].className}`}>{profileAvatars[selectedAvatar].emoji}</span><h2 id="profile-title">بازیکن WARGO</h2><p>عضو مهمان · حساب کاربری هنوز فعال نشده</p></div>
+          <div className="profile-avatar-picker">
+            <div className="profile-section-title"><h3>انتخاب تصویر پروفایل</h3><span>یکی را انتخاب کن</span></div>
+            <div className="profile-avatar-options" role="group" aria-label="تصاویر آماده پروفایل">
+              {profileAvatars.map((avatar, index) => <button key={avatar.id} type="button" className={`profile-avatar-option ${avatar.className} ${selectedAvatar === index ? "is-selected" : ""}`} onClick={() => setSelectedAvatar(index)} aria-label={`انتخاب تصویر ${avatar.name}`} aria-pressed={selectedAvatar === index}>{avatar.emoji}</button>)}
+            </div>
+          </div>
           <div className="profile-stats">
             <div><strong>—</strong><span>مجموع امتیاز</span></div>
-            <div><strong>—</strong><span>بازی‌های انجام‌شده</span></div>
             <div><strong>—</strong><span>رتبه کلی</span></div>
           </div>
-          <div className="profile-section-title"><h3>دستاوردها</h3><span>به‌زودی</span></div>
+          <div className="profile-section-title"><h3>بازی‌های موردعلاقه</h3><span>نمونه نمایشی</span></div>
+          <div className="profile-favorite-games"><span>♟ شطرنج</span><span>▦ ۲۰۴۸</span><span>✦ مار و سیب</span></div>
+          <div className="profile-section-title"><h3>دستاوردها</h3><span>۶ نشان</span></div>
           <div className="profile-achievements">
             <div><i>✦</i><b>شروع ماجراجویی</b><small>اولین بازی</small></div>
-            <div><i>♛</i><b>قهرمان WARGO</b><small>رسیدن به رتبه برتر</small></div>
-            <div><i>◈</i><b>بازیکن حرفه‌ای</b><small>ثبت چند رکورد</small></div>
+            <div><i>♛</i><b>قهرمان</b><small>رتبه برتر</small></div>
+            <div><i>◈</i><b>رکوردشکن</b><small>ثبت رکورد</small></div>
+            <div><i>⚡</i><b>سریع‌دست</b><small>واکنش سریع</small></div>
+            <div><i>♜</i><b>استراتژیست</b><small>بازی فکری</small></div>
+            <div><i>★</i><b>وفادار</b><small>بازگشت به بازی</small></div>
           </div>
           <div className="profile-panel-note">این صفحه فعلاً نمایشی است؛ اطلاعاتی دریافت یا ذخیره نمی‌شود.</div>
           <button className="profile-edit-button" type="button" disabled>ویرایش پروفایل · به‌زودی</button>
