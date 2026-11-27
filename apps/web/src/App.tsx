@@ -64,6 +64,21 @@ export default function App() {
     try { await fetch(`${API_URL}/auth/logout`, { method: "POST", credentials: "include" }); } finally { setUser(null); setDisplayName("بازیکن WARGO"); setNameDraft("بازیکن WARGO"); }
   }
 
+  useEffect(() => {
+    const handleGameScore = (event: Event) => {
+      const detail = (event as CustomEvent<{ gameId?: string; score?: number }>).detail;
+      if (!user || !detail || typeof detail.gameId !== "string" || !Number.isSafeInteger(detail.score) || (detail.score ?? 0) < 0) return;
+      void fetch(`${API_URL}/api/scores`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ gameId: detail.gameId, score: detail.score, resultId: crypto.randomUUID() }),
+      }).catch(() => { /* Score submission must never interrupt gameplay. */ });
+    };
+    window.addEventListener("wargo:game-score", handleGameScore);
+    return () => window.removeEventListener("wargo:game-score", handleGameScore);
+  }, [user]);
+
   const games = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase("fa");
     return gameRegistry.filter((game) => {
