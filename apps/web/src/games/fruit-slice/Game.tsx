@@ -2,11 +2,11 @@ import { useCallback, useEffect, useRef, useState, type PointerEvent } from "rea
 import GameFrame from "../GameFrame";
 import GameStartOverlay from "../GameStartOverlay";
 
-const W = 420, H = 560, BEST_KEY = "wargo:fruit-slice-best";
+const W = 420, H = 560, BEST_KEY = "wargo:fruit-slice-best";\nconst SWIPE_THRESHOLD = 12;
 type Item = { x:number; y:number; vx:number; vy:number; r:number; kind:"fruit"|"bomb"; hue:number; hit:boolean };
 type World = { items:Item[]; score:number; lives:number; spawn:number; last:number; raf:number; over:boolean; trail:{x:number;y:number;life:number}[] };
 function readBest(){try{return Math.max(0,Number(localStorage.getItem(BEST_KEY))||0)}catch{return 0}}
-function makeWorld():World{return{items:[],score:0,lives:3,spawn:0,last:0,raf:0,over:false,trail:[]}}
+function makeWorld():World{return{items:[],score:0,lives:3,spawn:.9,last:0,raf:0,over:false,trail:[]}}
 export default function FruitSlice({onExit}:{onExit:()=>void}){
  const canvas=useRef<HTMLCanvasElement>(null),world=useRef<World>(makeWorld()),pointer=useRef<{down:boolean;x:number;y:number}>({down:false,x:0,y:0});
  const [running,setRunning]=useState(false),[score,setScore]=useState(0),[best,setBest]=useState(readBest),[lives,setLives]=useState(3),[over,setOver]=useState(false);
@@ -23,7 +23,7 @@ export default function FruitSlice({onExit}:{onExit:()=>void}){
    const g=world.current,dt=Math.min((time-(g.last||time))/1000,.032);g.last=time;
    if(running&&!g.over){
     g.spawn-=dt;
-    if(g.spawn<=0){const count=Math.random()<.22?3:2;for(let i=0;i<count;i++){const kind=Math.random()<.13?"bomb":"fruit";g.items.push({x:65+Math.random()*(W-130),y:H+35+i*22,vx:(Math.random()-.5)*150,vy:-650-Math.random()*130,r:kind==="bomb"?23:22+Math.random()*5,kind,hue:Math.floor(Math.random()*360),hit:false})}g.spawn=.68+Math.random()*.38}
+    if(g.spawn<=0){const count=Math.random()<.22?3:2;for(let i=0;i<count;i++){const kind=g.score>=5&&Math.random()<.1?"bomb":"fruit";g.items.push({x:65+Math.random()*(W-130),y:H+35+i*22,vx:(Math.random()-.5)*150,vy:-650-Math.random()*130,r:kind==="bomb"?23:22+Math.random()*5,kind,hue:Math.floor(Math.random()*360),hit:false})}g.spawn=.68+Math.random()*.38}
     for(const item of g.items){item.x+=item.vx*dt;item.y+=item.vy*dt;item.vy+=850*dt}
     const missed=g.items.filter(item=>!item.hit&&item.kind==="fruit"&&item.y>H+item.r);
     if(missed.length){g.lives=Math.max(0,g.lives-missed.length);setLives(g.lives);g.items=g.items.filter(item=>!missed.includes(item));if(g.lives===0){g.over=true;setRunning(false);setOver(true)}}
@@ -42,7 +42,7 @@ export default function FruitSlice({onExit}:{onExit:()=>void}){
  useEffect(()=>()=>cancelAnimationFrame(world.current.raf),[]);
  return <GameFrame title="Fruit Slice" onExit={onExit}>
   <div className="game-stats"><span>امتیاز <b>{score}</b></span><span>رکورد <b>{best}</b></span><span>جان <b>{lives}</b></span></div>
-  <div className="fruit-slice-stage" onPointerDown={event=>{event.preventDefault();event.currentTarget.setPointerCapture(event.pointerId);pointer.current.down=true;const p=point(event);pointer.current.x=p.x;pointer.current.y=p.y;sliceAt(p.x,p.y)}} onPointerMove={event=>{if(!pointer.current.down)return;const p=point(event);const dx=p.x-pointer.current.x,dy=p.y-pointer.current.y;const steps=Math.max(1,Math.ceil(Math.hypot(dx,dy)/9));for(let i=1;i<=steps;i++)sliceAt(pointer.current.x+dx*i/steps,pointer.current.y+dy*i/steps);pointer.current.x=p.x;pointer.current.y=p.y}} onPointerUp={()=>{pointer.current.down=false}} onPointerCancel={()=>{pointer.current.down=false}}>
+  <div className="fruit-slice-stage" onPointerDown={event=>{event.preventDefault();event.currentTarget.setPointerCapture(event.pointerId);pointer.current.down=true;const p=point(event);pointer.current.x=p.x;pointer.current.y=p.y}} onPointerMove={event=>{if(!pointer.current.down)return;const p=point(event);const dx=p.x-pointer.current.x,dy=p.y-pointer.current.y;const distance=Math.hypot(dx,dy);if(distance>=SWIPE_THRESHOLD){const steps=Math.max(1,Math.ceil(distance/7));for(let i=1;i<=steps;i++)sliceAt(pointer.current.x+dx*i/steps,pointer.current.y+dy*i/steps);pointer.current.x=p.x;pointer.current.y=p.y}}} onPointerUp={()=>{pointer.current.down=false}} onPointerCancel={()=>{pointer.current.down=false}}>
    <canvas ref={canvas} aria-label="میدان بازی برش میوه"/>
   </div>
   <GameStartOverlay visible={!running} title={over?"بازی تمام شد!":"میوه‌ها را برش بزن"} description={over?`امتیازت ${score} بود. بمب یا از دست دادن سه میوه بازی را تمام می‌کند.`:"با کشیدن انگشت روی میوه‌ها امتیاز بگیر؛ به بمب‌ها دست نزن و میوه‌ها را از دست نده."} buttonLabel={over?"تلاش دوباره":"شروع بازی"} onStart={start}/>
