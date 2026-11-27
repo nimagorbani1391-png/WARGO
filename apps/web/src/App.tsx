@@ -61,42 +61,10 @@ export default function App() {
     setUser((current) => current ? { ...current, displayName: nextName.trim(), avatarId: profileAvatars[nextAvatar].id } : current);
   }
 
-  async function openMonthlyContest() {
-    setContestOpen(true);
-    setContestLoading(true);
-    setContestError("");
-    try {
-      const response = await fetch(`${API_URL}/api/leaderboard`, { cache: "no-store" });
-      if (!response.ok) throw new Error("leaderboard");
-      const data = await response.json() as { period: string; leaders: { displayName: string; score: number; gamesPlayed: number }[] };
-      setContestPeriod(data.period);
-      setContestLeaders(data.leaders || []);
-    } catch {
-      setContestError("دریافت رتبه‌بندی ممکن نشد. دوباره تلاش کن.");
-    } finally {
-      setContestLoading(false);
-    }
-  }
-
   function startGoogleLogin() { window.location.href = `${API_URL}/auth/google/start`; }
   async function logout() {
     try { await fetch(`${API_URL}/auth/logout`, { method: "POST", credentials: "include" }); } finally { setUser(null); setDisplayName("بازیکن WARGO"); setNameDraft("بازیکن WARGO"); }
   }
-
-  useEffect(() => {
-    const handleGameScore = (event: Event) => {
-      const detail = (event as CustomEvent<{ gameId?: string; score?: number }>).detail;
-      if (!user || !detail || typeof detail.gameId !== "string" || !Number.isSafeInteger(detail.score) || (detail.score ?? 0) < 0) return;
-      void fetch(`${API_URL}/api/scores`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ gameId: detail.gameId, score: detail.score, resultId: crypto.randomUUID() }),
-      }).catch(() => { /* Score submission must never interrupt gameplay. */ });
-    };
-    window.addEventListener("wargo:game-score", handleGameScore);
-    return () => window.removeEventListener("wargo:game-score", handleGameScore);
-  }, [user]);
 
   const games = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase("fa");
@@ -161,31 +129,6 @@ export default function App() {
         <div className="hero-art" aria-hidden="true"><div className="orbit orbit-one" /><div className="orbit orbit-two" /><div className="game-tile tile-one">✳</div><div className="game-tile tile-two">◈</div><div className="game-tile tile-three">⌘</div><div className="hero-core">W</div></div>
       </section>
 
-      <section className="contest-section" aria-labelledby="contest-title">
-        <div className="contest-card">
-          <div className="contest-copy">
-            <div className="contest-kicker"><span className="contest-live-dot" /> رقابت ماهانه WARGO</div>
-            <h2 id="contest-title">هر ماه یک رقابت تازه؛<br /><span>امتیاز جمع کن و بالا برو!</span></h2>
-            <p className="contest-lead">امتیاز بازی‌ها پس از پایان هر دور به مجموع ماهانه‌ات اضافه می‌شود. در پایان ماه، سه نفر اول رتبه‌بندی مشخص می‌شوند.</p>
-            <div className="contest-facts">
-              <div><span className="contest-fact-icon">◷</span><span><b>یک ماه</b><small>مدت رقابت</small></span></div>
-              <div><span className="contest-fact-icon">♛</span><span><b>۳ نفر</b><small>رتبه‌های برتر</small></span></div>
-              <div><span className="contest-fact-icon">▤</span><span><b>همه بازی‌ها</b><small>امتیاز مشترک</small></span></div>
-            </div>
-            <button className="contest-cta" type="button" onClick={() => void openMonthlyContest()}>
-              ورود به مسابقه <span aria-hidden="true">←</span>
-            </button>
-            <div className="contest-note">رتبه‌بندی با درخواست مستقیم و فقط هنگام بازکردن این بخش دریافت می‌شود.</div>
-          </div>
-          <div className="contest-visual" aria-hidden="true">
-            <div className="contest-orbit contest-orbit-a" /><div className="contest-orbit contest-orbit-b" />
-            <div className="contest-trophy">♛</div>
-            <div className="contest-target"><small>هدف مسابقه</small><strong>۳ رتبه</strong><span>برتر ماه</span></div>
-            <div className="contest-spark spark-a">✦</div><div className="contest-spark spark-b">✧</div><div className="contest-spark spark-c">✦</div>
-          </div>
-        </div>
-      </section>
-
       <section className="recent-section mobile-section" aria-labelledby="recent-title">
         <div className="mobile-section-heading"><div><h2 id="recent-title">بازی‌های اخیر تو</h2></div></div>
         <RecentGames key={opened?.game.id || "closed"} onOpen={(id) => { const game = gameRegistry.find((item) => item.id === id); if (game) void launchGame(game); }} />
@@ -244,24 +187,6 @@ export default function App() {
             <div><i>★</i><b>وفادار</b><small>بازگشت به بازی</small></div>
           </div>
           <div className="profile-panel-note">{user ? "حساب گوگل به WARGO متصل است." : "برای ساخت حساب و نمایش اطلاعات واقعی، با Google وارد شو."}</div>
-        </section>
-      </div>}
-
-      {contestOpen && <div className="contest-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setContestOpen(false); }}>
-        <section className="contest-modal" role="dialog" aria-modal="true" aria-labelledby="contest-modal-title" dir="rtl">
-          <button className="contest-modal-close" type="button" onClick={() => setContestOpen(false)} aria-label="بستن">×</button>
-          <div className="contest-modal-emblem">♛</div>
-          <span className="contest-modal-kicker">رتبه‌بندی ماهانه {contestPeriod && `· ${contestPeriod}`}</span>
-          <h2 id="contest-modal-title">سه نفر برتر WARGO</h2>
-          {contestLoading ? <p>در حال دریافت رتبه‌بندی...</p> : contestError ? <p role="alert">{contestError}</p> : contestLeaders.length ? <div className="contest-leaderboard">
-            {contestLeaders.map((leader, index) => <div className="contest-leader-row" key={index}>
-              <b>{["🥇", "🥈", "🥉"][index]}</b>
-              <strong>{leader.displayName}</strong>
-              <span>{leader.score.toLocaleString("fa-IR")} امتیاز</span>
-            </div>)}
-          </div> : <p>هنوز امتیازی برای این ماه ثبت نشده است. اولین بازی را انجام بده!</p>}
-          <small className="contest-privacy">برای ثبت امتیاز باید وارد حساب Google شده باشی. نتیجه هر دور پس از پایان بازی ارسال می‌شود.</small>
-          <button className="contest-cta" type="button" onClick={() => setContestOpen(false)}>بستن</button>
         </section>
       </div>}
 
