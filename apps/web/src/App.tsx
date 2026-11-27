@@ -162,7 +162,7 @@ export default function App() {
             <div><strong>—</strong><span>رتبه کلی</span></div>
           </div>
           <div className="profile-section-title"><h3>بازی‌های موردعلاقه</h3><span>نمونه نمایشی</span></div>
-          <div className="profile-favorite-games"><span>♟ شطرنج</span><span>▦ ۲۰۴۸</span><span>✦ مار و سیب</span></div>
+          <div className="profile-favorite-games"><span>شطرنج</span><span>۲۰۴۸</span><span>مار و سیب</span></div>
           <div className="profile-section-title"><h3>دستاوردها</h3><span>۶ نشان</span></div>
           <div className="profile-achievements">
             <div><i>✦</i><b>شروع ماجراجویی</b><small>اولین بازی</small></div>
