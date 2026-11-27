@@ -1,6 +1,7 @@
 import { useState } from "react";
 import GameFrame from "../GameFrame";
 import GameStartOverlay from "../GameStartOverlay";
+import { reportGameScore } from "../reportScore";
 
 type Mark = "X" | "O" | null;
 type Outcome = Mark | "draw";
@@ -90,6 +91,7 @@ export default function TicTacToe({ onExit }: { onExit: () => void }) {
   const [started, setStarted] = useState(false);
 
   const result = getOutcome(board);
+  useEffect(() => { if (started && result !== null) reportGameScore("tic-tac-toe", result === "X" ? 3 : result === "draw" ? 1 : 0); }, [started, result]);
   const winning = winningLine(board);
 
   function record(outcome: Outcome) {
