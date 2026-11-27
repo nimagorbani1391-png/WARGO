@@ -32,7 +32,7 @@ function adjacentBoxes(edge: number): number[] {
   return result;
 }
 
-function scoreMove(edges: readonly Player[], owners: readonly BoxOwner[], edge: number, player: Player) {
+function scoreMove(edges: readonly (Player | undefined)[], owners: readonly BoxOwner[], edge: number, player: Player) {
   const nextEdges = [...edges];
   nextEdges[edge] = player;
   const nextOwners = [...owners];
