@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import GameFrame from "../GameFrame";
 import GameStartOverlay from "../GameStartOverlay";
-import { reportGameScore } from "../reportScore";
 
 const BEST_KEY = "wargo:flappy-best";
 const WIDTH = 360;
@@ -65,7 +64,7 @@ export default function FlappyBird({ onExit }: { onExit: () => void }) {
       const current = world.current;
       if (current.over) return;
       current.over = true;
-      reportGameScore("flappy-bird", current.score);
+
       setRunning(false);
       setOver(true);
       setBest((old) => {
