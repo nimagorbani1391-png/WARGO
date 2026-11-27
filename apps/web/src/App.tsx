@@ -16,7 +16,10 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState<GameCategory | "all">("all");
   const [opened, setOpened] = useState<{ game: GameDefinition; View: ComponentType<{ onExit: () => void }> } | null>(null);
   const [loadingId, setLoadingId] = useState<string | null>(null);
-  const [loadError, setLoadError] = useState<string | null>(null);\n  const [contestOpen, setContestOpen] = useState(false);\n  const [contestEmail, setContestEmail] = useState("");\n  const [contestPreview, setContestPreview] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [contestOpen, setContestOpen] = useState(false);
+  const [contestEmail, setContestEmail] = useState("");
+  const [contestPreview, setContestPreview] = useState(false);
 
   const games = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase("fa");
@@ -151,7 +154,8 @@ export default function App() {
           </>}
         </section>
       </div>}
-\n      {opened && ActiveGame && <div className="game-overlay" role="dialog" aria-modal="true" aria-label={opened.game.title}>
+
+      {opened && ActiveGame && <div className="game-overlay" role="dialog" aria-modal="true" aria-label={opened.game.title}>
         <Suspense fallback={<div className="game-loading">در حال بارگذاری بازی…</div>}>
           <ActiveGame onExit={() => setOpened(null)} />
         </Suspense>
