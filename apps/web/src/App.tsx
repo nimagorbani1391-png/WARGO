@@ -157,7 +157,7 @@ export default function App() {
             <div className="profile-info-row"><span>ایمیل</span><strong>{authLoading ? "در حال بررسی حساب..." : user ? user.email : "وارد حساب نشده‌ای"}</strong></div>
             <div className="profile-info-row"><span>تاریخ عضویت</span><strong>{user?.joinedAt ? new Date(user.joinedAt).toLocaleDateString("fa-IR") : "—"}</strong></div>
           </div>
-          {!authLoading && (user ? <button className="profile-login-button" type="button" onClick={() => void logout()}>خروج از حساب</button> : <button className="profile-login-button" type="button" onClick={startGoogleLogin}>ورود با حساب Google</button>)}
+          {user ? <button className="profile-login-button" type="button" onClick={() => void logout()}>خروج از حساب</button> : <button className="profile-login-button" type="button" onClick={startGoogleLogin}>ورود با حساب Google</button>}
         </section>
       </div>}
 
