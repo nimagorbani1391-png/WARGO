@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import GameFrame from "../GameFrame";
 import GameStartOverlay from "../GameStartOverlay";
-import { reportGameScore } from "../reportScore";
 
 const SYMBOLS = ["🍉","🚀","🎧","🦊","🍩","⚽","🌙","🎲","🧩","🐼","🍓","🎸","🪐","🦋","🍕","🐙","🎯","🌈","🛹","🐸","🍿","🦄","🎈","🍀"];
 const BEST_KEY = "wargo:memory-best";
@@ -111,7 +110,6 @@ export default function MemoryMatch({ onExit }: { onExit: () => void }) {
     }
   }
 
-  useEffect(() => { if (complete) reportGameScore("memory-match", stage * 10 + matches); }, [complete]);
 
   const columns = pairs <= 8 ? 4 : pairs <= 10 ? 5 : 6;
   return <GameFrame title="بازی حافظه" onExit={onExit}>
