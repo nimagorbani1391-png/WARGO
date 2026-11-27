@@ -1,1 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400"><defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#172c3c"/><stop offset="1" stop-color="#101722"/></linearGradient><radialGradient id="glow"><stop stop-color="#55e69a" stop-opacity=".42"/><stop offset="1" stop-color="#55e69a" stop-opacity="0"/></radialGradient></defs><rect width="640" height="400" rx="30" fill="url(#bg)"/><circle cx="320" cy="188" r="180" fill="url(#glow)"/><rect x="208" y="76" width="224" height="224" rx="54" fill="#1e3c36" stroke="#62e8a2" stroke-width="5"/><path d="M320 123v88m0 36v3" stroke="#83ffc0" stroke-width="19" stroke-linecap="round"/><text x="320" y="350" fill="#f3f7f5" font-size="31" font-family="sans-serif" font-weight="700" text-anchor="middle">REACTION TEST</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400">
+<defs>
+ <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#101b3c"/><stop offset=".55" stop-color="#172b55"/><stop offset="1" stop-color="#071426"/></linearGradient>
+ <radialGradient id="halo"><stop stop-color="#36d9ff" stop-opacity=".3"/><stop offset="1" stop-color="#36d9ff" stop-opacity="0"/></radialGradient>
+ <linearGradient id="cyan" x2="0" y2="1"><stop stop-color="#b9f7ff"/><stop offset=".45" stop-color="#35d8ff"/><stop offset="1" stop-color="#1685e8"/></linearGradient>
+ <filter id="glow"><feGaussianBlur stdDeviation="9" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="640" height="400" rx="30" fill="url(#bg)"/>
+<circle cx="320" cy="183" r="190" fill="url(#halo)"/>
+<g fill="none" stroke="#4bdfff" opacity=".22"><circle cx="320" cy="183" r="142" stroke-width="2"/><circle cx="320" cy="183" r="164" stroke-width="1" stroke-dasharray="5 13"/></g>
+<g transform="translate(320 181)">
+ <circle r="105" fill="#0b1c38" stroke="#48dcff" stroke-width="8" filter="url(#glow)"/>
+ <circle r="84" fill="#102c50" stroke="#a2f1ff" stroke-opacity=".65" stroke-width="3"/>
+ <path d="M0-68v17M68 0H51M0 68V51M-68 0h17" stroke="#baf7ff" stroke-width="6" stroke-linecap="round"/>
+ <path d="M17-49L-28 9h31l-18 48 53-68H8z" fill="url(#cyan)" stroke="#e1fcff" stroke-width="3" stroke-linejoin="round"/>
+</g>
+<g fill="#68e8ff"><circle cx="112" cy="105" r="5"/><circle cx="520" cy="91" r="4"/><circle cx="500" cy="285" r="6"/><circle cx="145" cy="295" r="4"/></g>
+<g stroke="#62e7ff" stroke-width="3" stroke-linecap="round" opacity=".8"><path d="M94 180h34m-17-17v34"/><path d="M526 180h25m-12-12v25"/><path d="M180 65l13 13m0-13l-13 13"/></g>
+<text x="320" y="350" fill="#f3fbff" font-size="29" font-family="Arial,sans-serif" font-weight="700" letter-spacing="3" text-anchor="middle">REACTION SPEED</text>
+</svg>
