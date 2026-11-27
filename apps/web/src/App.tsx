@@ -31,16 +31,11 @@ export default function App() {
   const [opened, setOpened] = useState<{ game: GameDefinition; View: ComponentType<{ onExit: () => void }> } | null>(null);
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [contestOpen, setContestOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [selectedAvatar, setSelectedAvatar] = useState(0);
   const [displayName, setDisplayName] = useState("بازیکن WARGO");
   const [nameDraft, setNameDraft] = useState("بازیکن WARGO");
   const [editingName, setEditingName] = useState(false);
-  const [contestLeaders, setContestLeaders] = useState<{ displayName: string; score: number; gamesPlayed: number }[]>([]);
-  const [contestPeriod, setContestPeriod] = useState("");
-  const [contestLoading, setContestLoading] = useState(false);
-  const [contestError, setContestError] = useState("");
   const [user, setUser] = useState<WargoUser | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
 
@@ -171,8 +166,8 @@ export default function App() {
             </div>
           </div>
           <div className="profile-stats">
-            <div><strong>{user ? user.totalScore.toLocaleString("fa-IR") : "—"}</strong><span>مجموع امتیاز</span></div>
-            <div><strong>—</strong><span>رتبه کلی</span></div>
+            <div><strong>محلی</strong><span>امتیازهای بازی در مرورگر</span></div>
+            
             <div><strong>{user?.joinedAt ? new Date(user.joinedAt).toLocaleDateString("fa-IR") : "—"}</strong><span>تاریخ عضویت</span></div>
           </div>
           <div className="profile-section-title"><h3>بازی‌های موردعلاقه</h3><span>نمونه نمایشی</span></div>
@@ -180,7 +175,7 @@ export default function App() {
           <div className="profile-section-title"><h3>دستاوردها</h3><span>۶ نشان</span></div>
           <div className="profile-achievements">
             <div><i>✦</i><b>شروع ماجراجویی</b><small>اولین بازی</small></div>
-            <div><i>♛</i><b>قهرمان</b><small>رتبه برتر</small></div>
+            
             <div><i>◈</i><b>رکوردشکن</b><small>ثبت رکورد</small></div>
             <div><i>⚡</i><b>سریع‌دست</b><small>واکنش سریع</small></div>
             <div><i>♜</i><b>استراتژیست</b><small>بازی فکری</small></div>
