@@ -40,7 +40,8 @@ type State = {
 
 function readBest() {
   try {
-    return Math.max(0, Number(localStorage.getItem(BEST_KEY)) || 0);
+    const value = Number(localStorage.getItem(BEST_KEY));
+    return Number.isSafeInteger(value) && value >= 0 ? value : 0;
   } catch {
     return 0;
   }
@@ -163,15 +164,16 @@ export default function KnifeHit({ onExit }: { onExit: () => void }) {
       // Two knives in the same lane collide when the faster trailing one catches up.
       const ordered = [...state.flying].sort((a, b) => b.distance - a.distance);
       for (let i = 0; i < ordered.length - 1; i += 1) {
-        const front = ordered[i];
-        const behind = ordered[i + 1];
-        if (behind.speed > front.speed && front.distance - behind.distance <= FLYING_COLLISION_DISTANCE) {
+        const gap = ordered[i].distance - ordered[i + 1].distance;
+        if (gap <= FLYING_COLLISION_DISTANCE) {
           finishRound(state, false);
           return;
         }
       }
 
-      const arrived = state.flying.filter((knife) => knife.distance >= travelDistance);
+      const arrived = state.flying
+        .filter((knife) => knife.distance >= travelDistance)
+        .sort((a, b) => b.distance - a.distance);
       state.flying = state.flying.filter((knife) => knife.distance < travelDistance);
       for (let i = 0; i < arrived.length; i += 1) {
         const impactAngle = getImpactAngle(state.angle);
@@ -254,7 +256,9 @@ export default function KnifeHit({ onExit }: { onExit: () => void }) {
       state.knives.forEach((knife) => {
         ctx.save();
         ctx.rotate(knife.angle);
-        drawKnife(ctx, 0, -R - 5);
+        ctx.translate(0, -R - 5);
+        ctx.rotate(Math.PI);
+        drawKnife(ctx, 0, 0);
         ctx.restore();
       });
       ctx.restore();
@@ -316,14 +320,19 @@ export default function KnifeHit({ onExit }: { onExit: () => void }) {
       <button
         type="button"
         className="knife-stage"
+        disabled={!running || over || remaining <= 0}
         onPointerDown={(event) => {
           event.preventDefault();
           throwKnife();
         }}
-        aria-label="برای پرتاب چاقو لمس کن"
+        onClick={(event) => {
+          if (event.detail === 0) throwKnife();
+        }}
+        aria-label="برای پرتاب چاقو ضربه بزن یا کلید فاصله را فشار بده"
+        aria-describedby="knife-game-help"
       >
-        <canvas ref={canvas} />
-        <span className="sr-only">برای پرتاب چاقو روی صفحه ضربه بزن</span>
+        <canvas ref={canvas} aria-hidden="true" />
+        <span className="sr-only">برای پرتاب چاقو روی صفحه ضربه بزن یا کلید فاصله را فشار بده</span>
       </button>
       <GameStartOverlay
         visible={!running}
@@ -336,7 +345,7 @@ export default function KnifeHit({ onExit }: { onExit: () => void }) {
         buttonLabel={over ? "مرحله بعد" : "شروع بازی"}
         onStart={start}
       />
-      <p className="game-help">برای پرتاب هر چاقو یک‌بار روی میدان بازی ضربه بزن. به چاقوهای قبلی برخورد نکن.</p>
+      <p className="game-help" id="knife-game-help">برای پرتاب هر چاقو یک‌بار روی میدان بازی ضربه بزن یا کلید فاصله را فشار بده. چاقوها نباید به یکدیگر یا چاقوهای قبلی برخورد کنند.</p>
     </GameFrame>
   );
 }
