@@ -160,6 +160,7 @@ export default function App() {
           <div className="profile-stats">
             <div><strong>—</strong><span>مجموع امتیاز</span></div>
             <div><strong>—</strong><span>رتبه کلی</span></div>
+            <div><strong>—</strong><span>تاریخ عضویت</span></div>
           </div>
           <div className="profile-section-title"><h3>بازی‌های موردعلاقه</h3><span>نمونه نمایشی</span></div>
           <div className="profile-favorite-games"><span>شطرنج</span><span>۲۰۴۸</span><span>مار و سیب</span></div>
