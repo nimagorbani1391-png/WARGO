@@ -1,4 +1,4 @@
-import { Suspense, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import type { ComponentType } from "react";
 import { gameRegistry } from "./games/registry";
 import type { GameCategory, GameDefinition } from "./types/game";
@@ -13,6 +13,9 @@ const profileAvatars = [
   { id: "octopus", emoji: "🐙", name: "اختاپوس", className: "avatar-octopus" },
   { id: "penguin", emoji: "🐧", name: "پنگوئن", className: "avatar-penguin" },
 ] as const;
+
+const API_URL = "https://wargo-api.nimagorbani1391.workers.dev";
+type WargoUser = { id: string; email: string; displayName: string; avatarUrl: string | null; joinedAt: string; totalScore: number; gamesPlayed: number };
 
 const categories: { id: GameCategory | "all"; label: string; icon: string }[] = [
   { id: "all", label: "همه", icon: "✦" },
@@ -36,6 +39,23 @@ export default function App() {
   const [editingName, setEditingName] = useState(false);
   const [contestEmail, setContestEmail] = useState("");
   const [contestPreview, setContestPreview] = useState(false);
+  const [user, setUser] = useState<WargoUser | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    fetch(`${API_URL}/api/me`, { credentials: "include", cache: "no-store" })
+      .then((response) => response.ok ? response.json() : Promise.reject(new Error("auth")))
+      .then((data: { user: WargoUser | null }) => { if (active) { setUser(data.user); if (data.user?.displayName) { setDisplayName(data.user.displayName); setNameDraft(data.user.displayName); } } })
+      .catch(() => { if (active) setUser(null); })
+      .finally(() => { if (active) setAuthLoading(false); });
+    return () => { active = false; };
+  }, []);
+
+  function startGoogleLogin() { window.location.href = `${API_URL}/auth/google/start`; }
+  async function logout() {
+    try { await fetch(`${API_URL}/auth/logout`, { method: "POST", credentials: "include" }); } finally { setUser(null); setDisplayName("بازیکن WARGO"); setNameDraft("بازیکن WARGO"); }
+  }
 
   const games = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase("fa");
@@ -159,7 +179,7 @@ export default function App() {
               <button type="submit" aria-label="ذخیره نام">✓</button>
               <button type="button" aria-label="لغو تغییر نام" onClick={() => { setNameDraft(displayName); setEditingName(false); }}>×</button>
             </form> : <><h2 id="profile-title">{displayName}</h2><button className="profile-name-edit" type="button" aria-label="تغییر نام کاربر" title="تغییر نام" onClick={() => { setNameDraft(displayName); setEditingName(true); }}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25Zm17.71-10.04a1 1 0 0 0 0-1.42l-2.5-2.5a1 1 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 2-1.66Z"/></svg></button></>}
-          </div><p>عضو مهمان · حساب کاربری هنوز فعال نشده</p></div>
+          </div><p>{authLoading ? "در حال بررسی حساب..." : user ? user.email : "عضو مهمان · حساب کاربری هنوز فعال نشده"}</p>{!authLoading && (user ? <button className="profile-login-button" type="button" onClick={() => void logout()}>خروج از حساب</button> : <button className="profile-login-button" type="button" onClick={startGoogleLogin}>ورود با حساب Google</button>)}</div>
           <div className="profile-avatar-picker">
             <div className="profile-section-title"><h3>انتخاب تصویر پروفایل</h3><span>یکی را انتخاب کن</span></div>
             <div className="profile-avatar-options" role="group" aria-label="تصاویر آماده پروفایل">
@@ -167,9 +187,9 @@ export default function App() {
             </div>
           </div>
           <div className="profile-stats">
-            <div><strong>—</strong><span>مجموع امتیاز</span></div>
+            <div><strong>{user ? user.totalScore.toLocaleString("fa-IR") : "—"}</strong><span>مجموع امتیاز</span></div>
             <div><strong>—</strong><span>رتبه کلی</span></div>
-            <div><strong>—</strong><span>تاریخ عضویت</span></div>
+            <div><strong>{user?.joinedAt ? new Date(user.joinedAt).toLocaleDateString("fa-IR") : "—"}</strong><span>تاریخ عضویت</span></div>
           </div>
           <div className="profile-section-title"><h3>بازی‌های موردعلاقه</h3><span>نمونه نمایشی</span></div>
           <div className="profile-favorite-games"><span>شطرنج</span><span>۲۰۴۸</span><span>مار و سیب</span></div>
@@ -182,7 +202,7 @@ export default function App() {
             <div><i>♜</i><b>استراتژیست</b><small>بازی فکری</small></div>
             <div><i>★</i><b>وفادار</b><small>بازگشت به بازی</small></div>
           </div>
-          <div className="profile-panel-note">این صفحه فعلاً نمایشی است؛ اطلاعاتی دریافت یا ذخیره نمی‌شود.</div>
+          <div className="profile-panel-note">{user ? "حساب گوگل به WARGO متصل است." : "برای ساخت حساب و نمایش اطلاعات واقعی، با Google وارد شو."}</div>
         </section>
       </div>}
 
