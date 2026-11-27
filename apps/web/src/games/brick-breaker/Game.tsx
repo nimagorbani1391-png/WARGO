@@ -202,7 +202,6 @@ export default function BrickBreaker({ onExit }: { onExit: () => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<Engine | null>(null);
   const [score, setScore] = useState(0);
-  const resultReported = useRef(false);
   const [best, setBest] = useState(bestScore);
   const [ballsLeft, setBallsLeft] = useState(BALLS_PER_VOLLEY);
   const [round, setRound] = useState(1);
