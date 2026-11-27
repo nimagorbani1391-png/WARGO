@@ -488,3 +488,154 @@ h2 { margin: 5px 0 0; font-size: 25px; }
   margin-top: 12px;
   touch-action: manipulation;
 }
+
+
+/* Unified premium scoreboards and personal records across WARGO games. */
+.game-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  gap: 9px;
+  margin: 0 0 16px;
+  color: #d7d1e8;
+}
+.game-stats > span {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 66px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 10px 8px;
+  overflow: hidden;
+  border: 1px solid rgba(196,181,253,.16);
+  border-radius: 14px;
+  background: linear-gradient(145deg, rgba(42,39,62,.96), rgba(24,29,44,.98));
+  box-shadow: inset 0 1px rgba(255,255,255,.045), 0 7px 18px rgba(0,0,0,.13);
+  text-align: center;
+  font-size: 10px;
+  line-height: 1.4;
+}
+.game-stats > span::before {
+  position: absolute;
+  top: 0;
+  right: 18%;
+  left: 18%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(196,181,253,.55), transparent);
+  content: "";
+}
+.game-stats > span > b {
+  margin: 0;
+  color: #f5efff;
+  font-size: clamp(17px, 4.8vw, 23px);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .2px;
+  line-height: 1.2;
+  text-shadow: 0 0 18px rgba(196,181,253,.16);
+}
+.game-stats > span > small {
+  color: #a9a4bb;
+  font-size: 10px;
+  font-weight: 600;
+}
+.game-stats > span:nth-child(2) > b { color: #d8c6ff; }
+.game-stats > span:nth-child(3) > b { color: #a9e7d0; }
+
+.rps-score {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid rgba(196,181,253,.17);
+  border-radius: 17px;
+  background: linear-gradient(145deg, #24243a, #171d2c);
+  box-shadow: inset 0 1px rgba(255,255,255,.04), 0 10px 26px rgba(0,0,0,.14);
+}
+.rps-score div:not(.rps-round) {
+  min-width: 0;
+  min-height: 76px;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 4px;
+  border: 1px solid rgba(196,181,253,.12);
+  border-radius: 12px;
+  background: rgba(255,255,255,.025);
+}
+.rps-score b {
+  color: #e4d7ff;
+  font-size: clamp(25px, 7vw, 32px);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  text-shadow: 0 0 20px rgba(167,139,250,.22);
+}
+.rps-score span,.rps-round { color: #aaa5bd; font-size: 10px; }
+.rps-round {
+  padding: 7px 10px;
+  border: 1px solid rgba(196,181,253,.16);
+  border-radius: 999px;
+  background: rgba(167,139,250,.09);
+  color: #d6c6ff;
+  white-space: nowrap;
+  font-weight: 700;
+}
+.rps-footer {
+  gap: 10px;
+  padding: 11px 12px;
+  border: 1px solid rgba(196,181,253,.12);
+  border-radius: 12px;
+  background: rgba(255,255,255,.025);
+}
+.rps-footer > span { color: #d8c6ff; font-weight: 700; }
+.rps-history {
+  padding: 12px;
+  border: 1px solid rgba(196,181,253,.12);
+  border-radius: 13px;
+  background: rgba(255,255,255,.025);
+}
+.rps-history::before {
+  content: "نتیجه دورهای اخیر";
+  flex: 0 0 100%;
+  color: #aaa5bd;
+  font-size: 10px;
+  font-weight: 700;
+}
+.rps-history span {
+  min-width: 48px;
+  padding: 6px 9px;
+  border: 1px solid rgba(255,255,255,.055);
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 700;
+}
+.chess-bottom {
+  justify-content: center;
+  min-height: 42px;
+  padding: 8px 12px;
+  border: 1px solid rgba(196,181,253,.15);
+  border-radius: 11px;
+  background: linear-gradient(110deg, rgba(167,139,250,.1), rgba(255,255,255,.025));
+  color: #d8c6ff;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.chess-history {
+  padding: 12px 14px;
+  border-color: rgba(196,181,253,.14);
+  border-radius: 12px;
+  background: rgba(255,255,255,.025);
+  color: #d8d1e8;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 380px) {
+  .game-stats { gap: 6px; }
+  .game-stats > span { min-height: 60px; padding: 8px 5px; border-radius: 11px; }
+  .game-stats > span > b { font-size: 17px; }
+  .rps-score { gap: 6px; padding: 8px; }
+  .rps-score div:not(.rps-round) { min-height: 68px; }
+}
