@@ -83,7 +83,6 @@ export default function ColorMemory({ onExit }: { onExit: () => void }) {
     }
   }
 
-  const started = phase !== "idle";
   return <GameFrame title="حافظه رنگی" onExit={onExit}>
     <div className="game-stats">
       <span>مرحله <b>{round}</b></span>
