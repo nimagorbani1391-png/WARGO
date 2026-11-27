@@ -1,7 +1,6 @@
 import { useEffect, useReducer, useRef } from "react";
 import GameFrame from "../GameFrame";
 import GameStartOverlay from "../GameStartOverlay";
-import { reportGameScore } from "../reportScore";
 
 type Board = number[][];
 type Direction = "left" | "right" | "up" | "down";
@@ -224,7 +223,6 @@ export default function Game2048({ onExit }: { onExit: () => void }) {
       ? `امتیاز نهایی: ${state.score.toLocaleString("fa-IR")}`
       : "می‌توانی بازی را ادامه بدهی یا یک صفحه‌ی تازه بسازی.";
 
-  useEffect(() => { if (!state.over && state.score === 0) resultReported.current = false; if (state.over && !resultReported.current) { resultReported.current = true; reportGameScore("game-2048", state.score); } }, [state.over, state.score]);
 
   // Keep the best score synchronized with every committed game state.
   useEffect(() => setBest(state.score), [state.score]);
