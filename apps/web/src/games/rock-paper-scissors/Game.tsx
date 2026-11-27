@@ -1,6 +1,7 @@
 import { useState } from "react";
 import GameFrame from "../GameFrame";
 import GameStartOverlay from "../GameStartOverlay";
+import { reportGameScore } from "../reportScore";
 
 const choices = [{ id: "rock", label: "سنگ", icon: "✊" }, { id: "paper", label: "کاغذ", icon: "✋" }, { id: "scissors", label: "قیچی", icon: "✌️" }];
 const beats: Record<string, string> = { rock: "scissors", paper: "rock", scissors: "paper" };
@@ -16,6 +17,7 @@ export default function RockPaperScissors({ onExit }: { onExit: () => void }) {
     const cpu = choices[Math.floor(Math.random() * choices.length)].id;
     const result = id === cpu ? "draw" : beats[id] === cpu ? "win" : "lose";
     const next = { player: id, cpu, result } as Round;
+    reportGameScore("rock-paper-scissors", result === "win" ? 3 : result === "draw" ? 1 : 0);
     setRound(next); setStarted(false); setRounds((n) => n + 1); setHistory((h) => [next, ...h].slice(0, 5));
     setScore((s) => ({ player: s.player + (result === "win" ? 1 : 0), cpu: s.cpu + (result === "lose" ? 1 : 0), draw: s.draw + (result === "draw" ? 1 : 0) }));
   }
