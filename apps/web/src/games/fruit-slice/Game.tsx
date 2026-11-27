@@ -15,7 +15,7 @@ export default function FruitSlice({onExit}:{onExit:()=>void}){
  const point=(event:PointerEvent<HTMLDivElement>)=>{const rect=event.currentTarget.getBoundingClientRect();return{x:(event.clientX-rect.left)*W/rect.width,y:(event.clientY-rect.top)*H/rect.height}};
  const sliceAt=useCallback((x:number,y:number)=>{
   const g=world.current;g.trail.push({x,y,life:.22});
-  for(const item of g.items){if(item.hit)continue;const dx=item.x-x,dy=item.y-y;if(dx*dx+dy*dy<(item.r+16)*(item.r+16)){item.hit=true;if(item.kind==="bomb"){g.over=truesetRunning(false);setOver(true)}else{g.score+=1;setScore(g.score);if(g.score>readBest()){try{localStorage.setItem(BEST_KEY,String(g.score))}catch{/* Optional storage. */}setBest(g.score)}}}}
+  for(const item of g.items){if(item.hit)continue;const dx=item.x-x,dy=item.y-y;if(dx*dx+dy*dy<(item.r+16)*(item.r+16)){item.hit=true;if(item.kind==="bomb"){g.over=true;setRunning(false);setOver(true)}else{g.score+=1;setScore(g.score);if(g.score>readBest()){try{localStorage.setItem(BEST_KEY,String(g.score))}catch{/* Optional storage. */}setBest(g.score)}}}}
  },[]);
  useEffect(()=>{
   const el=canvas.current,ctx=el?.getContext("2d");if(!el||!ctx)return;
