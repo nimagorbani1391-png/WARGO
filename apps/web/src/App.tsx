@@ -183,7 +183,6 @@ export default function App() {
             <div><i>★</i><b>وفادار</b><small>بازگشت به بازی</small></div>
           </div>
           <div className="profile-panel-note">این صفحه فعلاً نمایشی است؛ اطلاعاتی دریافت یا ذخیره نمی‌شود.</div>
-          <button className="profile-edit-button" type="button" disabled>ویرایش پروفایل · به‌زودی</button>
         </section>
       </div>}
 
