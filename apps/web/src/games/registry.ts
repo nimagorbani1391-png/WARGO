@@ -9,6 +9,7 @@ export const gameRegistry: readonly GameDefinition[] = [
   { id: "dots-and-boxes", title: "نقطه‌بازی", description: "با کامل‌کردن مربع‌ها امتیاز بگیر؛ مقابل ربات یا دونفره بازی کن.", category: "logic", cover: "/WARGO/games/dots-and-boxes.svg", load: () => import("./dots-and-boxes/Game") },
   { id: "brick-breaker", title: "شکستن آجرها", description: "۱۰ توپ را مثل تیرکمان پرتاب کن و آجرها را بشکن.", category: "arcade", cover: "/WARGO/games/1000025228.webp", load: () => import("./brick-breaker/Game") },
   { id: "chess", title: "شطرنج", description: "با ربات بازی کن و سطح سختی را انتخاب کن.", category: "logic", cover: "/WARGO/games/chess-cover.svg", load: () => import("./chess/Game") },
+  { id: "coin-toss", title: "شیر یا خط", description: "حدست را انتخاب کن و سکه را بینداز؛ ببین شانست چقدر است.", category: "casual", cover: "/WARGO/games/coin-toss.svg", load: () => import("./coin-toss/Game") },
   { id: "rock-paper-scissors", title: "سنگ، کاغذ، قیچی", description: "یک رقابت سریع و سه‌مرحله‌ای با ربات.", category: "casual", cover: "/WARGO/games/1000025222.webp", load: () => import("./rock-paper-scissors/Game") },
   { id: "snake-apple", title: "مار و سیب", description: "مار را هدایت کن، سیب بخور و رکوردت را ثبت کن.", category: "arcade", cover: "/WARGO/games/snake-apple.svg", load: () => import("./snake-apple/Game") },
   { id: "reaction-test", title: "تست سرعت واکنش", description: "سرعت واکنشت را بسنج و رکورد میلی‌ثانیه‌ای ثبت کن.", category: "casual", cover: "/WARGO/games/reaction-test.svg", load: () => import("./reaction-test/Game") },
