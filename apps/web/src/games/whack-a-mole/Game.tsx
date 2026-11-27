@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import GameFrame from "../GameFrame";
 import GameStartOverlay from "../GameStartOverlay";
+import { reportGameScore } from "../reportScore";
 
 const BEST_KEY = "wargo:whack-best";
 const ROUND_SECONDS = 30;
@@ -32,6 +33,7 @@ export default function WhackAMole({ onExit }: { onExit: () => void }) {
     setActive(-1);
   };
   const ended=!running&&time===0;
+  useEffect(()=>{if(ended)reportGameScore("whack-a-mole",score)},[ended]);
   return <GameFrame title="موش‌گیر" onExit={onExit}>
     <div className="game-stats"><span>امتیاز <b>{score}</b></span><span>رکورد <b>{best}</b></span><span>زمان <b>{time} ثانیه</b></span></div>
     <section className="mole-arena" aria-label="زمین بازی موش‌گیر">
