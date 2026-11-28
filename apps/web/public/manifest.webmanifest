@@ -1,0 +1,21 @@
+{
+  "id": "./",
+  "name": "WARGO — دنیای بازی",
+  "short_name": "WARGO",
+  "description": "بازی‌های سبک و سرگرم‌کننده؛ حتی وقتی اینترنت قطع است.",
+  "lang": "fa",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#10131d",
+  "theme_color": "#10131d",
+  "icons": [
+    {
+      "src": "./wargo-offline.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
