@@ -14,25 +14,13 @@ type BirdId = "classic" | "flame" | "mint" | "cosmic";
 type BirdSkin = { id: BirdId; name: string; emoji: string; body: string; wing: string; beak: string; unlockAt: number };
 type Pipe = { x: number; gapY: number; scored: boolean };
 type World = { birdY: number; velocity: number; pipes: Pipe[]; score: number; last: number; raf: number; over: boolean; elapsed: number };
-type SaveData = { best: number; selectedBird: BirdId; achievements: string[] };
+type SaveData = { best: number; selectedBird: BirdId };
 
 const BIRDS: BirdSkin[] = [
   { id: "classic", name: "طلایی", emoji: "🐤", body: "#ffd166", wing: "#e7a93e", beak: "#f08c46", unlockAt: 0 },
   { id: "flame", name: "آتشین", emoji: "🔥", body: "#ff765e", wing: "#d94c3d", beak: "#ffd166", unlockAt: 5 },
   { id: "mint", name: "زمردی", emoji: "🪽", body: "#65dfbd", wing: "#27a98c", beak: "#f5b84b", unlockAt: 12 },
   { id: "cosmic", name: "کیهانی", emoji: "🌌", body: "#b69aff", wing: "#7957d5", beak: "#72d8ff", unlockAt: 20 },
-];
-
-const MISSIONS = [
-  { id: "m5", title: "پرواز اول", detail: "از ۵ مانع عبور کن", target: 5, reward: "نشان تازه‌کار" },
-  { id: "m12", title: "پرواز بلند", detail: "به امتیاز ۱۲ برس", target: 12, reward: "نشان خلبان" },
-  { id: "m20", title: "فرمانروای آسمان", detail: "به امتیاز ۲۰ برس", target: 20, reward: "نشان افسانه‌ای" },
-];
-
-const ACHIEVEMENTS = [
-  { id: "m5", title: "تازه‌کار", icon: "🌱", description: "۵ مانع را پشت سر گذاشتی" },
-  { id: "m12", title: "خلبان", icon: "🛩️", description: "به امتیاز ۱۲ رسیدی" },
-  { id: "m20", title: "افسانه‌ای", icon: "🏆", description: "به امتیاز ۲۰ رسیدی" },
 ];
 
 function readSave(): SaveData {
@@ -45,13 +33,12 @@ function readSave(): SaveData {
       return {
         best: Number.isSafeInteger(best) && best > 0 ? best : 0,
         selectedBird,
-        achievements: Array.isArray(parsed.achievements) ? parsed.achievements.filter((id): id is string => typeof id === "string") : [],
       };
     }
     const legacy = Number(localStorage.getItem(LEGACY_BEST_KEY) || 0);
-    return { best: Number.isSafeInteger(legacy) && legacy > 0 ? legacy : 0, selectedBird: "classic", achievements: [] };
+    return { best: Number.isSafeInteger(legacy) && legacy > 0 ? legacy : 0, selectedBird: "classic" };
   } catch {
-    return { best: 0, selectedBird: "classic", achievements: [] };
+    return { best: 0, selectedBird: "classic" };
   }
 }
 
@@ -88,13 +75,8 @@ export default function FlappyBird({ onExit }: { onExit: () => void }) {
   const [score, setScore] = useState(0);
   const [best, setBest] = useState(saveRef.current.best);
   const [selectedBird, setSelectedBird] = useState<BirdId>(saveRef.current.selectedBird);
-  const [achievements, setAchievements] = useState<string[]>(saveRef.current.achievements);
-  const [showAchievements, setShowAchievements] = useState(false);
-
   const activeBird = useMemo(() => BIRDS.find((bird) => bird.id === selectedBird) ?? BIRDS[0], [selectedBird]);
   const environment = environmentFor(score);
-  const completedMissions = MISSIONS.filter((mission) => achievements.includes(mission.id)).length;
-
   const persist = useCallback((next: SaveData) => {
     saveRef.current = next;
     try { localStorage.setItem(SAVE_KEY, JSON.stringify(next)); } catch { /* Local progress is optional when storage is unavailable. */ }
@@ -149,13 +131,8 @@ export default function FlappyBird({ onExit }: { onExit: () => void }) {
       const isNewRecord = current.score > saveRef.current.best;
       setNewRecord(isNewRecord);
       const nextBest = Math.max(saveRef.current.best, current.score);
-      const nextAchievements = [...new Set([
-        ...saveRef.current.achievements,
-        ...MISSIONS.filter((mission) => current.score >= mission.target).map((mission) => mission.id),
-      ])];
       setBest(nextBest);
-      setAchievements(nextAchievements);
-      persist({ ...saveRef.current, best: nextBest, achievements: nextAchievements });
+      persist({ ...saveRef.current, best: nextBest });
     };
 
     const draw = (time: number) => {
@@ -297,10 +274,10 @@ export default function FlappyBird({ onExit }: { onExit: () => void }) {
   }, [running, activeBird, persist]);
 
   return <GameFrame title="پرنده پرشی" onExit={onExit}>
+    {!running && !over && <button type="button" className="flappy-top-start" onClick={start}>شروع پرواز</button>}
     <div className="game-stats flappy-stats">
       <span>امتیاز <b>{score}</b></span>
       <span>رکورد <b>{best}</b></span>
-      <span>نشان‌ها <b>{completedMissions}/3</b></span>
     </div>
 
     <section className="flappy-bird-picker" aria-label="انتخاب پرنده">
@@ -322,34 +299,13 @@ export default function FlappyBird({ onExit }: { onExit: () => void }) {
       <canvas ref={canvas} />
     </button>
 
-    <section className="flappy-missions">
-      <div className="flappy-section-heading"><strong>مأموریت‌های پرواز</strong><span>{completedMissions} از ۳ تکمیل‌شده</span></div>
-      <div className="flappy-mission-list">
-        {MISSIONS.map((mission) => {
-          const done = achievements.includes(mission.id);
-          return <div key={mission.id} className={`flappy-mission ${done ? "is-done" : ""}`}>
-            <span className="flappy-mission-icon">{done ? "✓" : "✦"}</span>
-            <div className="flappy-mission-copy"><b>{mission.title}</b><small>{done ? mission.reward : mission.detail}</small></div>
-            <strong className="flappy-mission-count">{done ? "کامل" : `هدف ${mission.target}`}</strong>
-          </div>;
-        })}
-      </div>
-      <button type="button" className="flappy-achievement-toggle" onClick={() => setShowAchievements((value) => !value)} aria-expanded={showAchievements}>
-        {showAchievements ? "بستن دستاوردها" : "مشاهده دستاوردها"} <span>{achievements.length}/3</span>
-      </button>
-      {showAchievements && <div className="flappy-achievements">
-        {ACHIEVEMENTS.map((item) => <div key={item.id} className={`flappy-achievement ${achievements.includes(item.id) ? "is-earned" : ""}`}><span>{achievements.includes(item.id) ? item.icon : "🔒"}</span><div><b>{item.title}</b><small>{item.description}</small></div></div>)}
-      </div>}
-    </section>
-
-    <GameStartOverlay visible={!running} className="flappy-game-overlay" title={over ? (newRecord ? "رکورد تازه ثبت شد!" : "پرواز به پایان رسید") : "آماده پرواز؟"} description={over ? "این نتیجه فقط روی همین دستگاه ذخیره می‌شود." : "با هر لمس بال بزن، از موانع عبور کن و پرنده‌های تازه را آزاد کن."} buttonLabel={over ? "پرواز دوباره" : "شروع پرواز"} onStart={start}>
+    <GameStartOverlay visible={over} className="flappy-game-overlay" title={over ? (newRecord ? "رکورد تازه ثبت شد!" : "پرواز به پایان رسید") : "آماده پرواز؟"} description={over ? "این نتیجه فقط روی همین دستگاه ذخیره می‌شود." : "با هر لمس بال بزن، از موانع عبور کن و پرنده‌های تازه را آزاد کن."} buttonLabel={over ? "پرواز دوباره" : "شروع پرواز"} onStart={start}>
       {over && <div className="flappy-result-grid" aria-label="نتیجه بازی">
         <div className="flappy-result-main"><span>امتیاز این دور</span><strong>{score}</strong></div>
         <div><span>بهترین رکورد</span><strong>{best}</strong></div>
-        <div><span>دستاوردها</span><strong>{achievements.length}<small>/۳</small></strong></div>
       </div>}
     </GameStartOverlay>
     <p className="game-help">برای بال زدن صفحه را لمس کن یا Space را بزن. هر مانع یک امتیاز دارد؛ با پیشرفت، آسمان و چالش‌ها تغییر می‌کنند.</p>
-    <p className="flappy-local-note">پیشرفت و دستاوردها فقط روی همین دستگاه ذخیره می‌شوند.</p>
+    <p className="flappy-local-note">رکورد فقط روی همین دستگاه ذخیره می‌شود.</p>
   </GameFrame>;
 }
