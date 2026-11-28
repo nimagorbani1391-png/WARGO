@@ -1180,3 +1180,29 @@ h2 { margin: 5px 0 0; font-size: 25px; }
   .profile-panel { padding: 23px 16px 18px; }
   .profile-info-row { min-height: 55px; padding: 11px 12px; }
 }
+
+
+/* WARGO Neon Run — embedded arcade game */
+.neon-run{width:100%;max-width:520px;margin:0 auto;padding:5px 0 18px;color:#f5f4ff;text-align:center}
+.neon-run-heading{margin:2px 0 15px}
+.neon-run-tag{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border:1px solid #45e6d044;border-radius:30px;background:#45e6d010;color:#76f6df;font-size:10px}
+.neon-run-tag i{width:7px;height:7px;border-radius:50%;background:#48f2ce;box-shadow:0 0 12px #48f2ce}
+.neon-run-heading h2{margin:9px 0 4px;font-size:clamp(22px,6vw,30px);font-weight:1000}
+.neon-run-heading p{margin:0;color:#999bb8;font-size:11px;line-height:1.9}
+.neon-run-panel{padding:12px;border:1px solid #a68aff2b;border-radius:21px;background:linear-gradient(145deg,#191a30ed,#101426f2);box-shadow:0 20px 60px #0007,inset 0 1px #ffffff12}
+.neon-run-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-bottom:10px}
+.neon-run-stats>div{min-width:0;padding:9px 3px;border:1px solid #ffffff12;border-radius:12px;background:#ffffff07}
+.neon-run-stats span{display:block;margin-bottom:5px;color:#9da1bf;font-size:9px}
+.neon-run-stats strong{display:block;color:#e5ddff;font-size:17px;font-variant-numeric:tabular-nums}
+.neon-run-canvas{display:block;width:100%;height:auto;aspect-ratio:1;border:1px solid #9a7aff40;border-radius:15px;background:#080e1d;touch-action:none;box-shadow:0 0 30px #6d4aff12}
+.neon-run-meta{display:flex;justify-content:space-between;gap:8px;margin:10px 3px 0;color:#a6a4c1;font-size:10px;text-align:right}
+.neon-run-meta b{color:#d8cbff}
+.neon-run-actions{display:flex;gap:8px;margin-top:12px}
+.neon-run-actions button{min-height:45px;border-radius:12px;font:inherit;font-size:12px;font-weight:900;cursor:pointer}
+.neon-run-start{flex:1;border:0;background:linear-gradient(110deg,#c7b7ff,#8b5cf6 55%,#58e7dc);color:#130f24;box-shadow:0 6px 22px #8b5cf633}
+.neon-run-sound{width:48px;border:1px solid #ffffff20;background:#ffffff09;color:#e6dcff;font-size:17px!important}
+.neon-run-status{min-height:23px;margin:10px 0 0;color:#c5b9ef;font-size:10px;line-height:1.8}
+.neon-run-tip,.neon-run-local-note{margin:12px 5px 0;color:#8588a5;font-size:9px;line-height:1.9}
+.neon-run-local-note{color:#69d9c6}
+@media(max-width:370px){.neon-run-stats{gap:4px}.neon-run-stats strong{font-size:15px}.neon-run-panel{padding:8px}}
+@media(prefers-reduced-motion:reduce){.neon-run *{scroll-behavior:auto!important}}
