@@ -327,7 +327,6 @@ export default function FlappyBird({ onExit }: { onExit: () => void }) {
       <div className="flappy-mission-list">
         {MISSIONS.map((mission) => {
           const done = achievements.includes(mission.id);
-          const progress = Math.min(score, mission.target);
           return <div key={mission.id} className={`flappy-mission ${done ? "is-done" : ""}`}>
             <span className="flappy-mission-icon">{done ? "✓" : "✦"}</span>
             <div className="flappy-mission-copy"><b>{mission.title}</b><small>{done ? mission.reward : mission.detail}</small></div>
