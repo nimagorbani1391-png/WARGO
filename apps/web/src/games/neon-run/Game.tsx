@@ -218,7 +218,6 @@ export default function NeonRun({ onExit }: { onExit: () => void }) {
   }, [redraw]);
   useEffect(() => {
     if (!running) return;
-    const delay = Math.max(72, 145 - worldRef.current.level * 5);
     let frame = 0, lastTime = 0, accumulator = 0;
     const animate = (time: number) => {
       if (!lastTime) lastTime = time;
