@@ -1206,3 +1206,43 @@ h2 { margin: 5px 0 0; font-size: 25px; }
 .neon-run-local-note{color:#69d9c6}
 @media(max-width:370px){.neon-run-stats{gap:4px}.neon-run-stats strong{font-size:15px}.neon-run-panel{padding:8px}}
 @media(prefers-reduced-motion:reduce){.neon-run *{scroll-behavior:auto!important}}
+
+
+/* WARGO appearance preferences and refined category controls. */
+.theme-toggle{position:absolute;left:0;top:50%;transform:translateY(-50%);display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:39px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--text);font:inherit;font-size:11px;font-weight:800;cursor:pointer;transition:background .18s,border-color .18s}
+.theme-toggle:hover{border-color:rgba(167,139,250,.55);background:rgba(167,139,250,.12)}
+.theme-toggle span:first-child{font-size:15px;line-height:1}
+.category-chip small{display:grid;place-items:center;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:rgba(255,255,255,.08);color:inherit;font-size:9px;font-weight:800;font-variant-numeric:tabular-nums}
+.category-chip.is-active small{background:rgba(196,181,253,.2)}
+:root{--text:#f5f6fb}
+:root[data-theme="light"]{color-scheme:light;--text:#242238;--muted:#6d7183;--surface:#ffffff;--line:rgba(37,34,56,.12);background:#f4f3fa;color:#242238}
+:root[data-theme="light"] body{background:#f4f3fa;color:#242238}
+:root[data-theme="light"] .app-shell{color:#242238}
+:root[data-theme="light"] .topbar{border-color:rgba(37,34,56,.12)}
+:root[data-theme="light"] .theme-toggle{background:#fff;color:#51466e;border-color:rgba(37,34,56,.13)}
+:root[data-theme="light"] .profile-trigger{background:#eee9fb;color:#51466e;border-color:rgba(116,88,174,.22)}
+:root[data-theme="light"] .search-box{background:#fff;border-color:rgba(37,34,56,.14);color:#777187}
+:root[data-theme="light"] .search-box input{color:#29263a}
+:root[data-theme="light"] .category-chip{background:#fff;border-color:rgba(37,34,56,.12);color:#5f5a70}
+:root[data-theme="light"] .category-chip.is-active{background:#eee8ff;border-color:#b9a5ef;color:#6248a5}
+:root[data-theme="light"] .category-chip small{background:rgba(80,65,120,.09)}
+:root[data-theme="light"] .game-card{background:#fff;border-color:rgba(37,34,56,.1);box-shadow:0 5px 18px rgba(48,39,75,.045)}
+:root[data-theme="light"] .game-card h3{color:#29263a}
+:root[data-theme="light"] .game-card p{color:#777187}
+:root[data-theme="light"] .recent-empty,:root[data-theme="light"] .recent-game{background:#fff;border-color:rgba(37,34,56,.12);color:#29263a}
+:root[data-theme="light"] .recent-empty strong,:root[data-theme="light"] .recent-game span{color:#29263a}
+:root[data-theme="light"] .empty-state{background:rgba(255,255,255,.7);border-color:rgba(37,34,56,.18)}
+:root[data-theme="light"] .empty-state h3{color:#29263a}
+:root[data-theme="light"] .footer{border-color:rgba(37,34,56,.12);color:#777187}
+:root[data-theme="light"] .profile-backdrop{background:rgba(32,28,48,.35)}
+:root[data-theme="light"] .profile-panel{background:linear-gradient(145deg,#fff,#f3effc);color:#29263a;border-color:rgba(96,73,145,.2);box-shadow:0 28px 90px rgba(40,32,65,.2)}
+:root[data-theme="light"] .profile-simple-heading h2,:root[data-theme="light"] .profile-info-row>strong{color:#29263a}
+:root[data-theme="light"] .profile-info-list{background:#fff;border-color:rgba(37,34,56,.1)}
+:root[data-theme="light"] .profile-info-row+.profile-info-row{border-color:rgba(37,34,56,.08)}
+:root[data-theme="light"] .profile-info-row>span{color:#777187}
+:root[data-theme="light"] .profile-login-button{background:#eee8ff;color:#6248a5;border-color:#d6c9f5}
+:root[data-theme="light"] .profile-close{background:#f1eef8;color:#51466e;border-color:rgba(37,34,56,.12)}
+:root[data-theme="light"] .profile-name-edit{background:#eee8ff;color:#6248a5}
+:root[data-theme="light"] .game-load-error{background:#fff0f0;color:#a52d3a}
+@media(max-width:700px){.theme-toggle{left:0;min-height:35px;padding:0 9px;font-size:10px}.theme-toggle span:first-child{font-size:14px}}
+@media(prefers-reduced-motion:reduce){.theme-toggle,.category-chip{transition:none!important}}
