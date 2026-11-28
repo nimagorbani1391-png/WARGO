@@ -109,7 +109,7 @@ export default function NeonRun({ onExit }: { onExit: () => void }) {
   const startMusic = useCallback(() => {
     if (mutedRef.current || musicRef.current !== null) return;
     const notes = [220, 277, 330, 440, 330, 277]; let i = 0;
-    musicRef.current = window.setInterval(() => { if (running) sound(notes[i++ % notes.length], .22, "triangle", .012); }, 320);
+    musicRef.current = window.setInterval(() => { sound(notes[i++ % notes.length], .22, "triangle", .012); }, 320);
   }, [running, sound]);
 
   const redraw = useCallback(() => {
