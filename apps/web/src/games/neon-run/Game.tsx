@@ -250,7 +250,7 @@ export default function NeonRun({ onExit }: { onExit: () => void }) {
 
   const start = () => {
     const w = worldRef.current;
-    w.snake = [{ x: 5, y: 12 }, { x: 4, y: 12 }, { x: 3, y: 12 }];
+    w.snake = [{ x: 5, y: 12 }, { x: 4, y: 12 }, { x: 3, y: 12 }]; w.prevSnake = w.snake.map((p) => ({ ...p }));
     w.dir = { x: 1, y: 0 }; w.next = { ...w.dir }; w.score = 0; w.runCoins = 0; w.level = 1;
     w.tickNo = 0; w.particles = []; w.started = true;
     setScore(0); setOver(false); setupStage(); setRunning(true);
