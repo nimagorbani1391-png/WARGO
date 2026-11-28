@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent } from "react";
 import GameFrame from "../GameFrame";
-import GameStartOverlay from "../GameStartOverlay";
 
 type Point = { x: number; y: number };
 type Hunter = Point & { dx: number; dy: number };
