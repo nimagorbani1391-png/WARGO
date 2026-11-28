@@ -1,155 +1,95 @@
 <!doctype html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#10131d">
-  <meta name="description" content="بازی آفلاین مار WARGO؛ بدون نیاز به اینترنت.">
-  <title>WARGO — حالت آفلاین</title>
-  <link rel="icon" href="./wargo-offline.svg" type="image/svg+xml">
-  <style>
-    :root{color-scheme:dark;font-family:Tahoma,Arial,sans-serif;background:#10131d;color:#f5f6fb}
-    *{box-sizing:border-box}
-    body{margin:0;min-height:100svh;display:grid;place-items:center;padding:20px;background:radial-gradient(ellipse at 50% 0%,rgba(139,92,246,.2),transparent 52%),#10131d}
-    .shell{width:min(100%,480px);text-align:center}
-    .brand{display:inline-block;margin-bottom:9px;color:#d9ccff;font-size:23px;font-weight:1000;letter-spacing:4px;text-shadow:0 3px 18px #7652d566}
-    .offline-tag{display:inline-flex;align-items:center;gap:7px;margin:0 auto 15px;padding:7px 12px;border:1px solid #f0b45a44;border-radius:999px;background:#f0b45a12;color:#ffd18a;font-size:11px}
-    .dot{width:7px;height:7px;border-radius:50%;background:#f0b45a;box-shadow:0 0 10px #f0b45a}
-    h1{margin:0 0 7px;font-size:clamp(23px,6vw,30px);font-weight:900}
-    .sub{margin:0 0 20px;color:#a6abc0;font-size:12px;line-height:2}
-    .game-card{padding:14px;border:1px solid #ffffff16;border-radius:22px;background:linear-gradient(145deg,#1c2232,#171b29);box-shadow:0 24px 70px #0006}
-    .stats{display:flex;justify-content:space-between;gap:10px;margin:0 2px 12px}
-    .stat{flex:1;padding:9px 10px;border:1px solid #ffffff10;border-radius:12px;background:#ffffff06}
-    .stat span{display:block;color:#9da4ba;font-size:10px;margin-bottom:5px}
-    .stat strong{font-size:20px;font-variant-numeric:tabular-nums;color:#e4dcff}
-    canvas{display:block;width:100%;height:auto;aspect-ratio:1;border:1px solid #ffffff12;border-radius:15px;background:#111827;touch-action:none}
-    .actions{display:flex;gap:9px;margin-top:12px}
-    button,.back{min-height:45px;border:0;border-radius:12px;font:inherit;font-size:12px;font-weight:800;cursor:pointer}
-    #start{flex:1;background:linear-gradient(135deg,#c4b5fd,#8b5cf6);color:#171322}
-    #back{padding:0 15px;border:1px solid #ffffff20;background:#ffffff08;color:#e8e4f5;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
-    .status{min-height:25px;margin:11px 0 2px;color:#b9b2d1;font-size:11px}
-    .controls{display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(2,42px);justify-content:center;gap:6px;margin:12px auto 0}
-    .controls button{min-height:42px;border:1px solid #ffffff17;background:#ffffff08;color:#e8e1ff;font-size:17px;touch-action:manipulation}
-    .controls button:active{background:#a78bfa33}
-    .up{grid-column:2}.left{grid-column:1;grid-row:2}.down{grid-column:2;grid-row:2}.right{grid-column:3;grid-row:2}
-    .foot{margin-top:16px;color:#777f96;font-size:10px;line-height:1.9}
-    @media(min-width:600px){.shell{width:min(100%,450px)}}
-    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
-  </style>
-</head>
-<body>
-  <main class="shell">
-    <div class="brand">WARGO</div>
-    <div class="offline-tag"><i class="dot"></i> حالت آفلاین</div>
-    <h1>اینترنت نیست؟ بازی هست!</h1>
-    <p class="sub">تا وقتی اتصال برگرده، مار WARGO منتظرته.</p>
-    <section class="game-card" aria-label="بازی مار آفلاین">
-      <div class="stats">
-        <div class="stat"><span>امتیاز</span><strong id="score">۰</strong></div>
-        <div class="stat"><span>بهترین رکورد این دستگاه</span><strong id="best">۰</strong></div>
-      </div>
-      <canvas id="board" width="420" height="420" aria-label="صفحه بازی مار"></canvas>
-      <div class="actions">
-        <button id="start" type="button">شروع بازی</button>
-        <a id="back" class="back" href="./">بازگشت به WARGO</a>
-      </div>
-      <p class="status" id="status" aria-live="polite">برای شروع، دکمه را بزن.</p>
-      <div class="controls" aria-label="کنترل لمسی بازی">
-        <button class="up" data-dir="up" type="button" aria-label="بالا">↑</button>
-        <button class="left" data-dir="left" type="button" aria-label="چپ">←</button>
-        <button class="down" data-dir="down" type="button" aria-label="پایین">↓</button>
-        <button class="right" data-dir="right" type="button" aria-label="راست">→</button>
-      </div>
-    </section>
-    <p class="foot">این بازی کاملاً روی دستگاهت اجرا می‌شود.<br>امتیازهای این حالت وارد رتبه‌بندی اصلی WARGO نمی‌شوند.</p>
-  </main>
-  <script>
-    (() => {
-      const canvas = document.getElementById("board");
-      const ctx = canvas.getContext("2d");
-      const scoreEl = document.getElementById("score");
-      const bestEl = document.getElementById("best");
-      const statusEl = document.getElementById("status");
-      const startButton = document.getElementById("start");
-      const size = 21, cell = 20;
-      const bestKey = "wargo:offline-snake-best";
-      let snake, food, direction, nextDirection, score, timer, running = false, ended = false;
-      const fa = value => new Intl.NumberFormat("fa-IR").format(value);
-      let best = 0;
-      try { best = Number(localStorage.getItem(bestKey) || 0) || 0; } catch {}
-      bestEl.textContent = fa(best);
-
-      function placeFood() {
-        let point;
-        do { point = {x:Math.floor(Math.random()*size), y:Math.floor(Math.random()*size)}; }
-        while (snake.some(part => part.x===point.x && part.y===point.y));
-        return point;
-      }
-      function draw() {
-        ctx.fillStyle = "#111827"; ctx.fillRect(0,0,420,420);
-        ctx.strokeStyle = "rgba(255,255,255,.035)"; ctx.lineWidth = 1;
-        for(let i=1;i<size;i++){ctx.beginPath();ctx.moveTo(i*cell,0);ctx.lineTo(i*cell,420);ctx.stroke();ctx.beginPath();ctx.moveTo(0,i*cell);ctx.lineTo(420,i*cell);ctx.stroke();}
-        ctx.fillStyle = "#ff7187"; ctx.shadowColor = "#ff7187"; ctx.shadowBlur = 14;
-        ctx.beginPath();ctx.arc(food.x*cell+10,food.y*cell+10,7,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
-        snake.forEach((part,index)=>{
-          const inset=index===0?2:3;
-          ctx.fillStyle=index===0?"#c4b5fd":"#8b72d8";
-          ctx.shadowColor=index===0?"#a78bfa":"transparent";ctx.shadowBlur=index===0?12:0;
-          const x=part.x*cell+inset,y=part.y*cell+inset,w=cell-inset*2;
-          ctx.beginPath();ctx.roundRect(x,y,w,w,6);ctx.fill();
-        });
-        ctx.shadowBlur=0;
-      }
-      function reset() {
-        snake=[{x:10,y:10},{x:9,y:10},{x:8,y:10}];
-        direction={x:1,y:0};nextDirection={x:1,y:0};score=0;
-        food=placeFood();scoreEl.textContent=fa(score);draw();
-      }
-      function finish() {
-        running=false;ended=true;clearInterval(timer);
-        statusEl.textContent="بازی تموم شد! دوباره تلاش کن.";
-        startButton.textContent="بازی دوباره";
-      }
-      function tick() {
-        direction=nextDirection;
-        const head={x:snake[0].x+direction.x,y:snake[0].y+direction.y};
-        const ate=head.x===food.x&&head.y===food.y;
-        const body=ate?snake:snake.slice(0,-1);
-        if(head.x<0||head.y<0||head.x>=size||head.y>=size||body.some(part=>part.x===head.x&&part.y===head.y)){finish();return;}
-        snake.unshift(head);
-        if(ate){
-          score+=10;scoreEl.textContent=fa(score);food=placeFood();
-          if(score>best){best=score;bestEl.textContent=fa(best);try{localStorage.setItem(bestKey,String(best));}catch{}}
-        }else snake.pop();
-        draw();
-      }
-      function start() {
-        clearInterval(timer);reset();running=true;ended=false;
-        statusEl.textContent="با کلیدهای جهت‌دار یا دکمه‌های پایین حرکت کن.";
-        startButton.textContent="شروع دوباره";
-        timer=setInterval(tick,125);
-      }
-      function steer(name) {
-        const dirs={up:{x:0,y:-1},down:{x:0,y:1},left:{x:-1,y:0},right:{x:1,y:0}};
-        const chosen=dirs[name];if(!chosen||!running)return;
-        if(chosen.x!==-direction.x||chosen.y!==-direction.y)nextDirection=chosen;
-      }
-      startButton.addEventListener("click",start);
-      document.querySelectorAll("[data-dir]").forEach(button=>button.addEventListener("click",()=>steer(button.dataset.dir)));
-      window.addEventListener("keydown",event=>{
-        const keys={ArrowUp:"up",w:"up",ArrowDown:"down",s:"down",ArrowLeft:"left",a:"left",ArrowRight:"right",d:"right"};
-        const name=keys[event.key];if(name){event.preventDefault();steer(name);}
-        if((event.key===" "||event.key==="Enter")&&!running){event.preventDefault();start();}
-      });
-      let touchStart=null;
-      canvas.addEventListener("touchstart",event=>{const t=event.changedTouches[0];touchStart={x:t.clientX,y:t.clientY};},{passive:true});
-      canvas.addEventListener("touchend",event=>{
-        if(!touchStart)return;const t=event.changedTouches[0],dx=t.clientX-touchStart.x,dy=t.clientY-touchStart.y;
-        if(Math.max(Math.abs(dx),Math.abs(dy))>20)steer(Math.abs(dx)>Math.abs(dy)?(dx>0?"right":"left"):(dy>0?"down":"up"));
-        touchStart=null;
-      },{passive:true});
-      reset();
-    })();
-  </script>
-</body>
-</html>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090b18"><meta name="description" content="WARGO NEON RUN؛ بازی آرکید آفلاین.">
+<title>WARGO — NEON RUN</title><link rel="icon" href="./wargo-offline.svg" type="image/svg+xml">
+<style>
+:root{color-scheme:dark;font-family:Tahoma,Arial,sans-serif;background:#090b18;color:#f5f4ff}*{box-sizing:border-box}
+body{margin:0;min-height:100svh;padding:18px 12px 28px;background:radial-gradient(ellipse at 50% -10%,#5731a955,transparent 55%),radial-gradient(circle at 5% 60%,#0c9dba16,transparent 35%),#090b18;display:grid;place-items:center}
+.shell{width:min(100%,520px);text-align:center}.brand{font-size:25px;font-weight:1000;letter-spacing:5px;color:#e5dcff;text-shadow:0 0 25px #9b70ff;margin:3px 0 5px}
+.tag{display:inline-flex;align-items:center;gap:7px;border:1px solid #45e6d044;background:#45e6d010;color:#76f6df;border-radius:30px;padding:6px 12px;font-size:10px;margin-bottom:12px}.pulse{width:7px;height:7px;background:#48f2ce;border-radius:50%;box-shadow:0 0 12px #48f2ce}
+h1{font-size:clamp(23px,6vw,32px);margin:0;font-weight:1000;letter-spacing:-1px}.sub{color:#999bb8;font-size:11px;line-height:1.9;margin:7px 0 15px}
+.panel{padding:12px;border:1px solid #a68aff2b;border-radius:23px;background:linear-gradient(145deg,#191a30ed,#101426f2);box-shadow:0 24px 80px #0009,inset 0 1px #ffffff12}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:10px}.stat{padding:9px 3px;border:1px solid #ffffff12;border-radius:12px;background:#ffffff07}.stat span{display:block;color:#9da1bf;font-size:9px;margin-bottom:5px}.stat strong{font-size:17px;color:#e5ddff;font-variant-numeric:tabular-nums}
+canvas{display:block;width:100%;height:auto;aspect-ratio:1;border:1px solid #9a7aff40;border-radius:15px;background:#080e1d;touch-action:none;box-shadow:0 0 30px #6d4aff12}
+.meta{display:flex;justify-content:space-between;gap:8px;color:#a6a4c1;font-size:10px;margin:10px 3px 0}.meta b{color:#d8cbff}
+.actions{display:flex;gap:8px;margin-top:12px}button,.back{font:inherit;font-weight:900;font-size:12px;border-radius:12px;min-height:45px;cursor:pointer}
+#start{flex:1;border:0;color:#130f24;background:linear-gradient(110deg,#c7b7ff,#8b5cf6 55%,#58e7dc);box-shadow:0 6px 22px #8b5cf633}
+#sound{width:48px;border:1px solid #ffffff20;background:#ffffff09;color:#e6dcff;font-size:17px}
+.back{display:inline-flex;align-items:center;justify-content:center;padding:0 13px;border:1px solid #ffffff20;background:#ffffff08;color:#e6e2f5;text-decoration:none}
+.status{min-height:23px;color:#c5b9ef;font-size:10px;margin:10px 0 0;line-height:1.8}
+.tip{font-size:9px;color:#777e9e;line-height:1.9;margin:12px 5px 0}
+@media(max-width:370px){.stats{gap:4px}.stat strong{font-size:15px}.panel{padding:8px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important}}
+</style></head>
+<body><main class="shell">
+<div class="brand">W A R G O</div><div class="tag"><i class="pulse"></i> NEON ARCADE · OFFLINE MODE</div>
+<h1>وارد میدان نئون شو</h1><p class="sub">جمع‌آوری کریستال، فرار از شکارچی‌ها و فتح مرحله‌ها؛ حتی بدون اینترنت.</p>
+<section class="panel" aria-label="بازی آرکید آفلاین WARGO">
+<div class="stats">
+<div class="stat"><span>امتیاز</span><strong id="score">۰</strong></div><div class="stat"><span>رکورد</span><strong id="best">۰</strong></div>
+<div class="stat"><span>کریستال</span><strong id="coins">۰</strong></div><div class="stat"><span>مرحله</span><strong id="level">۱</strong></div>
+</div>
+<canvas id="board" width="480" height="480" aria-label="میدان بازی؛ با کشیدن انگشت روی صفحه مسیر را تعیین کن"></canvas>
+<div class="meta"><span>ماموریت: <b id="mission">۵ کریستال جمع کن</b></span><span>قدرت: <b id="power">نداری</b></span></div>
+<div class="actions"><button id="start" type="button">شروع مأموریت</button><button id="sound" type="button" aria-label="خاموش یا روشن کردن صدا">♫</button><a class="back" href="./">بازگشت</a></div>
+<p class="status" id="status" aria-live="polite">برای حرکت، انگشتت را روی زمین بازی بکش.</p>
+</section>
+<p class="tip">کنترل فقط با کشیدن انگشت روی صفحه انجام می‌شود · صدا و موسیقی قابل خاموش‌کردن‌اند<br>تمام پیشرفت‌ها روی همین دستگاه ذخیره می‌شوند؛ امتیاز آفلاین وارد رتبه‌بندی آنلاین نمی‌شود.</p>
+</main>
+<script>
+(()=> {
+const canvas=document.getElementById('board'),ctx=canvas.getContext('2d'),$=id=>document.getElementById(id);
+const N=24,C=20,STORE='wargo:neon-arcade:',bestKey=STORE+'best',coinKey=STORE+'coins',progressKey=STORE+'level';
+const fa=n=>new Intl.NumberFormat('fa-IR').format(n);
+let best=+(localStorage.getItem(bestKey)||0),bank=+(localStorage.getItem(coinKey)||0),unlocked=Math.max(1,+(localStorage.getItem(progressKey)||1));
+let snake,dir,next,crystal,coin,power,obstacles,hunters,particles,score,runCoins,level,goal,tickNo,timer,running=false,muted=false,audio=null,musicTimer=null,started=false;
+$('best').textContent=fa(best);$('coins').textContent=fa(bank);
+const rand=()=>Math.floor(Math.random()*N),same=(a,b)=>a.x===b.x&&a.y===b.y;
+function occupied(p){return snake?.some(s=>same(s,p))||obstacles?.some(o=>same(o,p))||hunters?.some(h=>same(h,p))}
+function free(){let p;do{p={x:rand(),y:rand()}}while(occupied(p));return p}
+function sound(freq=440,duration=.08,type='sine',volume=.035){if(muted)return;try{audio??=new(window.AudioContext||window.webkitAudioContext)();const o=audio.createOscillator(),g=audio.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(volume,audio.currentTime);g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+duration);o.connect(g);g.connect(audio.destination);o.start();o.stop(audio.currentTime+duration)}catch{}}
+function music(){if(muted||musicTimer)return;let notes=[220,277,330,440,330,277],i=0;musicTimer=setInterval(()=>{if(running)sound(notes[i++%notes.length],.22,'triangle',.012)},320)}
+function stopMusic(){clearInterval(musicTimer);musicTimer=null}
+function burst(x,y,color,count=14){for(let i=0;i<count;i++){let a=Math.random()*Math.PI*2,v=1+Math.random()*4;particles.push({x:x*C+C/2,y:y*C+C/2,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:25+Math.random()*15,color})}}
+function addObstacle(){let p=free();obstacles.push(p)}
+function setupStage(){obstacles=[];hunters=[];for(let i=0;i<Math.min(2+level,9);i++)addObstacle();if(level>=2)hunters.push({...free(),dx:1,dy:0});if(level>=4)hunters.push({...free(),dx:0,dy:1});crystal=free();coin=free();power=null;goal=5+level*2;$('mission').textContent=fa(goal)+' کریستال جمع کن';$('level').textContent=fa(level);$('power').textContent='نداری'}
+function reset(){level=1;score=0;runCoins=0;tickNo=0;snake=[{x:5,y:12},{x:4,y:12},{x:3,y:12}];dir={x:1,y:0};next={...dir};particles=[];setupStage();updateStats();draw()}
+function updateStats(){$('score').textContent=fa(score);$('coins').textContent=fa(bank+runCoins);$('best').textContent=fa(best);$('level').textContent=fa(level)}
+function finish(win=false){running=false;clearInterval(timer);stopMusic();$('start').textContent='تلاش دوباره';$('status').textContent=win?'تو قهرمان میدان شدی! رکوردت ثبت شد.':'برخورد کردی! دوباره وارد میدان شو.';sound(win?880:110,.35,'sawtooth');}
+function nextStage(){level++;unlocked=Math.max(unlocked,level);localStorage.setItem(progressKey,String(unlocked));snake=[{x:5,y:12},{x:4,y:12},{x:3,y:12}];dir={x:1,y:0};next={...dir};tickNo=0;setupStage();$('status').textContent='مرحله '+fa(level)+' شروع شد؛ سرعت بیشتر و شکارچی‌های خطرناک‌تر!';sound(660,.2);draw()}
+function tick(){
+tickNo++;dir={...next};const head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
+if(head.x<0||head.y<0||head.x>=N||head.y>=N||snake.slice(0,-1).some(p=>same(p,head))||obstacles.some(p=>same(p,head))||hunters.some(p=>same(p,head))){burst(snake[0].x,snake[0].y,'#ff537d',30);finish();return}
+snake.unshift(head);
+if(same(head,crystal)){score+=10;burst(head.x,head.y,'#6cf7e7');crystal=free();sound(620,.1);if(score>best){best=score;localStorage.setItem(bestKey,String(best))}
+if(score/10>=goal){runCoins+=5+level;bank+=runCoins;runCoins=0;localStorage.setItem(coinKey,String(bank));if(level>=unlocked+3){finish(true);return}nextStage()}}
+else if(same(head,coin)){runCoins+=1;burst(head.x,head.y,'#ffd166',18);coin=free();sound(940,.12,'triangle')}
+else snake.pop();
+if(power&&same(head,power)){runCoins+=3;burst(head.x,head.y,'#c59bff',22);power=null;$('power').textContent='سپر فعال';sound(760,.18)}
+if(!power&&tickNo%90===0){power=free()}
+hunters.forEach(h=>{if(tickNo%2===0){let dx=Math.sign(head.x-h.x),dy=Math.sign(head.y-h.y);if(Math.random()<.5)h.x=Math.max(0,Math.min(N-1,h.x+dx));else h.y=Math.max(0,Math.min(N-1,h.y+dy));if(same(h,head)){finish();}}});
+if(tickNo%35===0&&level>=3){let h=hunters[0];if(h){let opts=[{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1}].filter(d=>h.x+d.x>=0&&h.x+d.x<N&&h.y+d.y>=0&&h.y+d.y<N&&!obstacles.some(o=>same(o,{x:h.x+d.x,y:h.y+d.y})));if(opts.length){let d=opts[Math.floor(Math.random()*opts.length)];h.x+=d.x;h.y+=d.y}}}
+particles=particles.filter(p=>p.life-->0);particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vx*=.94;p.vy*=.94});updateStats();draw()
+}
+function draw(){
+ctx.clearRect(0,0,480,480);let bg=ctx.createLinearGradient(0,0,480,480);bg.addColorStop(0,'#0d1730');bg.addColorStop(1,'#080d1b');ctx.fillStyle=bg;ctx.fillRect(0,0,480,480);
+ctx.strokeStyle='rgba(137,160,255,.075)';ctx.lineWidth=1;for(let i=0;i<=N;i++){ctx.beginPath();ctx.moveTo(i*C,0);ctx.lineTo(i*C,480);ctx.stroke();ctx.beginPath();ctx.moveTo(0,i*C);ctx.lineTo(480,i*C);ctx.stroke()}
+ctx.save();ctx.shadowBlur=18;ctx.shadowColor='#ff527d';ctx.fillStyle='#ff668b';ctx.beginPath();ctx.arc(crystal.x*C+10,crystal.y*C+10,7+Math.sin(tickNo/5)*1.5,0,Math.PI*2);ctx.fill();ctx.restore();
+ctx.save();ctx.shadowBlur=18;ctx.shadowColor='#ffd166';ctx.fillStyle='#ffd166';ctx.translate(coin.x*C+10,coin.y*C+10);ctx.rotate(Math.PI/4);ctx.fillRect(-6,-6,12,12);ctx.restore();
+if(power){ctx.save();ctx.shadowBlur=20;ctx.shadowColor='#bd91ff';ctx.strokeStyle='#d5b9ff';ctx.lineWidth=3;ctx.beginPath();ctx.arc(power.x*C+10,power.y*C+10,8,0,Math.PI*2);ctx.stroke();ctx.restore()}
+obstacles.forEach(o=>{ctx.fillStyle='#343d60';ctx.strokeStyle='#7784b8';ctx.lineWidth=1.5;ctx.beginPath();ctx.roundRect(o.x*C+2,o.y*C+2,16,16,5);ctx.fill();ctx.stroke()});
+hunters.forEach(h=>{ctx.save();ctx.shadowBlur=16;ctx.shadowColor='#ff315f';ctx.fillStyle='#ff456e';ctx.beginPath();ctx.arc(h.x*C+10,h.y*C+10,8,0,Math.PI*2);ctx.fill();ctx.fillStyle='#250817';ctx.fillRect(h.x*C+6,h.y*C+7,3,3);ctx.fillRect(h.x*C+12,h.y*C+7,3,3);ctx.restore()});
+snake.forEach((p,i)=>{ctx.save();ctx.shadowBlur=i===0?19:8;ctx.shadowColor=i===0?'#62f4e3':'#8c69ff';ctx.fillStyle=i===0?'#8affec':`hsl(${258-i*2},75%,${68-i*.7}%)`;ctx.beginPath();ctx.roundRect(p.x*C+2,p.y*C+2,16,16,6);ctx.fill();if(i===0){ctx.fillStyle='#11233a';ctx.beginPath();ctx.arc(p.x*C+7,p.y*C+7,1.8,0,7);ctx.arc(p.x*C+13,p.y*C+7,1.8,0,7);ctx.fill()}ctx.restore()});
+particles.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life/35);ctx.fillStyle=p.color;ctx.fillRect(p.x,p.y,3,3)});ctx.globalAlpha=1;
+if(!started){ctx.fillStyle='#080b19bb';ctx.fillRect(0,0,480,480);ctx.textAlign='center';ctx.fillStyle='#e7e1ff';ctx.font='bold 25px Tahoma';ctx.fillText('WARGO NEON RUN',240,215);ctx.fillStyle='#a9a4c9';ctx.font='15px Tahoma';ctx.fillText('برای شروع، دکمه مأموریت را بزن',240,250)}
+}
+function start(){clearInterval(timer);reset();started=true;running=true;$('start').textContent='شروع دوباره';$('status').textContent='با کشیدن انگشت، حرکت کن؛ از شکارچی‌ها دوری کن!';timer=setInterval(tick,Math.max(72,145-level*5));music()}
+function steer(x,y){if(!running)return;if(x!==-dir.x||y!==-dir.y)next={x,y}}
+let touch=null;canvas.addEventListener('pointerdown',e=>{touch={x:e.clientX,y:e.clientY};canvas.setPointerCapture?.(e.pointerId)});canvas.addEventListener('pointerup',e=>{if(!touch)return;let dx=e.clientX-touch.x,dy=e.clientY-touch.y;if(Math.max(Math.abs(dx),Math.abs(dy))>16){if(Math.abs(dx)>Math.abs(dy))steer(dx>0?1:-1,0);else steer(0,dy>0?1:-1)}touch=null});
+$('start').addEventListener('click',start);$('sound').addEventListener('click',()=>{muted=!muted;$('sound').textContent=muted?'×':'♫';if(muted)stopMusic();else{sound(520);music()}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&running){running=false;clearInterval(timer);stopMusic();$('status').textContent='بازی متوقف شد؛ برای ادامه دوباره شروع کن.';$('start').textContent='ادامه از اول'}});
+reset();
+})();
+</script></body></html>
