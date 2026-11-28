@@ -28,6 +28,26 @@ export default function App() {
   const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
+    const base = import.meta.env.BASE_URL;
+    const offlinePage = `${base}offline.html`;
+    const redirectToOfflineGame = () => {
+      if (!window.location.pathname.endsWith("/offline.html")) {
+        window.location.replace(offlinePage);
+      }
+    };
+
+    window.addEventListener("offline", redirectToOfflineGame);
+    if (!navigator.onLine) redirectToOfflineGame();
+
+    if ("serviceWorker" in navigator) {
+      void navigator.serviceWorker.register(`${base}sw.js`, { scope: base })
+        .catch((error: unknown) => console.warn("WARGO: offline support could not be enabled", error));
+    }
+
+    return () => window.removeEventListener("offline", redirectToOfflineGame);
+  }, []);
+
+  useEffect(() => {
     const currentUrl = new URL(window.location.href);
     if (currentUrl.searchParams.get("auth") === "success") {
       currentUrl.searchParams.delete("auth");
