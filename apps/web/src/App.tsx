@@ -26,6 +26,16 @@ export default function App() {
   const [editingName, setEditingName] = useState(false);
   const [user, setUser] = useState<WargoUser | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const [theme, setTheme] = useState<"dark" | "light">(() => {
+    try { return localStorage.getItem("wargo:theme") === "light" ? "light" : "dark"; }
+    catch { return "dark"; }
+  });
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    try { localStorage.setItem("wargo:theme", theme); }
+    catch { /* The selected theme remains active for this session. */ }
+  }, [theme]);
 
   useEffect(() => {
     const base = import.meta.env.BASE_URL;
@@ -110,9 +120,12 @@ export default function App() {
   const ActiveGame = opened?.View;
 
   return (
-    <main className="app-shell">
+    <main className="app-shell" data-theme={theme}>
       <header className="topbar">
         <a className="brand" href="/WARGO/" aria-label="صفحه اصلی WARGO"><span>WARGO</span></a>
+        <button className="theme-toggle" type="button" onClick={() => setTheme((current) => current === "dark" ? "light" : "dark")} aria-label={theme === "dark" ? "فعال‌کردن تم روشن" : "فعال‌کردن تم تاریک"} title={theme === "dark" ? "تم روشن" : "تم تاریک"}>
+          <span aria-hidden="true">{theme === "dark" ? "☀" : "☾"}</span><span>{theme === "dark" ? "روشن" : "تاریک"}</span>
+        </button>
         <button className="profile-trigger" type="button" onClick={() => setProfileOpen(true)} aria-haspopup="dialog" aria-label="نمایش پروفایل کاربر">
           <span className="profile-trigger-avatar profile-trigger-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 12a4.25 4.25 0 1 0 0-8.5 4.25 4.25 0 0 0 0 8.5Zm0 2c-4.15 0-7.5 2.12-7.5 4.75V21h15v-2.25C19.5 16.12 16.15 14 12 14Z" /></svg></span><span>پروفایل</span>
         </button>
@@ -147,7 +160,10 @@ export default function App() {
       <section className="category-section mobile-section" aria-labelledby="category-title">
         <div className="mobile-section-heading"><div><h2 id="category-title">دسته‌بندی بازی‌ها</h2></div></div>
         <div className="category-list" role="group" aria-label="فیلتر دسته‌بندی بازی‌ها">
-          {categories.map((category) => <button className={`category-chip ${activeCategory === category.id ? "is-active" : ""}`} type="button" key={category.id} aria-pressed={activeCategory === category.id} onClick={() => setActiveCategory(category.id)}><span aria-hidden="true">{category.icon}</span>{category.label}</button>)}
+          {categories.map((category) => {
+            const count = category.id === "all" ? gameRegistry.length : gameRegistry.filter((game) => game.category === category.id).length;
+            return <button className={`category-chip ${activeCategory === category.id ? "is-active" : ""}`} type="button" key={category.id} aria-label={`${category.label}، ${count} بازی`} aria-pressed={activeCategory === category.id} onClick={() => setActiveCategory(category.id)}><span aria-hidden="true">{category.icon}</span>{category.label}<small>{count}</small></button>;
+          })}
         </div>
       </section>
 
@@ -159,7 +175,7 @@ export default function App() {
         {loadError && <div className="game-load-error" role="alert">{loadError}</div>}
         {games.length === 0 ? <div className="empty-state"><div className="empty-icon" aria-hidden="true">◇</div><h3>{query ? "بازی‌ای پیدا نشد" : "بازی‌ای در این دسته نیست"}</h3><p>{query ? "عبارت دیگری را جست‌وجو کن." : "دسته‌بندی دیگری را انتخاب کن."}</p></div> :
           <div className="game-grid">{games.map((game) => <button className="game-card" key={game.id} type="button" onClick={() => void launchGame(game)} disabled={!!loadingId}>
-            <img src={game.cover} alt="" loading="lazy" /><div><h3>{game.title}</h3><p>{loadingId === game.id ? "در حال آماده‌سازی..." : game.description}</p></div>
+            <img src={game.cover} alt="" loading="lazy" decoding="async" /><div><h3>{game.title}</h3><p>{loadingId === game.id ? "در حال آماده‌سازی..." : game.description}</p></div>
           </button>)}</div>}
       </section>
       <footer className="footer"><span>WARGO</span></footer>
@@ -201,5 +217,5 @@ function RecentGames({ onOpen }: { onOpen: (id: string) => void }) {
   const [ids] = useState<string[]>(() => { try { return JSON.parse(localStorage.getItem("wargo:recent") || "[]"); } catch { return []; } });
   const recent = ids.map((id) => gameRegistry.find((game) => game.id === id)).filter((game): game is GameDefinition => !!game).slice(0, 3);
   if (!recent.length) return <div className="recent-empty"><span className="recent-empty-icon" aria-hidden="true">◷</span><div><strong>هنوز بازی‌ای انجام ندادی</strong><p>بعد از اولین بازی، اینجا پیداش می‌کنی.</p></div></div>;
-  return <div className="recent-list">{recent.map((game) => <button type="button" className="recent-game" key={game.id} onClick={() => onOpen(game.id)}><img src={game.cover} alt="" /><span>{game.title}</span><b>›</b></button>)}</div>;
+  return <div className="recent-list">{recent.map((game) => <button type="button" className="recent-game" key={game.id} onClick={() => onOpen(game.id)}><img src={game.cover} alt="" loading="lazy" decoding="async" /><span>{game.title}</span><b>›</b></button>)}</div>;
 }
