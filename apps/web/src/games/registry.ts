@@ -4,6 +4,7 @@ import type { GameDefinition } from "../types/game";
 export const gameRegistry: readonly GameDefinition[] = [
   { id: "game-2048", title: "۲۰۴۸", description: "عددهای برابر را ترکیب کن و به ۲۰۴۸ برس.", category: "puzzle", cover: "/WARGO/games/2048.svg", load: () => import("./game-2048/Game") },
   { id: "tetris", title: "تتریس", description: "قطعه‌ها را بچرخان و ردیف‌های کامل بساز.", category: "puzzle", cover: "/WARGO/games/tetris.svg", load: () => import("./tetris/Game") },
+  { id: "neon-run", title: "WARGO Neon Run", description: "کریستال جمع کن، از شکارچی‌ها فرار کن و مرحله‌ها را فتح کن.", category: "arcade", cover: "/WARGO/games/neon-run.svg", load: () => import("./neon-run/Game") },
   { id: "dinosaur-runner", title: "دایناسور دونده", description: "از موانع بپر و رکوردت را ثبت کن.", category: "arcade", cover: "/WARGO/games/dinosaur-runner.svg", load: () => import("./dinosaur-runner/Game") },
   { id: "tic-tac-toe", title: "دوز", description: "مقابل ربات یا یک بازیکن دیگر بازی کن.", category: "logic", cover: "/WARGO/games/tic-tac-toe.svg", load: () => import("./tic-tac-toe/Game") },
   { id: "dots-and-boxes", title: "نقطه‌بازی", description: "با کامل‌کردن مربع‌ها امتیاز بگیر؛ مقابل ربات یا دونفره بازی کن.", category: "logic", cover: "/WARGO/games/dots-and-boxes.svg", load: () => import("./dots-and-boxes/Game") },
