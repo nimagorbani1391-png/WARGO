@@ -4,7 +4,7 @@ import type { GameDefinition } from "../types/game";
 export const gameRegistry: readonly GameDefinition[] = [
   { id: "game-2048", title: "۲۰۴۸", description: "عددهای برابر را ترکیب کن و به ۲۰۴۸ برس.", category: "puzzle", cover: "/WARGO/games/2048.svg", load: () => import("./game-2048/Game") },
   { id: "tetris", title: "تتریس", description: "قطعه‌ها را بچرخان و ردیف‌های کامل بساز.", category: "puzzle", cover: "/WARGO/games/tetris.svg", load: () => import("./tetris/Game") },
-  { id: "neon-run", title: "WARGO Neon Run", description: "کریستال جمع کن، از شکارچی‌ها فرار کن و مرحله‌ها را فتح کن.", category: "arcade", cover: "/WARGO/games/neon-run.svg", load: () => import("./neon-run/Game") },
+  { id: "neon-run", title: "مار نئونی", description: "در دنیای نئونی حرکت کن، کریستال جمع کن و از شکارچی‌ها فرار کن.", category: "arcade", cover: "/WARGO/games/neon-run.svg", load: () => import("./neon-run/Game") },
   { id: "dinosaur-runner", title: "دایناسور دونده", description: "از موانع بپر و رکوردت را ثبت کن.", category: "arcade", cover: "/WARGO/games/dinosaur-runner.svg", load: () => import("./dinosaur-runner/Game") },
   { id: "tic-tac-toe", title: "دوز", description: "مقابل ربات یا یک بازیکن دیگر بازی کن.", category: "logic", cover: "/WARGO/games/tic-tac-toe.svg", load: () => import("./tic-tac-toe/Game") },
   { id: "dots-and-boxes", title: "نقطه‌بازی", description: "با کامل‌کردن مربع‌ها امتیاز بگیر؛ مقابل ربات یا دونفره بازی کن.", category: "logic", cover: "/WARGO/games/dots-and-boxes.svg", load: () => import("./dots-and-boxes/Game") },
@@ -12,7 +12,6 @@ export const gameRegistry: readonly GameDefinition[] = [
   { id: "chess", title: "شطرنج", description: "با ربات بازی کن و سطح سختی را انتخاب کن.", category: "logic", cover: "/WARGO/games/chess-cover.svg", load: () => import("./chess/Game") },
   { id: "coin-toss", title: "شیر یا خط", description: "حدست را انتخاب کن و سکه را بینداز؛ ببین شانست چقدر است.", category: "casual", cover: "/WARGO/games/coin-toss.svg", load: () => import("./coin-toss/Game") },
   { id: "rock-paper-scissors", title: "سنگ، کاغذ، قیچی", description: "یک رقابت سریع و سه‌مرحله‌ای با ربات.", category: "casual", cover: "/WARGO/games/1000025222.webp", load: () => import("./rock-paper-scissors/Game") },
-  { id: "snake-apple", title: "مار و سیب", description: "مار را هدایت کن، سیب بخور و رکوردت را ثبت کن.", category: "arcade", cover: "/WARGO/games/snake-apple.svg", load: () => import("./snake-apple/Game") },
   { id: "reaction-test", title: "تست سرعت واکنش", description: "سرعت واکنشت را بسنج و رکورد میلی‌ثانیه‌ای ثبت کن.", category: "casual", cover: "/WARGO/games/reaction-test.svg", load: () => import("./reaction-test/Game") },
   { id: "flappy-bird", title: "پرنده پرشی", description: "با ضربه‌های دقیق از لوله‌ها عبور کن و رکورد بزن.", category: "arcade", cover: "/WARGO/games/flappy-bird.svg", load: () => import("./flappy-bird/Game") },
   { id: "memory-match", title: "بازی حافظه", description: "جفت کارت‌ها را پیدا کن؛ هر مرحله با چیدمان تصادفی تازه.", category: "puzzle", cover: "/WARGO/games/memory-match.svg", load: () => import("./memory-match/Game") },
