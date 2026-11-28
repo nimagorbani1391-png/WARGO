@@ -7,12 +7,13 @@ type Props = {
   buttonLabel: string;
   onStart: () => void;
   children?: ReactNode;
+  className?: string;
 };
 
-export default function GameStartOverlay({ visible, title, description, buttonLabel, onStart, children }: Props) {
+export default function GameStartOverlay({ visible, title, description, buttonLabel, onStart, children, className }: Props) {
   if (!visible) return null;
   return (
-    <div className="game-start-overlay">
+    <div className={`game-start-overlay ${className ?? ""}`}>
       <div className="game-start-card" role="dialog" aria-modal="true" aria-label={title}>
         <strong>{title}</strong>
         {description && <span>{description}</span>}
