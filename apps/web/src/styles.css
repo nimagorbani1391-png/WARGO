@@ -1250,7 +1250,7 @@ h2 { margin: 5px 0 0; font-size: 25px; }
 
 /* Flappy Bird: polished skins, evolving scenery and local missions */
 .flappy-stats { align-items:center; padding:11px 13px; border:1px solid rgba(167,139,250,.18); border-radius:13px; background:linear-gradient(110deg,rgba(167,139,250,.1),rgba(255,255,255,.025)); }
-.flappy-bird-picker,.flappy-missions { margin:14px 0; padding:14px; border:1px solid rgba(167,139,250,.17); border-radius:16px; background:linear-gradient(145deg,rgba(34,37,59,.9),rgba(22,26,40,.94)); }
+.flappy-bird-picker { margin:14px 0; padding:14px; border:1px solid rgba(167,139,250,.17); border-radius:16px; background:linear-gradient(145deg,rgba(34,37,59,.9),rgba(22,26,40,.94)); }
 .flappy-section-heading { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:11px; }
 .flappy-section-heading strong { color:#f1edff; font-size:12px; }
 .flappy-section-heading>span { color:#929ab0; font-size:9px; }
@@ -1269,19 +1269,6 @@ h2 { margin: 5px 0 0; font-size: 25px; }
 .flappy-stage { position:relative; display:block; width:min(100%,360px); margin:0 auto; padding:0; overflow:hidden; border:1px solid rgba(196,181,253,.28); border-radius:16px; background:#172b4c; box-shadow:0 16px 38px rgba(0,0,0,.28),0 0 24px rgba(139,92,246,.08); cursor:pointer; touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
 .flappy-stage canvas { display:block; width:100%; height:auto; aspect-ratio:9/14; }
 .flappy-missions { margin-top:17px; }
-.flappy-mission-list { display:grid; gap:8px; }
-.flappy-mission { display:flex; align-items:center; gap:9px; min-width:0; padding:9px; border:1px solid rgba(255,255,255,.055); border-radius:11px; background:rgba(8,12,22,.24); }
-.flappy-mission.is-done { border-color:rgba(110,231,183,.2); background:rgba(16,91,70,.12); }
-.flappy-mission-icon { display:grid; place-items:center; flex:0 0 29px; width:29px; height:29px; border-radius:9px; background:rgba(167,139,250,.13); color:#c4b5fd; font-size:15px; font-weight:900; }
-.flappy-mission.is-done .flappy-mission-icon { background:rgba(52,211,153,.14); color:#86efac; }
-.flappy-mission-copy { flex:1; min-width:0; display:grid; gap:3px; }
-.flappy-mission-copy b { color:#e9e5f5; font-size:10px; }
-.flappy-mission-copy small { overflow:hidden; color:#929ab0; font-size:9px; text-overflow:ellipsis; white-space:nowrap; }
-.flappy-mission-count { flex:0 0 auto; color:#c4b5fd; font-size:9px; font-variant-numeric:tabular-nums; }
-.flappy-mission.is-done .flappy-mission-count { color:#86efac; }
-.flappy-achievement-toggle { display:flex; align-items:center; justify-content:space-between; width:100%; margin-top:10px; padding:9px 2px 0; border:0; border-top:1px solid rgba(255,255,255,.07); background:transparent; color:#c8baff; font-size:10px; cursor:pointer; }
-.flappy-achievement-toggle span { color:#8f97ac; }
-.flappy-achievements { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px; margin-top:10px; }
 .flappy-achievement { display:grid; justify-items:center; gap:5px; min-width:0; padding:10px 5px; border:1px solid rgba(255,255,255,.06); border-radius:10px; background:rgba(8,12,22,.25); text-align:center; opacity:.5; }
 .flappy-achievement.is-earned { border-color:rgba(196,181,253,.2); background:rgba(139,92,246,.1); opacity:1; }
 .flappy-achievement>span { font-size:19px; }
@@ -1290,7 +1277,7 @@ h2 { margin: 5px 0 0; font-size: 25px; }
 .flappy-achievement small { color:#929ab0; font-size:8px; line-height:1.6; }
 .flappy-local-note { margin:7px 0 0; color:#7f879c; font-size:9px; text-align:center; }
 @media (max-width:520px) {
-  .flappy-bird-picker,.flappy-missions { padding:11px; border-radius:13px; }
+  .flappy-bird-picker { margin:14px 0; padding:14px; border:1px solid rgba(167,139,250,.17); border-radius:16px; background:linear-gradient(145deg,rgba(34,37,59,.9),rgba(22,26,40,.94)); }
   .flappy-bird-list { gap:6px; }
   .flappy-bird-option { padding:8px 2px 7px; }
   .flappy-bird-avatar { width:32px; height:32px; font-size:16px; }
@@ -1359,7 +1346,7 @@ h2 { margin: 5px 0 0; font-size: 25px; }
 .flappy-game-overlay .game-start-card .game-primary:active { transform: scale(.98); filter: brightness(.96); }
 .flappy-result-grid {
   display: grid;
-  grid-template-columns: 1.15fr 1fr 1fr;
+  grid-template-columns: repeat(2,minmax(0,1fr));
   gap: 8px;
   width: 100%;
   margin: 3px 0 2px;
@@ -1386,8 +1373,6 @@ h2 { margin: 5px 0 0; font-size: 25px; }
 .flappy-result-grid strong { color: #fff; font-size: 25px; line-height: 1; font-weight: 900; font-variant-numeric: tabular-nums; }
 .flappy-result-grid>div:first-child strong { color: #e4d8ff; font-size: 31px; }
 .flappy-result-grid strong small { margin-right: 2px; color: rgba(235,231,255,.55); font-size: 12px; }
-.flappy-mission-copy { gap: 4px; }
-.flappy-mission-count { min-width: 43px; padding: 5px 7px; border: 1px solid rgba(196,181,253,.14); border-radius: 8px; background: rgba(167,139,250,.08); text-align: center; }
 @keyframes flappy-overlay-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes flappy-card-in { from { opacity: 0; transform: translateY(10px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
 @media(max-width:380px) {
@@ -1402,3 +1387,22 @@ h2 { margin: 5px 0 0; font-size: 25px; }
   .flappy-game-overlay,.flappy-game-overlay .game-start-card { animation: none !important; }
   .flappy-game-overlay .game-primary { transition: none !important; }
 }
+
+
+/* Flappy Bird — start action stays at the top of the game page. */
+.flappy-top-start {
+  display:block;
+  width:100%;
+  min-height:46px;
+  margin:0 0 12px;
+  border:1px solid rgba(220,210,255,.25);
+  border-radius:13px;
+  background:linear-gradient(105deg,#d9ccff,#a78bfa 55%,#7cebd7);
+  color:#171326;
+  font:inherit;
+  font-size:13px;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 8px 24px rgba(139,92,246,.18),inset 0 1px rgba(255,255,255,.5);
+}
+.flappy-top-start:active { transform:scale(.99); }
