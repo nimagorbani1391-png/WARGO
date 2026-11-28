@@ -44,7 +44,7 @@ const canvas=document.getElementById('board'),ctx=canvas.getContext('2d'),$=id=>
 const N=24,C=20,STORE='wargo:neon-arcade:',bestKey=STORE+'best',coinKey=STORE+'coins',progressKey=STORE+'level';
 const fa=n=>new Intl.NumberFormat('fa-IR').format(n);
 let best=+(localStorage.getItem(bestKey)||0),bank=+(localStorage.getItem(coinKey)||0),unlocked=Math.max(1,+(localStorage.getItem(progressKey)||1));
-let snake,dir,next,crystal,coin,power,obstacles,hunters,particles,score,runCoins,level,goal,tickNo,timer,running=false,muted=false,audio=null,musicTimer=null,started=false;
+let snake,dir,next,crystal,coin,power,obstacles,hunters,particles,score,runCoins,level,goal,stageProgress,tickNo,timer,running=false,muted=false,audio=null,musicTimer=null,started=false;
 $('best').textContent=fa(best);$('coins').textContent=fa(bank);
 const rand=()=>Math.floor(Math.random()*N),same=(a,b)=>a.x===b.x&&a.y===b.y;
 function occupied(p){return snake?.some(s=>same(s,p))||obstacles?.some(o=>same(o,p))||hunters?.some(h=>same(h,p))}
@@ -54,7 +54,7 @@ function music(){if(muted||musicTimer)return;let notes=[220,277,330,440,330,277]
 function stopMusic(){clearInterval(musicTimer);musicTimer=null}
 function burst(x,y,color,count=14){for(let i=0;i<count;i++){let a=Math.random()*Math.PI*2,v=1+Math.random()*4;particles.push({x:x*C+C/2,y:y*C+C/2,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:25+Math.random()*15,color})}}
 function addObstacle(){let p=free();obstacles.push(p)}
-function setupStage(){obstacles=[];hunters=[];for(let i=0;i<Math.min(2+level,9);i++)addObstacle();if(level>=2)hunters.push({...free(),dx:1,dy:0});if(level>=4)hunters.push({...free(),dx:0,dy:1});crystal=free();coin=free();power=null;goal=5+level*2;$('mission').textContent=fa(goal)+' کریستال جمع کن';$('level').textContent=fa(level);$('power').textContent='نداری'}
+function setupStage(){obstacles=[];hunters=[];for(let i=0;i<Math.min(2+level,9);i++)addObstacle();if(level>=2)hunters.push({...free(),dx:1,dy:0});if(level>=4)hunters.push({...free(),dx:0,dy:1});crystal=free();coin=free();power=null;goal=5+level*2;stageProgress=0;$('mission').textContent=fa(goal)+' کریستال جمع کن';$('level').textContent=fa(level);$('power').textContent='نداری'}
 function reset(){level=1;score=0;runCoins=0;tickNo=0;snake=[{x:5,y:12},{x:4,y:12},{x:3,y:12}];dir={x:1,y:0};next={...dir};particles=[];setupStage();updateStats();draw()}
 function updateStats(){$('score').textContent=fa(score);$('coins').textContent=fa(bank+runCoins);$('best').textContent=fa(best);$('level').textContent=fa(level)}
 function finish(win=false){running=false;clearInterval(timer);stopMusic();$('start').textContent='تلاش دوباره';$('status').textContent=win?'تو قهرمان میدان شدی! رکوردت ثبت شد.':'برخورد کردی! دوباره وارد میدان شو.';sound(win?880:110,.35,'sawtooth');}
@@ -64,10 +64,10 @@ tickNo++;dir={...next};const head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
 if(head.x<0||head.y<0||head.x>=N||head.y>=N||snake.slice(0,-1).some(p=>same(p,head))||obstacles.some(p=>same(p,head))||hunters.some(p=>same(p,head))){burst(snake[0].x,snake[0].y,'#ff537d',30);finish();return}
 snake.unshift(head);
 if(same(head,crystal)){score+=10;burst(head.x,head.y,'#6cf7e7');crystal=free();sound(620,.1);if(score>best){best=score;localStorage.setItem(bestKey,String(best))}
-if(score/10>=goal){runCoins+=5+level;bank+=runCoins;runCoins=0;localStorage.setItem(coinKey,String(bank));if(level>=unlocked+3){finish(true);return}nextStage()}}
-else if(same(head,coin)){runCoins+=1;burst(head.x,head.y,'#ffd166',18);coin=free();sound(940,.12,'triangle')}
+stageProgress++;$('mission').textContent=fa(Math.max(0,goal-stageProgress))+' کریستال باقی‌مانده';if(stageProgress>=goal){runCoins+=5+level;bank+=runCoins;runCoins=0;localStorage.setItem(coinKey,String(bank));if(level>=unlocked+3){finish(true);return}nextStage()}}
+else if(same(head,coin)){runCoins+=1;bank++;localStorage.setItem(coinKey,String(bank));burst(head.x,head.y,'#ffd166',18);coin=free();sound(940,.12,'triangle')}
 else snake.pop();
-if(power&&same(head,power)){runCoins+=3;burst(head.x,head.y,'#c59bff',22);power=null;$('power').textContent='سپر فعال';sound(760,.18)}
+if(power&&same(head,power)){runCoins+=3;bank+=3;localStorage.setItem(coinKey,String(bank));burst(head.x,head.y,'#c59bff',22);power=null;$('power').textContent='سپر فعال';sound(760,.18)}
 if(!power&&tickNo%90===0){power=free()}
 hunters.forEach(h=>{if(tickNo%2===0){let dx=Math.sign(head.x-h.x),dy=Math.sign(head.y-h.y);if(Math.random()<.5)h.x=Math.max(0,Math.min(N-1,h.x+dx));else h.y=Math.max(0,Math.min(N-1,h.y+dy));if(same(h,head)){finish();}}});
 if(tickNo%35===0&&level>=3){let h=hunters[0];if(h){let opts=[{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1}].filter(d=>h.x+d.x>=0&&h.x+d.x<N&&h.y+d.y>=0&&h.y+d.y<N&&!obstacles.some(o=>same(o,{x:h.x+d.x,y:h.y+d.y})));if(opts.length){let d=opts[Math.floor(Math.random()*opts.length)];h.x+=d.x;h.y+=d.y}}}
