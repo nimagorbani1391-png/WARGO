@@ -92,7 +92,6 @@ export default function FlappyBird({ onExit }: { onExit: () => void }) {
 
   const activeBird = useMemo(() => BIRDS.find((bird) => bird.id === selectedBird) ?? BIRDS[0], [selectedBird]);
   const environment = environmentFor(score);
-  const unlockedBirds = BIRDS.filter((bird) => best >= bird.unlockAt);
   const completedMissions = MISSIONS.filter((mission) => achievements.includes(mission.id)).length;
 
   const persist = useCallback((next: SaveData) => {
