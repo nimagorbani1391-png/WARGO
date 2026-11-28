@@ -84,6 +84,7 @@ export default function FlappyBird({ onExit }: { onExit: () => void }) {
   const saveRef = useRef<SaveData>(readSave());
   const [running, setRunning] = useState(false);
   const [over, setOver] = useState(false);
+  const [newRecord, setNewRecord] = useState(false);
   const [score, setScore] = useState(0);
   const [best, setBest] = useState(saveRef.current.best);
   const [selectedBird, setSelectedBird] = useState<BirdId>(saveRef.current.selectedBird);
@@ -115,6 +116,7 @@ export default function FlappyBird({ onExit }: { onExit: () => void }) {
     world.current = makeWorld();
     setScore(0);
     setOver(false);
+    setNewRecord(false);
     setRunning(true);
   }, []);
 
@@ -144,6 +146,8 @@ export default function FlappyBird({ onExit }: { onExit: () => void }) {
       current.over = true;
       setRunning(false);
       setOver(true);
+      const isNewRecord = current.score > saveRef.current.best;
+      setNewRecord(isNewRecord);
       const nextBest = Math.max(saveRef.current.best, current.score);
       const nextAchievements = [...new Set([
         ...saveRef.current.achievements,
@@ -326,8 +330,8 @@ export default function FlappyBird({ onExit }: { onExit: () => void }) {
           const progress = Math.min(score, mission.target);
           return <div key={mission.id} className={`flappy-mission ${done ? "is-done" : ""}`}>
             <span className="flappy-mission-icon">{done ? "✓" : "✦"}</span>
-            <div className="flappy-mission-copy"><b>{mission.title}</b><small>{done ? mission.reward : mission.detail}</small><div className="flappy-progress"><i style={{ width: `${done ? 100 : (progress / mission.target) * 100}%` }} /></div></div>
-            <strong className="flappy-mission-count">{done ? "کامل" : `${progress}/${mission.target}`}</strong>
+            <div className="flappy-mission-copy"><b>{mission.title}</b><small>{done ? mission.reward : mission.detail}</small></div>
+            <strong className="flappy-mission-count">{done ? "کامل" : `هدف ${mission.target}`}</strong>
           </div>;
         })}
       </div>
@@ -339,7 +343,13 @@ export default function FlappyBird({ onExit }: { onExit: () => void }) {
       </div>}
     </section>
 
-    <GameStartOverlay visible={!running} title={over ? "پرواز به پایان رسید" : "آماده پرواز؟"} description={over ? `امتیاز این دور: ${score} — ${score >= best ? "رکورد جدید ثبت شد!" : "برای رکورد بهتر دوباره تلاش کن."}` : "با هر لمس بال بزن، از موانع عبور کن و پرنده‌های تازه را آزاد کن."} buttonLabel={over ? "پرواز دوباره" : "شروع پرواز"} onStart={start} />
+    <GameStartOverlay visible={!running} className="flappy-game-overlay" title={over ? (newRecord ? "رکورد تازه ثبت شد!" : "پرواز به پایان رسید") : "آماده پرواز؟"} description={over ? "این نتیجه فقط روی همین دستگاه ذخیره می‌شود." : "با هر لمس بال بزن، از موانع عبور کن و پرنده‌های تازه را آزاد کن."} buttonLabel={over ? "پرواز دوباره" : "شروع پرواز"} onStart={start}>
+      {over && <div className="flappy-result-grid" aria-label="نتیجه بازی">
+        <div className="flappy-result-main"><span>امتیاز این دور</span><strong>{score}</strong></div>
+        <div><span>بهترین رکورد</span><strong>{best}</strong></div>
+        <div><span>دستاوردها</span><strong>{achievements.length}<small>/۳</small></strong></div>
+      </div>}
+    </GameStartOverlay>
     <p className="game-help">برای بال زدن صفحه را لمس کن یا Space را بزن. هر مانع یک امتیاز دارد؛ با پیشرفت، آسمان و چالش‌ها تغییر می‌کنند.</p>
     <p className="flappy-local-note">پیشرفت و دستاوردها فقط روی همین دستگاه ذخیره می‌شوند.</p>
   </GameFrame>;
