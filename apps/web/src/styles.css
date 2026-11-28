@@ -1246,3 +1246,61 @@ h2 { margin: 5px 0 0; font-size: 25px; }
 :root[data-theme="light"] .game-load-error{background:#fff0f0;color:#a52d3a}
 @media(max-width:700px){.theme-toggle{left:0;min-height:35px;padding:0 9px;font-size:10px}.theme-toggle span:first-child{font-size:14px}}
 @media(prefers-reduced-motion:reduce){.theme-toggle,.category-chip{transition:none!important}}
+
+
+/* Flappy Bird: polished skins, evolving scenery and local missions */
+.flappy-stats { align-items:center; padding:11px 13px; border:1px solid rgba(167,139,250,.18); border-radius:13px; background:linear-gradient(110deg,rgba(167,139,250,.1),rgba(255,255,255,.025)); }
+.flappy-bird-picker,.flappy-missions { margin:14px 0; padding:14px; border:1px solid rgba(167,139,250,.17); border-radius:16px; background:linear-gradient(145deg,rgba(34,37,59,.9),rgba(22,26,40,.94)); }
+.flappy-section-heading { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:11px; }
+.flappy-section-heading strong { color:#f1edff; font-size:12px; }
+.flappy-section-heading>span { color:#929ab0; font-size:9px; }
+.flappy-bird-list { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; }
+.flappy-bird-option { display:grid; justify-items:center; gap:5px; min-width:0; padding:9px 3px 8px; border:1px solid rgba(255,255,255,.08); border-radius:12px; background:#171b2a; color:#e8e5f4; cursor:pointer; transition:border-color .18s,background .18s,transform .18s; }
+.flappy-bird-option.is-selected { border-color:#b9a2ff; background:rgba(139,92,246,.17); box-shadow:inset 0 0 0 1px rgba(185,162,255,.16),0 0 18px rgba(139,92,246,.1); }
+.flappy-bird-option:disabled { cursor:not-allowed; }
+.flappy-bird-option.is-locked { opacity:.48; }
+.flappy-bird-option:not(:disabled):active { transform:scale(.96); }
+.flappy-bird-avatar { display:grid; place-items:center; width:35px; height:35px; border:2px solid rgba(255,255,255,.5); border-radius:50%; color:#202033; font-size:18px; box-shadow:0 4px 12px rgba(0,0,0,.2); }
+.flappy-bird-option b { max-width:100%; overflow:hidden; font-size:10px; text-overflow:ellipsis; white-space:nowrap; }
+.flappy-bird-option small { color:#9da5ba; font-size:8px; }
+.flappy-scene-label { display:flex; align-items:center; gap:7px; margin:15px 3px 8px; color:#e5ddff; font-size:11px; font-weight:700; }
+.flappy-scene-label>span:last-child { color:#8992a9; font-size:9px; font-weight:400; }
+.flappy-scene-dot { width:7px; height:7px; border-radius:50%; background:#8bdbbd; box-shadow:0 0 10px #8bdbbd; }
+.flappy-stage { position:relative; display:block; width:min(100%,360px); margin:0 auto; padding:0; overflow:hidden; border:1px solid rgba(196,181,253,.28); border-radius:16px; background:#172b4c; box-shadow:0 16px 38px rgba(0,0,0,.28),0 0 24px rgba(139,92,246,.08); cursor:pointer; touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
+.flappy-stage canvas { display:block; width:100%; height:auto; aspect-ratio:9/14; }
+.flappy-missions { margin-top:17px; }
+.flappy-mission-list { display:grid; gap:8px; }
+.flappy-mission { display:flex; align-items:center; gap:9px; min-width:0; padding:9px; border:1px solid rgba(255,255,255,.055); border-radius:11px; background:rgba(8,12,22,.24); }
+.flappy-mission.is-done { border-color:rgba(110,231,183,.2); background:rgba(16,91,70,.12); }
+.flappy-mission-icon { display:grid; place-items:center; flex:0 0 29px; width:29px; height:29px; border-radius:9px; background:rgba(167,139,250,.13); color:#c4b5fd; font-size:15px; font-weight:900; }
+.flappy-mission.is-done .flappy-mission-icon { background:rgba(52,211,153,.14); color:#86efac; }
+.flappy-mission-copy { flex:1; min-width:0; display:grid; gap:3px; }
+.flappy-mission-copy b { color:#e9e5f5; font-size:10px; }
+.flappy-mission-copy small { overflow:hidden; color:#929ab0; font-size:9px; text-overflow:ellipsis; white-space:nowrap; }
+.flappy-progress { height:4px; margin-top:3px; overflow:hidden; border-radius:99px; background:rgba(255,255,255,.09); }
+.flappy-progress i { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,#8b5cf6,#67e8c0); transition:width .25s ease; }
+.flappy-mission-count { flex:0 0 auto; color:#c4b5fd; font-size:9px; font-variant-numeric:tabular-nums; }
+.flappy-mission.is-done .flappy-mission-count { color:#86efac; }
+.flappy-achievement-toggle { display:flex; align-items:center; justify-content:space-between; width:100%; margin-top:10px; padding:9px 2px 0; border:0; border-top:1px solid rgba(255,255,255,.07); background:transparent; color:#c8baff; font-size:10px; cursor:pointer; }
+.flappy-achievement-toggle span { color:#8f97ac; }
+.flappy-achievements { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px; margin-top:10px; }
+.flappy-achievement { display:grid; justify-items:center; gap:5px; min-width:0; padding:10px 5px; border:1px solid rgba(255,255,255,.06); border-radius:10px; background:rgba(8,12,22,.25); text-align:center; opacity:.5; }
+.flappy-achievement.is-earned { border-color:rgba(196,181,253,.2); background:rgba(139,92,246,.1); opacity:1; }
+.flappy-achievement>span { font-size:19px; }
+.flappy-achievement div { display:grid; gap:3px; }
+.flappy-achievement b { color:#e9e5f5; font-size:9px; }
+.flappy-achievement small { color:#929ab0; font-size:8px; line-height:1.6; }
+.flappy-local-note { margin:7px 0 0; color:#7f879c; font-size:9px; text-align:center; }
+@media (max-width:520px) {
+  .flappy-bird-picker,.flappy-missions { padding:11px; border-radius:13px; }
+  .flappy-bird-list { gap:6px; }
+  .flappy-bird-option { padding:8px 2px 7px; }
+  .flappy-bird-avatar { width:32px; height:32px; font-size:16px; }
+  .flappy-section-heading strong { font-size:11px; }
+  .flappy-section-heading>span { font-size:8px; }
+  .flappy-scene-label { font-size:10px; }
+  .flappy-achievements { gap:5px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .flappy-bird-option,.flappy-progress i { transition:none !important; }
+}
