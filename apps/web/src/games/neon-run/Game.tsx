@@ -5,7 +5,7 @@ type Point = { x: number; y: number };
 type Hunter = Point & { dx: number; dy: number };
 type Particle = { x: number; y: number; vx: number; vy: number; life: number; color: string };
 type World = {
-  snake: Point[]; dir: Point; next: Point; crystal: Point; coin: Point; power: Point | null;
+  snake: Point[]; prevSnake: Point[]; dir: Point; next: Point; crystal: Point; coin: Point; power: Point | null;
   obstacles: Point[]; hunters: Hunter[]; particles: Particle[]; score: number; runCoins: number;
   level: number; goal: number; stageProgress: number; tickNo: number; started: boolean;
 };
@@ -18,14 +18,14 @@ const same = (a: Point, b: Point) => a.x === b.x && a.y === b.y;
 const randomPoint = (): Point => ({ x: Math.floor(Math.random() * N), y: Math.floor(Math.random() * N) });
 function makeWorld(): World {
   const world: World = {
-    snake: [{ x: 5, y: 12 }, { x: 4, y: 12 }, { x: 3, y: 12 }],
+    snake: [{ x: 5, y: 12 }, { x: 4, y: 12 }, { x: 3, y: 12 }], prevSnake: [{ x: 5, y: 12 }, { x: 4, y: 12 }, { x: 3, y: 12 }],
     dir: { x: 1, y: 0 }, next: { x: 1, y: 0 }, crystal: { x: 15, y: 12 },
     coin: { x: 18, y: 8 }, power: null, obstacles: [], hunters: [], particles: [],
     score: 0, runCoins: 0, level: 1, goal: 7, stageProgress: 0, tickNo: 0, started: false,
   };
   return world;
 }
-function drawWorld(canvas: HTMLCanvasElement, world: World) {
+function drawWorld(canvas: HTMLCanvasElement, world: World, alpha = 1) {
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
   ctx.clearRect(0, 0, SIZE, SIZE);
@@ -55,17 +55,20 @@ function drawWorld(canvas: HTMLCanvasElement, world: World) {
     ctx.fillStyle = "#250817"; ctx.fillRect(h.x * CELL + 6, h.y * CELL + 7, 3, 3); ctx.fillRect(h.x * CELL + 12, h.y * CELL + 7, 3, 3); ctx.restore();
   });
   world.snake.forEach((p, i) => {
+    const previous = world.prevSnake[i] || p;
+    const px = (previous.x + (p.x - previous.x) * alpha) * CELL;
+    const py = (previous.y + (p.y - previous.y) * alpha) * CELL;
     ctx.save(); ctx.shadowBlur = i === 0 ? 19 : 8; ctx.shadowColor = i === 0 ? "#62f4e3" : "#8c69ff";
     ctx.fillStyle = i === 0 ? "#8affec" : `hsl(${258 - i * 2},75%,${Math.max(28, 68 - i * .7)}%)`;
-    ctx.beginPath(); ctx.roundRect(p.x * CELL + 2, p.y * CELL + 2, 16, 16, 6); ctx.fill();
-    if (i === 0) { ctx.fillStyle = "#11233a"; ctx.beginPath(); ctx.arc(p.x * CELL + 7, p.y * CELL + 7, 1.8, 0, 7); ctx.arc(p.x * CELL + 13, p.y * CELL + 7, 1.8, 0, 7); ctx.fill(); }
+    ctx.beginPath(); ctx.roundRect(px + 2, py + 2, 16, 16, 6); ctx.fill();
+    if (i === 0) { ctx.fillStyle = "#11233a"; ctx.beginPath(); ctx.arc(px + 7, py + 7, 1.8, 0, 7); ctx.arc(px + 13, py + 7, 1.8, 0, 7); ctx.fill(); }
     ctx.restore();
   });
   world.particles.forEach((p) => { ctx.globalAlpha = Math.max(0, p.life / 35); ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, 3, 3); });
   ctx.globalAlpha = 1;
   if (!world.started) {
     ctx.fillStyle = "#080b19bb"; ctx.fillRect(0, 0, SIZE, SIZE); ctx.textAlign = "center";
-    ctx.fillStyle = "#e7e1ff"; ctx.font = "bold 25px Tahoma"; ctx.fillText("WARGO NEON RUN", 240, 215);
+    ctx.fillStyle = "#e7e1ff"; ctx.font = "bold 25px Tahoma"; ctx.fillText("مار نئونی", 240, 215);
     ctx.fillStyle = "#a9a4c9"; ctx.font = "15px Tahoma"; ctx.fillText("برای شروع، دکمه مأموریت را بزن", 240, 250);
   }
 }
@@ -74,7 +77,7 @@ export default function NeonRun({ onExit }: { onExit: () => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const worldRef = useRef<World>(makeWorld());
   const touchRef = useRef<{ x: number; y: number } | null>(null);
-  const timerRef = useRef<number | null>(null);
+
   const audioRef = useRef<AudioContext | null>(null);
   const musicRef = useRef<number | null>(null);
   const mutedRef = useRef(false);
@@ -148,7 +151,7 @@ export default function NeonRun({ onExit }: { onExit: () => void }) {
     const w = worldRef.current; w.level++;
     let unlocked = 1; try { unlocked = Number(localStorage.getItem(LEVEL_KEY) || 1); } catch { /* optional */ }
     if (w.level > unlocked) persist(LEVEL_KEY, w.level);
-    w.snake = [{ x: 5, y: 12 }, { x: 4, y: 12 }, { x: 3, y: 12 }];
+    w.snake = [{ x: 5, y: 12 }, { x: 4, y: 12 }, { x: 3, y: 12 }]; w.prevSnake = w.snake.map((p) => ({ ...p }));
     w.dir = { x: 1, y: 0 }; w.next = { ...w.dir }; w.tickNo = 0;
     setupStage(); setStatus("مرحله " + fa(w.level) + " شروع شد؛ سرعت بیشتر و شکارچی‌های خطرناک‌تر!");
     sound(660, .2);
@@ -160,6 +163,7 @@ export default function NeonRun({ onExit }: { onExit: () => void }) {
       w.snake.slice(0, -1).some((p) => same(p, head)) || w.obstacles.some((p) => same(p, head)) || w.hunters.some((p) => same(p, head))) {
       burst(w.snake[0].x, w.snake[0].y, "#ff537d", 30); finish(); return;
     }
+    w.prevSnake = w.snake.map((p) => ({ ...p }));
     w.snake.unshift(head);
     if (same(head, w.crystal)) {
       w.score += 10; setScore(w.score); burst(head.x, head.y, "#6cf7e7"); w.crystal = randomPoint();
@@ -215,8 +219,21 @@ export default function NeonRun({ onExit }: { onExit: () => void }) {
   useEffect(() => {
     if (!running) return;
     const delay = Math.max(72, 145 - worldRef.current.level * 5);
-    timerRef.current = window.setInterval(() => tickRef.current(), delay);
-    return () => { if (timerRef.current !== null) window.clearInterval(timerRef.current); timerRef.current = null; };
+    let frame = 0, lastTime = 0, accumulator = 0;
+    const animate = (time: number) => {
+      if (!lastTime) lastTime = time;
+      accumulator += Math.min(50, time - lastTime);
+      lastTime = time;
+      const delay = Math.max(72, 145 - worldRef.current.level * 5);
+      while (accumulator >= delay) {
+        tickRef.current();
+        accumulator -= delay;
+      }
+      if (canvasRef.current) drawWorld(canvasRef.current, worldRef.current, Math.min(1, accumulator / delay));
+      frame = window.requestAnimationFrame(animate);
+    };
+    frame = window.requestAnimationFrame(animate);
+    return () => window.cancelAnimationFrame(frame);
   }, [running, level]);
   useEffect(() => {
     const pause = () => {
@@ -228,7 +245,6 @@ export default function NeonRun({ onExit }: { onExit: () => void }) {
     return () => document.removeEventListener("visibilitychange", pause);
   }, [running, stopMusic]);
   useEffect(() => () => {
-    if (timerRef.current !== null) window.clearInterval(timerRef.current);
     stopMusic(); void audioRef.current?.close();
   }, [stopMusic]);
 
@@ -264,7 +280,7 @@ export default function NeonRun({ onExit }: { onExit: () => void }) {
     if (next) stopMusic(); else { sound(520); startMusic(); }
   };
 
-  return <GameFrame title="WARGO NEON RUN" onExit={onExit}>
+  return <GameFrame title="مار نئونی" onExit={onExit}>
     <div className="neon-run">
       <div className="neon-run-heading"><span className="neon-run-tag"><i /> NEON ARCADE</span><h2>وارد میدان نئون شو</h2><p>کریستال جمع کن، از شکارچی‌ها فرار کن و مرحله‌ها را فتح کن.</p></div>
       <section className="neon-run-panel" aria-label="بازی آرکید WARGO Neon Run">
@@ -280,7 +296,7 @@ export default function NeonRun({ onExit }: { onExit: () => void }) {
         </div>
         <p className="neon-run-status" aria-live="polite">{status}</p>
       </section>
-      <p className="neon-run-tip">کنترل فقط با کشیدن انگشت روی صفحه انجام می‌شود · صدا و موسیقی قابل خاموش‌کردن‌اند</p>
+      <p className="neon-run-tip">کنترل فقط با کشیدن انگشت روی صفحه انجام می‌شود · حرکت مار با انیمیشن نرم و پیوسته نمایش داده می‌شود</p>
       <p className="neon-run-local-note">امتیاز و رکورد فقط روی همین دستگاه نگهداری می‌شوند و به سرور یا رتبه‌بندی ارسال نمی‌شوند.</p>
     </div>
   </GameFrame>;
